@@ -60,3 +60,11 @@ er () {
     __emacs_daemon_restart
     __emacsclient_in_X_frame "$@"
 }
+
+magit () {
+    (if [[ $# == 1 ]]; then
+         cd $1;
+     fi
+     __emacsclient_in_X_frame --eval '(magit-status)'
+    )
+}
