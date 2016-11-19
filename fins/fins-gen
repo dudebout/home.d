@@ -1,0 +1,28 @@
+#!/usr/bin/zsh
+
+FINSDIR="$HOME/.home.d/fins"
+
+for file in $FINSDIR/funs.d/?*.zsh ; do
+    echo "Working on $file"
+    source "$file"
+
+    mkdir -p "$FINSDIR/bin"
+
+    for fun in $(functions | sed -n 's/^\([^_][^ ]*\) () {$/\1/p'); do
+        fin="$FINSDIR/bin/$fun"
+        echo "  Creating $fin"
+        cat > "$fin" <<EOF
+#!/usr/bin/zsh
+source "$file"
+
+$fun "\$@"
+EOF
+        chmod u+x "$fin"
+    done
+
+    # Also unfunction the auxiliary functions ending with an underscore
+    for fun in $(functions | sed -n 's/^\([^ ]\+\) () {$/\1/p'); do
+        echo "  Removing function $fun from scope"
+        unfunction $fun
+    done
+done
