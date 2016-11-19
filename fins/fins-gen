@@ -8,7 +8,13 @@ for file in $FINSDIR/funs.d/?*.zsh ; do
 
     mkdir -p "$FINSDIR/bin"
 
-    for fun in $(functions | sed -n 's/^\([^_][^ ]*\) () {$/\1/p'); do
+    set -A function_list $(functions | sed -n 's/^\([^ ]\+\) () {$/\1/p')
+
+    for fun in $function_list; do
+        if [[ $fun =~ '^__' ]]; then
+            continue
+        fi
+
         fin="$FINSDIR/bin/$fun"
         echo "  Creating $fin"
         cat > "$fin" <<EOF
@@ -21,7 +27,7 @@ EOF
     done
 
     # Also unfunction the auxiliary functions ending with an underscore
-    for fun in $(functions | sed -n 's/^\([^ ]\+\) () {$/\1/p'); do
+    for fun in $function_list; do
         echo "  Removing function $fun from scope"
         unfunction $fun
     done
