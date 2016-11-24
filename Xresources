@@ -3,6 +3,7 @@
 ! ------------------------------------------------------------------------------
 
 xterm*termName: xterm-256color
+xterm*metaSendsEscape: true
 
 xterm*foreground: COLOR_FG
 xterm*background: COLOR_BG
