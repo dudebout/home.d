@@ -6,8 +6,16 @@ __emacs_echo () {
     fi
 }
 
+__emacs_daemon_socket () {
+    echo /tmp/emacs$(id --user)/server
+}
+
+__emacs_daemon_socket_exists () {
+    test -S $(__emacs_daemon_socket)
+}
+
 __emacs_daemon_is_up () {
-    test -S /tmp/emacs$(id --user)/server
+    __emacs_daemon_socket_exists && pgrep emacs > /dev/null
 }
 
 __emacs_X_frame_exists () {
@@ -16,6 +24,10 @@ __emacs_X_frame_exists () {
 
 __emacs_daemon_start () {
     if ! $(__emacs_daemon_is_up); then
+        if $(__emacs_daemon_socket_exists); then
+            __emacs_echo 'Removing stale socket'
+            rm -f $(__emacs_daemon_socket)
+        fi
         __emacs_echo 'Starting emacs daemon'
         emacs --daemon --eval '(setq frame-title-format "emacs_X_frame")'
     else
