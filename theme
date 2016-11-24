@@ -1,0 +1,155 @@
+export ZENBURN_FG__P__1=#FFFFEF
+export ZENBURN_FG=#DCDCCC
+export ZENBURN_FG__M__1=#656555
+export ZENBURN_BG__M__2=#000000
+export ZENBURN_BG__M__1=#2B2B2B
+export ZENBURN_BG__M__05=#383838
+export ZENBURN_BG=#3F3F3F
+export ZENBURN_BG__P__05=#494949
+export ZENBURN_BG__P__1=#4F4F4F
+export ZENBURN_BG__P__2=#5F5F5F
+export ZENBURN_BG__P__3=#6F6F6F
+export ZENBURN_RED__P__1=#DCA3A3
+export ZENBURN_RED=#CC9393
+export ZENBURN_RED__M__1=#BC8383
+export ZENBURN_RED__M__2=#AC7373
+export ZENBURN_RED__M__3=#9C6363
+export ZENBURN_RED__M__4=#8C5353
+export ZENBURN_ORANGE=#DFAF8F
+export ZENBURN_YELLOW=#F0DFAF
+export ZENBURN_YELLOW__M__1=#E0CF9F
+export ZENBURN_YELLOW__M__2=#D0BF8F
+export ZENBURN_GREEN__M__1=#5F7F5F
+export ZENBURN_GREEN=#7F9F7F
+export ZENBURN_GREEN__P__1=#8FB28F
+export ZENBURN_GREEN__P__2=#9FC59F
+export ZENBURN_GREEN__P__3=#AFD8AF
+export ZENBURN_GREEN__P__4=#BFEBBF
+export ZENBURN_CYAN=#93E0E3
+export ZENBURN_BLUE__P__1=#94BFF3
+export ZENBURN_BLUE=#8CD0D3
+export ZENBURN_BLUE__M__1=#7CB8BB
+export ZENBURN_BLUE__M__2=#6CA0A3
+export ZENBURN_BLUE__M__3=#5C888B
+export ZENBURN_BLUE__M__4=#4C7073
+export ZENBURN_BLUE__M__5=#366060
+export ZENBURN_MAGENTA=#DC8CC3
+
+xterm-char-class () {
+    # In xterm, double click selects a word. A word is defined as a
+    # contiguous sequence of characters belonging to the same
+    # character class. The character class for alphanumeric characters
+    # is 48 (0 in ASCII). The following snippets adds common
+    # characters to that character class to allow easy selection of
+    # filenames and URLs.
+
+    local chars=$1
+
+    echo -n $chars | od -An -t uC | sed -r -e 's/  ([0-9][0-9])/\1:48_ /g' -e 's/_ $//' | tr _ ,
+}
+
+xrdb-reload () {
+    xrdb -remove
+    xrdb -load <(sed -e 's/FONT_NAME/DejaVu Sans Mono/g' \
+                     -e 's/FONT_SIZE/9/g' \
+                     -e "s/COLOR_FG/$ZENBURN_FG/g" \
+                     -e "s/COLOR_BG/$ZENBURN_BG/g" \
+                     -e "s/XTERM_CHAR_CLASS/$(xterm-char-class '!,%*-./?@=#:')/g" \
+                     $HOME_D/Xresources)
+}
+
+hex_to_ansi_escape () {
+    local hex=$1
+
+    local r=$((16#$(echo $hex | cut -c2-3)))
+    local g=$((16#$(echo $hex | cut -c4-5)))
+    local b=$((16#$(echo $hex | cut -c6-7)))
+
+    echo "$r;$g;$b"
+}
+
+ansi_escape_fg () {
+    local hex=$1
+
+    echo "38;2;$(hex_to_ansi_escape $hex)"
+}
+
+ansi_escape_bg () {
+    local hex=$1
+
+    echo "48;2;$(hex_to_ansi_escape $hex)"
+}
+
+colorize () {
+    local string=$1
+    local color=$2
+
+    echo "\[\e[$(ansi_escape_fg $color)m\]$string\[$(tput sgr0)\]"
+}
+
+ps1_part () {
+    local string=$1
+    local color=$2
+
+    echo "$(colorize $string $color) "
+}
+
+bash_prompt_command () {
+    local exit_code=$?
+    local ps1_exit_code=''
+    # if [[ $exit_code -ne 0 ]]; then
+    #     ps1_exit_code=$(ps1_part $exit_code $ZENBURN_RED)
+    # fi
+
+    local ps1_host=$(ps1_part $HOME_D_HOST $ZENBURN_GREEN)
+
+    local ps1_cwd=$(ps1_part \\w $ZENBURN_BLUE__M__2)
+
+    local ps1_prompt=$(ps1_part \$ $ZENBURN_YELLOW)
+
+    PS1=''
+    for part in "$ps1_host" "$ps1_cwd" "$ps1_exit_code" "$ps1_prompt"; do
+        PS1+=$part
+    done
+}
+
+alias ls='ls --color=auto'
+
+export LS_COLORS=''
+add_to_ls_colors () {
+    local type=$1
+    local fg=$2
+    local bg=$3
+
+    if [[ -z $LS_COLORS ]]; then
+        LS_COLORS="$type=$(ansi_escape_fg $fg)"
+    else
+        LS_COLORS="$LS_COLORS:$type=$(ansi_escape_fg $fg)"
+    fi
+
+    if [[ -n $bg ]]; then
+        LS_COLORS="$LS_COLORS:$type=$(ansi_escape_bg $bg)"
+    fi
+}
+
+add_to_ls_colors di $ZENBURN_BLUE__M__2
+
+alias grep='grep --color'
+export GREP_COLOR="$(ansi_escape_fg $ZENBURN_YELLOW)"
+
+export GREP_COLOR="$(ansi_escape_fg $ZENBURN_YELLOW)"
+
+alias ag="ag --color-line-number '$(ansi_escape_fg $ZENBURN_YELLOW)' \
+             --color-match '1;$(ansi_escape_fg $ZENBURN_YELLOW)' \
+             --color-path '$(ansi_escape_fg $ZENBURN_FG__P__1)'"
+
+export LESS_TERMCAP_mb=$(printf '\e[01;31m') # enter blinking mode - red
+export LESS_TERMCAP_md=$(printf '\e[01;35m') # enter double-bright mode - bold, magenta
+export LESS_TERMCAP_me=$(printf '\e[0m') # turn off all appearance modes (mb, md, so, us)
+export LESS_TERMCAP_se=$(printf '\e[0m') # leave standout mode
+export LESS_TERMCAP_so=$(printf '\e[01;33m') # enter standout mode - yellow
+export LESS_TERMCAP_ue=$(printf '\e[0m') # leave underline mode
+export LESS_TERMCAP_us=$(printf '\e[04;36m') # enter underline mode - cyan
+
+# LS_COLORS='rs=0:di=01;34:ln=01;36:mh=00:pi=40;33:so=01;35:do=01;35:bd=40;33;01:cd=40;33;01:or=40;31;01:su=37;41:sg=30;43:ca=30;41:tw=30;42:ow=34;42:st=37;44:ex=01;32:*.tar=01;31:*.tgz=01;31:*.arc=01;31:*.arj=01;31:*.taz=01;31:*.lha=01;31:*.lz4=01;31:*.lzh=01;31:*.lzma=01;31:*.tlz=01;31:*.txz=01;31:*.tzo=01;31:*.t7z=01;31:*.zip=01;31:*.z=01;31:*.Z=01;31:*.dz=01;31:*.gz=01;31:*.lrz=01;31:*.lz=01;31:*.lzo=01;31:*.xz=01;31:*.bz2=01;31:*.bz=01;31:*.tbz=01;31:*.tbz2=01;31:*.tz=01;31:*.deb=01;31:*.rpm=01;31:*.jar=01;31:*.war=01;31:*.ear=01;31:*.sar=01;31:*.rar=01;31:*.alz=01;31:*.ace=01;31:*.zoo=01;31:*.cpio=01;31:*.7z=01;31:*.rz=01;31:*.cab=01;31:*.jpg=01;35:*.jpeg=01;35:*.gif=01;35:*.bmp=01;35:*.pbm=01;35:*.pgm=01;35:*.ppm=01;35:*.tga=01;35:*.xbm=01;35:*.xpm=01;35:*.tif=01;35:*.tiff=01;35:*.png=01;35:*.svg=01;35:*.svgz=01;35:*.mng=01;35:*.pcx=01;35:*.mov=01;35:*.mpg=01;35:*.mpeg=01;35:*.m2v=01;35:*.mkv=01;35:*.webm=01;35:*.ogm=01;35:*.mp4=01;35:*.m4v=01;35:*.mp4v=01;35:*.vob=01;35:*.qt=01;35:*.nuv=01;35:*.wmv=01;35:*.asf=01;35:*.rm=01;35:*.rmvb=01;35:*.flc=01;35:*.avi=01;35:*.fli=01;35:*.flv=01;35:*.gl=01;35:*.dl=01;35:*.xcf=01;35:*.xwd=01;35:*.yuv=01;35:*.cgm=01;35:*.emf=01;35:*.axv=01;35:*.anx=01;35:*.ogv=01;35:*.ogx=01;35:*.aac=00;36:*.au=00;36:*.flac=00;36:*.mid=00;36:*.midi=00;36:*.mka=00;36:*.mp3=00;36:*.mpc=00;36:*.ogg=00;36:*.ra=00;36:*.wav=00;36:*.axa=00;36:*.oga=00;36:*.spx=00;36:*.xspf=00;36:';
+# export LS_COLORS

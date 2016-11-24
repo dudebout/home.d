@@ -1,0 +1,26 @@
+! ------------------------------------------------------------------------------
+! xterm
+! ------------------------------------------------------------------------------
+
+xterm*termName: xterm-256color
+
+xterm*foreground: COLOR_FG
+xterm*background: COLOR_BG
+
+xterm*faceName: FONT_NAME:size=FONT_SIZE
+
+xterm*scrollBar: false
+xterm*visualBell: true
+
+xterm*charClass: XTERM_CHAR_CLASS
+xterm*cutNewline: false
+xterm*cutToBeginningOfLine: false
+
+! ------------------------------------------------------------------------------
+! emacs
+! ------------------------------------------------------------------------------
+
+! The format FONT_NAME:size=FONT_SIZE does not work with
+! emacs*font. It sets the widget font size correctly but ends up
+! setting a smaller size for the font used in the buffers.
+emacs*font: FONT_NAME FONT_SIZE
