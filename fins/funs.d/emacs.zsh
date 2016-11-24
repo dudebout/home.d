@@ -29,7 +29,7 @@ __emacs_daemon_start () {
             rm -f $(__emacs_daemon_socket)
         fi
         __emacs_echo 'Starting emacs daemon'
-        emacs --daemon --eval '(setq frame-title-format "emacs_X_frame")'
+        (cd $HOME && emacs --daemon --eval '(setq frame-title-format "emacs_X_frame")')
     else
         __emacs_echo 'Emacs daemon is already running'
     fi
