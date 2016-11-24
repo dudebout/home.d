@@ -25,6 +25,7 @@ main = do
                                 } `additionalKeysP` [ ("M-s", saneNSAction scratchpads nsTmux)
                                                     , ("M-e", runOrRaise "e" (title =? "emacs_X_frame"))
                                                     , ("M-i", runOrRaise "firefox" (className =? "Firefox"))
+                                                    , ("M-q", spawn "PATH=$HOME_D_XMONAD_PATH $HOME_D_XMONAD --recompile && $HOME_D_XMONAD --restart")
                                                     ]
   where nsTmux = "NS:tmux"
         scratch = "scratch"
