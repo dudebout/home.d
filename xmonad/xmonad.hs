@@ -29,7 +29,7 @@ main = do
   where nsTmux = "NS:tmux"
         scratch = "scratch"
         scratchpads = [ NS nsTmux
-                           ("xterm -T " ++ nsTmux ++ " -e bash -c 'tmux attach -t " ++ scratch ++ " || tmux new-session -s " ++ scratch ++ "'")
+                           ("xterm -T " ++ nsTmux ++ " -e zsh -c 'tmux attach -t " ++ scratch ++ " || tmux new-session -s " ++ scratch ++ "'")
                            (title =? nsTmux)
                            doCenterFloat
                       ]
