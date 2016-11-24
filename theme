@@ -80,36 +80,67 @@ ansi_escape_bg () {
     echo "48;2;$(hex_to_ansi_escape $hex)"
 }
 
-colorize () {
+bash_colorize () {
     local string=$1
     local color=$2
 
     echo "\[\e[$(ansi_escape_fg $color)m\]$string\[$(tput sgr0)\]"
 }
 
-ps1_part () {
+bash_ps1_part () {
     local string=$1
     local color=$2
 
-    echo "$(colorize $string $color) "
+    echo "$(bash_colorize $string $color) "
 }
 
 bash_prompt_command () {
     local exit_code=$?
     local ps1_exit_code=''
-    # if [[ $exit_code -ne 0 ]]; then
-    #     ps1_exit_code=$(ps1_part $exit_code $ZENBURN_RED)
-    # fi
+    if [[ $exit_code -ne 0 ]]; then
+        ps1_exit_code=$(bash_ps1_part $exit_code $ZENBURN_RED)
+    fi
 
-    local ps1_host=$(ps1_part $HOME_D_HOST $ZENBURN_GREEN)
+    local ps1_host=$(bash_ps1_part $HOME_D_HOST $ZENBURN_GREEN)
 
-    local ps1_cwd=$(ps1_part \\w $ZENBURN_BLUE__M__2)
+    local ps1_cwd=$(bash_ps1_part \\w $ZENBURN_BLUE__M__2)
 
-    local ps1_prompt=$(ps1_part \$ $ZENBURN_YELLOW)
+    local ps1_prompt=$(bash_ps1_part \$ $ZENBURN_YELLOW)
 
     PS1=''
     for part in "$ps1_host" "$ps1_cwd" "$ps1_exit_code" "$ps1_prompt"; do
         PS1+=$part
+    done
+}
+
+zsh_colorize () {
+    local string=$1
+    local color=$2
+
+    echo "%{\e[$(ansi_escape_fg $color)m%}$string%{$(tput sgr0)%}"
+}
+
+zsh_prompt_part () {
+    local string=$1
+    local color=$2
+
+    echo "$(zsh_colorize $string $color) "
+}
+
+zsh_set_prompt () {
+    setopt PROMPT_SUBST
+
+    local prompt_host=$'$(zsh_prompt_part $HOME_D_HOST $ZENBURN_GREEN)'
+
+    local prompt_cwd=$'$(zsh_prompt_part %~ $ZENBURN_BLUE__M__2)'
+
+    local prompt_exit_code=$'$(zsh_colorize "%(?..%? )" $ZENBURN_RED)'
+
+    local prompt_prompt=$'$(zsh_prompt_part $ $ZENBURN_YELLOW)'
+
+    PROMPT=''
+    for part in "$prompt_host" "$prompt_cwd" "$prompt_exit_code" "$prompt_prompt"; do
+        PROMPT+=$part
     done
 }
 
