@@ -25,3 +25,10 @@ xterm*cutToBeginningOfLine: false
 ! emacs*font. It sets the widget font size correctly but ends up
 ! setting a smaller size for the font used in the buffers.
 emacs*font: FONT_NAME FONT_SIZE
+
+! ------------------------------------------------------------------------------
+! xmessage
+! ------------------------------------------------------------------------------
+
+xmessage*foreground: COLOR_FG
+xmessage*background: COLOR_BG
