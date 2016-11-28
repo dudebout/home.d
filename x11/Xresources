@@ -1,34 +1,34 @@
 ! ------------------------------------------------------------------------------
-! xterm
+! XTerm
 ! ------------------------------------------------------------------------------
 
-xterm*termName: xterm-256color
-xterm*metaSendsEscape: true
+XTerm*termName: xterm-256color
+XTerm*metaSendsEscape: true
 
-xterm*foreground: COLOR_FG
-xterm*background: COLOR_BG
+XTerm*foreground: COLOR_FG
+XTerm*background: COLOR_BG
 
-xterm*faceName: FONT_NAME:size=FONT_SIZE
+XTerm*faceName: FONT_NAME:size=FONT_SIZE
 
-xterm*scrollBar: false
-xterm*visualBell: true
+XTerm*scrollBar: false
+XTerm*visualBell: true
 
-xterm*charClass: XTERM_CHAR_CLASS
-xterm*cutNewline: false
-xterm*cutToBeginningOfLine: false
+XTerm*charClass: XTERM_CHAR_CLASS
+XTerm*cutNewline: false
+XTerm*cutToBeginningOfLine: false
 
 ! ------------------------------------------------------------------------------
-! emacs
+! Emacs
 ! ------------------------------------------------------------------------------
 
 ! The format FONT_NAME:size=FONT_SIZE does not work with
-! emacs*font. It sets the widget font size correctly but ends up
+! Emacs*font. It sets the widget font size correctly but ends up
 ! setting a smaller size for the font used in the buffers.
-emacs*font: FONT_NAME FONT_SIZE
+Emacs*font: FONT_NAME FONT_SIZE
 
 ! ------------------------------------------------------------------------------
-! xmessage
+! Xmessage
 ! ------------------------------------------------------------------------------
 
-xmessage*foreground: COLOR_FG
-xmessage*background: COLOR_BG
+Xmessage*foreground: COLOR_FG
+Xmessage*background: COLOR_BG
