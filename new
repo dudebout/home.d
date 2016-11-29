@@ -1,0 +1,225 @@
+set -u
+setopt BSD_ECHO
+
+set-color () {
+    local collection=$1
+    local name=$2
+    local value=$3 # maybe quote
+
+    eval $collection\[$name\]=$value
+}
+
+copy-color () {
+    local collection_from=$1
+    local collection_to=$2
+    local name_to=$3
+    local name_from=$4
+
+    eval set-color $collection_to $name_to \$\{$collection_from\[$name_from\]\}
+}
+
+get-color () {
+    local collection=$1
+    local name=$2
+
+    eval echo \$\{$collection\[$name\]\}
+}
+
+hex-to-ansi-code () {
+    local hex=$1
+
+    local r=$((16#$(echo $hex | cut -c2-3)))
+    local g=$((16#$(echo $hex | cut -c4-5)))
+    local b=$((16#$(echo $hex | cut -c6-7)))
+
+    echo "8;2;$r;$g;$b"
+}
+
+color-to-ansi-code () {
+    local color=$1
+
+    case $color in
+        (default)
+            echo 9
+            ;;
+        (*black)
+            echo 0
+            ;;
+        (*red)
+            echo 1
+            ;;
+        (*green)
+            echo 2
+            ;;
+        (*yellow)
+            echo 3
+            ;;
+        (*blue)
+            echo 4
+            ;;
+        (*magenta)
+            echo 5
+            ;;
+        (*cyan)
+            echo 6
+            ;;
+        (*white)
+            echo 7
+            ;;
+        (\#*)
+            hex-to-ansi-code $color
+            ;;
+    esac
+}
+
+ansi-code-fg () {
+    local color=$1
+
+    local category=3
+    if [[ $color =~ ^bright ]]; then
+        category=9
+    fi
+
+    echo "$category$(color-to-ansi-code $color)"
+}
+
+ansi-code-bg () {
+    local color=$1
+
+    echo "4$(color-to-ansi-code $color)"
+}
+
+ansi-escape () {
+    local code=${1:-}
+
+    echo "\e[${code}m"
+}
+
+ansi-color () {
+    local fg=${1:-default}
+    local bg=${2:-default}
+
+    echo "$(ansi-escape $(ansi-code-fg $fg)\;$(ansi-code-bg $bg))"
+}
+
+colorize () {
+    local string=$1
+    local fg=${2:-default}
+    local bg=${3:-default}
+
+
+    echo "$(ansi-color $fg $bg)$string$(ansi-escape)"
+}
+
+collection-ansi-color () {
+    local collection=$1
+    local fg=${2:-default}
+    local bg=${3:-default}
+
+    ansi-color $(get-color $collection $fg) $(get-color $collection $bg)
+}
+
+collection-colorize () {
+    local collection=$1
+    local fg=${2:-default}
+    local bg=${3:-default}
+
+    echo "$(collection-ansi-color $collection $fg $bg)$string$(ansi-escape)"
+}
+
+display-collection () {
+    local collection=$1
+
+    for i in ${!home_d_zenburn_theme[@]}; do
+        echo $i
+        # collection-colorize $collection $(eval \$\{$collection\[$i\]\})
+    done
+}
+
+
+declare -A home_d_zenburn_palette
+declare -A home_d_zenburn_theme
+
+# Palette
+alias zp='set-color home_d_zenburn_palette'
+
+# Palette to Theme
+alias zpt='copy-color home_d_zenburn_palette home_d_zenburn_theme'
+
+# Theme to Theme
+alias ztt='copy-color home_d_zenburn_theme home_d_zenburn_theme'
+
+zp default default
+zp fg_p1 '#DCDCCC'
+zp fg '#DCDCCC'
+zp fg_m1 '#656555'
+zp bg_m2 '#000000'
+zp bg_m1 '#2B2B2B'
+zp bg_m05 '#383838'
+zp bg '#3F3F3F'
+zp bg_p05 '#494949'
+zp bg_p1 '#4F4F4F'
+zp bg_p2 '#5F5F5F'
+zp bg_p3 '#6F6F6F'
+zp red_p1 '#DCA3A3'
+zp red '#CC9393'
+zp red_m1 '#BC8383'
+zp red_m2 '#AC7373'
+zp red_m3 '#9C6363'
+zp red_m4 '#8C5353'
+zp orange '#DFAF8F'
+zp yellow '#F0DFAF'
+zp yellow_m1 '#E0CF9F'
+zp yellow_m2 '#D0BF8F'
+zp green_m1 '#5F7F5F'
+zp green '#7F9F7F'
+zp green_p1 '#8FB28F'
+zp green_p2 '#9FC59F'
+zp green_p3 '#AFD8AF'
+zp green_p4 '#BFEBBF'
+zp cyan '#93E0E3'
+zp blue_p1 '#94BFF3'
+zp blue '#8CD0D3'
+zp blue_m1 '#7CB8BB'
+zp blue_m2 '#6CA0A3'
+zp blue_m3 '#5C888B'
+zp blue_m4 '#4C7073'
+zp blue_m5 '#366060'
+zp magenta '#DC8CC3'
+
+zpt default default
+zpt black bg_m2
+zpt red red
+zpt green green
+zpt yellow yellow
+zpt blue blue
+zpt magenta magenta
+zpt cyan cyan
+zpt white fg_p1
+
+# zpt 'bright black' bg_m2
+# zpt 'bright red' red
+# zpt 'bright green' green
+# zpt 'bright yellow' yellow
+# zpt 'bright blue' blue
+# zpt 'bright magenta' magenta
+# zpt 'bright cyan' cyan
+# zpt 'bright white' fg_p1
+
+# ztt positive green
+# ztt negative red
+# ztt attention yellow
+
+# ztt error negative
+# ztt warning attention
+
+# ztt directory blue
+# ztt symlink magenta
+# ztt container red
+
+declare -A home_d_theme
+home_d_theme=$home_d_zenburn_theme
+
+
+# Color list
+# ${!home_d_zenburn[@]}
