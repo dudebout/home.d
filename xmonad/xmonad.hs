@@ -2,23 +2,24 @@ module Main
   ( main
   ) where
 
-import System.Environment (getEnv)
+import           System.Environment          (getEnv)
 
-import XMonad                      (XConfig (..), className, defaultConfig,
-                                    mod4Mask, spawn, title, xmonad, (<+>), (=?))
-import XMonad.Actions.WindowGo     (raise, runOrRaise)
-import XMonad.Hooks.EwmhDesktops   (ewmh)
-import XMonad.Hooks.ManageHelpers  (doCenterFloat)
-import XMonad.Util.EZConfig        (additionalKeysP)
-import XMonad.Util.NamedScratchpad (NamedScratchpad (NS), namedScratchpadAction,
-                                    namedScratchpadManageHook)
+import           XMonad                      (XConfig (..), className,
+                                              defaultConfig, mod4Mask, spawn,
+                                              title, xmonad, (<+>), (=?))
+import           XMonad.Actions.WindowGo     (raise, runOrRaise)
+import           XMonad.Hooks.EwmhDesktops   (ewmh)
+import           XMonad.Hooks.ManageHelpers  (doCenterFloat)
+import           XMonad.Util.EZConfig        (additionalKeysP)
+import           XMonad.Util.NamedScratchpad (NamedScratchpad (NS),
+                                              namedScratchpadAction,
+                                              namedScratchpadManageHook)
 
 main :: IO ()
 main = do
   normalColor <- getEnv "ZENBURN_BG__M__05"
   focusedColor <- getEnv "ZENBURN_FG__M__1"
   xmonad $ ewmh $ defaultConfig { modMask = mod4Mask
-                                , focusFollowsMouse = False
                                 , normalBorderColor = normalColor
                                 , focusedBorderColor = focusedColor
                                 , manageHook = namedScratchpadManageHook scratchpads <+> manageHook defaultConfig

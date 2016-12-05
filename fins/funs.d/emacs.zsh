@@ -52,14 +52,24 @@ __emacs_daemon_restart () {
 __emacsclient_in_X_frame () {
     if $(__emacs_X_frame_exists); then
         __emacs_echo 'Attaching to existing X frame'
-        emacsclient --no-wait "$@"
+        emacsclient "$@"
     else
         __emacs_echo 'Starting X frame'
-        emacsclient --no-wait --create-frame "$@"
+        emacsclient --create-frame "$@"
     fi
 }
 
+__emacsclient_in_X_frame_no_wait () {
+    __emacsclient_in_X_frame --no-wait "$@"
+}
+
+
 e () {
+    __emacs_daemon_start
+    __emacsclient_in_X_frame_no_wait "$@"
+}
+
+ew () {
     __emacs_daemon_start
     __emacsclient_in_X_frame "$@"
 }
@@ -70,13 +80,13 @@ ek () {
 
 er () {
     __emacs_daemon_restart
-    __emacsclient_in_X_frame "$@"
+    __emacsclient_in_X_frame_no_wait "$@"
 }
 
 magit () {
     (if [[ $# == 1 ]]; then
          cd $1;
      fi
-     __emacsclient_in_X_frame --eval '(magit-status)'
+     __emacsclient_in_X_frame_no_wait --eval '(magit-status)'
     )
 }
