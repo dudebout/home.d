@@ -15,11 +15,13 @@ __xterm-char-class () {
 
 xrdb-reload () {
     xrdb -remove
-    xrdb -load <(sed -e "s/FONT_NAME/$HOME_D_FONT_NAME/g" \
-                     -e "s/FONT_SIZE/$HOME_D_FONT_SIZE/g" \
-                     -e "s/COLOR_FG/$HOME_D_COLOR_FG/g"   \
-                     -e "s/COLOR_BG/$HOME_D_COLOR_BG/g"   \
-                     -e "s/XTERM_CHAR_CLASS/$(__xterm-char-class '!,%*-./?@=#:')/g" \
-                     $HOME_D/x11/Xresources
-                     )
+    xrdb -load $HOME_D/x11/Xresources
+    xrdb -merge $HOME_D/generated/x11/Xresources
+    # xrdb -load <(sed -e "s/FONT_NAME/$HOME_D_FONT_NAME/g" \
+    #                  -e "s/FONT_SIZE/$HOME_D_FONT_SIZE/g" \
+    #                  -e "s/COLOR_FG/$HOME_D_COLOR_FG/g"   \
+    #                  -e "s/COLOR_BG/$HOME_D_COLOR_BG/g"   \
+    #                  -e "s/XTERM_CHAR_CLASS/$(__xterm-char-class '!,%*-./?@=#:')/g" \
+    #                  $HOME_D/x11/Xresources
+    #                  )
 }
