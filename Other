@@ -1,1 +1,7 @@
 https://github.com/trapd00r/colorcoke/wiki
+
+Xterm allows also to set the default foreground and background colors using[14]
+
+   ESC]10;<foreground>BEL
+   ESC]11;<background>BEL
+where <foreground> and <background> are X color specifications, and BEL is the ASCII BEL character (code 7). The closing bracket instead of an opening bracket reveals that it belongs to the operating system control commands.
