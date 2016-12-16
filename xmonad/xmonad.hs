@@ -2,18 +2,16 @@ module Main
   ( main
   ) where
 
-import           System.Environment          (getEnv)
+import System.Environment (getEnv)
 
-import           XMonad                      (XConfig (..), className,
-                                              defaultConfig, mod4Mask, spawn,
-                                              title, xmonad, (<+>), (=?))
-import           XMonad.Actions.WindowGo     (raise, runOrRaise)
-import           XMonad.Hooks.EwmhDesktops   (ewmh)
-import           XMonad.Hooks.ManageHelpers  (doCenterFloat)
-import           XMonad.Util.EZConfig        (additionalKeysP)
-import           XMonad.Util.NamedScratchpad (NamedScratchpad (NS),
-                                              namedScratchpadAction,
-                                              namedScratchpadManageHook)
+import XMonad                      (XConfig (..), className, defaultConfig,
+                                    mod4Mask, spawn, title, xmonad, (<+>), (=?))
+import XMonad.Actions.WindowGo     (raise, runOrRaise)
+import XMonad.Hooks.EwmhDesktops   (ewmh)
+import XMonad.Hooks.ManageHelpers  (doCenterFloat)
+import XMonad.Util.EZConfig        (additionalKeysP)
+import XMonad.Util.NamedScratchpad (NamedScratchpad (NS), namedScratchpadAction,
+                                    namedScratchpadManageHook)
 
 main :: IO ()
 main = do
@@ -27,6 +25,7 @@ main = do
                                                     , ("M-e", runOrRaise "e" (title =? "emacs_X_frame"))
                                                     , ("M-i", runOrRaise "firefox" (className =? "Firefox"))
                                                     , ("M-a", runOrRaise "slack" (className =? "Slack"))
+                                                    , ("M-n", runOrRaise "nautilus" (className =? "Nautilus"))
                                                     , ("M-q", spawn "PATH=$HOME_D_XMONAD_PATH $HOME_D_XMONAD --recompile && $HOME_D_XMONAD --restart")
                                                     ]
   where nsTmux = "NS:tmux"
