@@ -1,22 +1,22 @@
-XTerm*background:#3F3F3F
-XTerm*color0:#000000
-XTerm*color1:#CC9393
-XTerm*color10:#7F9F7F
-XTerm*color11:#F0DFAF
-XTerm*color12:#8CD0D3
-XTerm*color13:#DC8CC3
-XTerm*color14:#93E0E3
-XTerm*color15:#FFFFEF
-XTerm*color2:#7F9F7F
-XTerm*color3:#F0DFAF
-XTerm*color4:#8CD0D3
-XTerm*color5:#DC8CC3
-XTerm*color6:#93E0E3
-XTerm*color7:#FFFFEF
-XTerm*color8:#000000
-XTerm*color9:#CC9393
-XTerm*foreground:#DCDCCC
+*foreground: #DCDCCC
+*background: #3F3F3F
+*color0: #000000
+*color1: #CC9393
+*color2: #7F9F7F
+*color3: #F0DFAF
+*color4: #8CD0D3
+*color5: #DC8CC3
+*color6: #93E0E3
+*color7: #FFFFEF
+*color8: #000000
+*color9: #CC9393
+*color10: #7F9F7F
+*color11: #F0DFAF
+*color12: #8CD0D3
+*color13: #DC8CC3
+*color14: #93E0E3
+*color15: #FFFFEF
 
-XTerm*charClass: 33:48, 35:48, 37:48, 38:48, 42:48, 43:48, 44:48, 45:48, 46:48, 47:48, 58:48, 61:48, 63:48, 64:48, 95:48, 126:48
 XTerm*faceName: DejaVu Sans Mono:size=9
 Emacs*font: DejaVu Sans Mono 9
+XTerm*charClass: 33:48, 35:48, 37:48, 38:48, 42:48, 43:48, 44:48, 45:48, 46:48, 47:48, 58:48, 61:48, 63:48, 64:48, 95:48, 126:48
