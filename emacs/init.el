@@ -18,11 +18,26 @@
       vc-follow-symlinks t
       disabled-command-function nil)
 
-(setq-default indent-tabs-mode nil)
+(setq-default indent-tabs-mode nil
+              require-final-newline t)
 
 (add-hook 'before-save-hook 'whitespace-cleanup)
 
 (defalias 'yes-or-no-p 'y-or-n-p)
+
+(global-unset-key (kbd "C-z"))
+(global-unset-key (kbd "C-x C-z"))
+
+
+;; Not sure that this is such a good idea anyway
+;; When this is turned on, we get a message about the latest loade module instead...
+;; (defmacro inhibit-startup-echo-area-message ()
+;;   (list 'setq 'inhibit-startup-echo-area-message (getenv "USER")))
+;; (inhibit-startup-echo-area-message)
+
+
+(setq use-package-verbose t)
+(require 'use-package)
 
 (use-package avy
   :bind (("C-=" . avy-goto-word-1)
@@ -32,15 +47,26 @@
 (use-package company
   :init (global-company-mode))
 
+(use-package cursor-chg
+  :init (progn
+          (toggle-cursor-type-when-idle 1)
+          (change-cursor-mode 1)))
+
 (use-package ediff
   :init (setq ediff-window-setup-function 'ediff-setup-windows-plain))
+
+(use-package elisp-slime-nav
+  :init (progn
+          (add-hook 'emacs-lisp-mode-hook 'elisp-slime-nav-mode)
+          (add-hook 'c-mode-hook 'elisp-slime-nav-mode)))
 
 ;; TODO integrate flycheck-color-mode-line and flycheck-pos-tip
 (use-package flycheck
   :init (use-package flycheck-haskell
           :init (progn
                   (add-hook 'haskell-mode-hook 'flycheck-mode)
-                  (add-hook 'flycheck-mode-hook 'flycheck-haskell-setup))))
+                  (add-hook 'flycheck-mode-hook 'flycheck-haskell-setup)
+                  (global-flycheck-mode))))
 
 (use-package haskell-mode
   :init (progn
@@ -66,8 +92,12 @@
 (use-package helm-git-ls
   :bind ("C-x C-d" . helm-browse-project))
 
+(use-package macrostep
+  :bind ("C-c e" . macrostep-expand))
+
 (use-package magit
   :bind (("C-c i" . magit-status)
+         ;; TODO make C-c I chose the directory first
          ("C-c I" . magit-status))
   :init (progn
           (require 'helm-mode)
