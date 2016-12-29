@@ -19,6 +19,7 @@ import XMonad.Util.NamedScratchpad (NamedScratchpad (NS), namedScratchpadAction,
 
 main :: IO ()
 main = do
+  -- FIXME put this in generated
   normalColor <- getEnv "ZENBURN_BG__M__05"
   focusedColor <- getEnv "ZENBURN_FG__M__1"
   xmonad $ ewmh $ defaultConfig { modMask = mod4Mask
@@ -33,6 +34,8 @@ main = do
                                                     , ("M-a", runOrRaise "slack" (className =? "Slack"))
                                                     , ("M-n", runOrRaise "nautilus" (className =? "Nautilus"))
                                                     , ("M-q", spawn "PATH=$HOME_D_XMONAD_PATH $HOME_D_XMONAD --recompile && $HOME_D_XMONAD --restart")
+                                                    -- FIXME put this in profile
+                                                    , ("M-l", spawn "sudo systemctl suspend")
                                                     ]
   where sessionName = "scratch"
         xtermTitle = "NS:tmux:" ++ sessionName
