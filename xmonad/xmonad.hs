@@ -2,10 +2,14 @@ module Main
   ( main
   ) where
 
+import qualified XMonad.StackSet as W
+
+import Data.List          (intercalate)
 import System.Environment (getEnv)
 
 import XMonad                      (XConfig (..), className, defaultConfig,
-                                    mod4Mask, spawn, title, xmonad, (<+>), (=?))
+                                    mod4Mask, spawn, title, windows,
+                                    withFocused, xmonad, (<+>), (=?))
 import XMonad.Actions.WindowGo     (raise, runOrRaise)
 import XMonad.Hooks.EwmhDesktops   (ewmh)
 import XMonad.Hooks.ManageHelpers  (doCenterFloat)
@@ -21,18 +25,20 @@ main = do
                                 , normalBorderColor = normalColor
                                 , focusedBorderColor = focusedColor
                                 , manageHook = namedScratchpadManageHook scratchpads <+> manageHook defaultConfig
-                                } `additionalKeysP` [ ("M-s", saneNSAction scratchpads nsTmux)
+                                } `additionalKeysP` [ ("M-s", saneNSAction scratchpads nsScratch)
+                                                    , ("M-u", withFocused (windows . W.sink))
+                                                    , ("M-t", runOrRaise "xt" (title =? "tmux:default"))
                                                     , ("M-e", runOrRaise "e" (title =? "emacs_X_frame"))
                                                     , ("M-i", runOrRaise "firefox" (className =? "Firefox"))
                                                     , ("M-a", runOrRaise "slack" (className =? "Slack"))
                                                     , ("M-n", runOrRaise "nautilus" (className =? "Nautilus"))
                                                     , ("M-q", spawn "PATH=$HOME_D_XMONAD_PATH $HOME_D_XMONAD --recompile && $HOME_D_XMONAD --restart")
                                                     ]
-  where nsTmux = "NS:tmux"
-        scratch = "scratch"
-        scratchpads = [ NS nsTmux
-                           ("xterm -T " ++ nsTmux ++ " -e zsh -c 'tmux attach -t " ++ scratch ++ " || tmux new-session -s " ++ scratch ++ "'")
-                           (title =? nsTmux)
+  where sessionName = "scratch"
+        xtermTitle = "NS:tmux:" ++ sessionName
+        nsScratch = "NS:" ++ sessionName
+        scratchpads = [ NS nsScratch (intercalate " " ["xt", sessionName, xtermTitle])
+                           (title =? xtermTitle)
                            doCenterFloat
                       ]
         -- FIXME add a way to reselect the scratchpad even if it is on the current workspace
