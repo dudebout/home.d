@@ -28,6 +28,7 @@
 (global-unset-key (kbd "C-z"))
 (global-unset-key (kbd "C-x C-z"))
 
+(bind-key "C-c r" 'replace-string)
 
 ;; Not sure that this is such a good idea anyway
 ;; When this is turned on, we get a message about the latest loade module instead...
