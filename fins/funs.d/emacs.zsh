@@ -87,6 +87,7 @@ magit () {
     (if [[ $# == 1 ]]; then
          cd $1;
      fi
+     __emacs_daemon_start
      __emacsclient_in_X_frame_no_wait --eval '(magit-status)'
     )
 }
