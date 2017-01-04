@@ -28,7 +28,14 @@
 (global-unset-key (kbd "C-z"))
 (global-unset-key (kbd "C-x C-z"))
 
+(defun tmux-default-directory ()
+  (interactive)
+  (call-process "ct" nil nil nil default-directory))
+
 (bind-key "C-c r" 'replace-string)
+(bind-key "C-c g" 'rgrep)
+(bind-key "C-c t" 'tmux-default-directory)
+
 
 ;; Not sure that this is such a good idea anyway
 ;; When this is turned on, we get a message about the latest loade module instead...
