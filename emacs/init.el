@@ -34,8 +34,11 @@
 
 (bind-key "C-c r" 'replace-string)
 (bind-key "C-c g" 'rgrep)
-(bind-key "C-c t" 'tmux-default-directory)
-
+;; Make sure that the last letter of the keybinding does not
+;; correspond to the letter of the XMonad binding called by ct, else
+;; xdotool key does not seem to be called properly / there is an
+;; overlap problem. That problem can be fixed with a sleep (not ideal)
+(bind-key "C-c d" 'tmux-default-directory)
 
 ;; Not sure that this is such a good idea anyway
 ;; When this is turned on, we get a message about the latest loade module instead...

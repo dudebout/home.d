@@ -33,9 +33,9 @@ ct () {
 
     if __session_exists "$session_name"; then
         (cd "$directory"; tmux new-window -t "$session_name")
-        # Without this sleep, the xdotool does not focus on the existing window
-        sleep 0.1
     else
+        # setsid does not seem to be needed
+        # the newly created xterm is not killed when the shell which launched ct is closed
         xt &
         while ! __session_exists "$session_name"; do
             sleep 0.01
@@ -44,5 +44,5 @@ ct () {
         tmux kill-window -t "$session_name:1"
         tmux move-window -s "$session_name:2" -t "$session_name:1"
     fi
-    xdotool key 'Super_R+t'
+    xdotool key Super+t
 }
