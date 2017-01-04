@@ -38,6 +38,8 @@
 ;; correspond to the letter of the XMonad binding called by ct, else
 ;; xdotool key does not seem to be called properly / there is an
 ;; overlap problem. That problem can be fixed with a sleep (not ideal)
+;;
+;; If using "C-c t" and "Super+t", you would get an error saying that "C-S-t is not defined"
 (bind-key "C-c d" 'tmux-default-directory)
 
 ;; Not sure that this is such a good idea anyway
