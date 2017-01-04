@@ -1,8 +1,8 @@
+(package-initialize)
+
 (let ((pre-init (concat (getenv "HOME_D") "/profile/emacs/pre-init.el")))
   (when (file-exists-p pre-init)
     (load-file pre-init)))
-
-(package-initialize)
 
 (menu-bar-mode 0)
 (tool-bar-mode 0)
