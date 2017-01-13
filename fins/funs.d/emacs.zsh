@@ -1,7 +1,7 @@
 # -*- mode: sh; -*-
 
 __emacs_echo () {
-    if [[ -n $EMACS_ECHO ]]; then
+    if [[ -n ${EMACS_ECHO+x} ]]; then
         echo "$@"
     fi
 }

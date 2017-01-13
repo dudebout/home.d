@@ -1,7 +1,5 @@
 # -*- mode: sh; -*-
 
-set -u
-
 __session_exists () {
     local session_name="$1"
 

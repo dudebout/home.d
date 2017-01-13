@@ -1,6 +1,6 @@
 #!/usr/bin/zsh
 
-FINSDIR="$HOME/.home.d/fins"
+FINSDIR="${FINSDIR:-$HOME_D/fins}"
 
 for file in $FINSDIR/funs.d/?*.zsh ; do
     echo "Working on $file"
@@ -19,6 +19,11 @@ for file in $FINSDIR/funs.d/?*.zsh ; do
         echo "  Creating $fin"
         cat > "$fin" <<EOF
 #!/usr/bin/zsh
+
+set -e
+set -u
+# look into zshparseopt instead of relying on set -u
+
 source "$file"
 
 $fun "\$@"
