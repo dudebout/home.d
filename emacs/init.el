@@ -1,8 +1,8 @@
+(package-initialize)
+
 (let ((pre-init (concat (getenv "HOME_D") "/profile/emacs/pre-init.el")))
   (when (file-exists-p pre-init)
     (load-file pre-init)))
-
-(package-initialize)
 
 (menu-bar-mode 0)
 (tool-bar-mode 0)
@@ -28,7 +28,19 @@
 (global-unset-key (kbd "C-z"))
 (global-unset-key (kbd "C-x C-z"))
 
+(defun tmux-default-directory ()
+  (interactive)
+  (call-process "ct" nil nil nil default-directory))
+
 (bind-key "C-c r" 'replace-string)
+(bind-key "C-c g" 'rgrep)
+;; Make sure that the last letter of the keybinding does not
+;; correspond to the letter of the XMonad binding called by ct, else
+;; xdotool key does not seem to be called properly / there is an
+;; overlap problem. That problem can be fixed with a sleep (not ideal)
+;;
+;; If using "C-c t" and "Super+t", you would get an error saying that "C-S-t is not defined"
+(bind-key "C-c d" 'tmux-default-directory)
 
 ;; Not sure that this is such a good idea anyway
 ;; When this is turned on, we get a message about the latest loade module instead...
