@@ -2,22 +2,20 @@ module Main
   ( main
   ) where
 
-import qualified XMonad.StackSet             as W
+import qualified XMonad.StackSet as W
 
-import           Data.List                   (intercalate)
-import           System.Environment          (getEnv)
+import Data.List          (intercalate)
+import System.Environment (getEnv)
 
-import           XMonad                      (XConfig (..), className,
-                                              defaultConfig, mod4Mask, spawn,
-                                              title, windows, withFocused,
-                                              xmonad, (<+>), (=?))
-import           XMonad.Actions.WindowGo     (raise, runOrRaise)
-import           XMonad.Hooks.EwmhDesktops   (ewmh)
-import           XMonad.Hooks.ManageHelpers  (doCenterFloat)
-import           XMonad.Util.EZConfig        (additionalKeysP)
-import           XMonad.Util.NamedScratchpad (NamedScratchpad (NS),
-                                              namedScratchpadAction,
-                                              namedScratchpadManageHook)
+import XMonad                      (XConfig (..), className, defaultConfig,
+                                    mod4Mask, spawn, title, windows,
+                                    withFocused, xmonad, (<+>), (=?))
+import XMonad.Actions.WindowGo     (raise, runOrRaise)
+import XMonad.Hooks.EwmhDesktops   (ewmh)
+import XMonad.Hooks.ManageHelpers  (doCenterFloat)
+import XMonad.Util.EZConfig        (additionalKeysP)
+import XMonad.Util.NamedScratchpad (NamedScratchpad (NS), namedScratchpadAction,
+                                    namedScratchpadManageHook)
 
 main :: IO ()
 main = do
@@ -37,7 +35,7 @@ main = do
                                                     , ("M-n", runOrRaise "nautilus" (className =? "Nautilus"))
                                                     , ("M-q", spawn "PATH=$HOME_D_XMONAD_PATH $HOME_D_XMONAD --recompile && $HOME_D_XMONAD --restart")
                                                     -- FIXME put this in profile
-                                                    , ("M-l", spawn "sudo systemctl suspend")
+                                                    , ("M-S-l", spawn "sudo systemctl suspend")
                                                     , ("M-S-x", spawn "xkill")
                                                     ]
   where sessionName = "scratch"
