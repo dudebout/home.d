@@ -114,7 +114,8 @@
          ("C-c I" . magit-status))
   :init (progn
           (require 'helm-mode)
-          (setq magit-diff-refine-hunk 'all
+          (setq magit-delete-by-moving-to-trash nil
+                magit-diff-refine-hunk 'all
                 magit-completing-read-function 'helm--completing-read-default)))
 
 (use-package menu-bar
