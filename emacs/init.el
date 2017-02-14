@@ -4,6 +4,8 @@
   (when (file-exists-p pre-init)
     (load-file pre-init)))
 
+(require 'home.d-interactives (concat (getenv "HOME_D") "/emacs/home.d-interactives.el"))
+
 (menu-bar-mode 0)
 (tool-bar-mode 0)
 (scroll-bar-mode 0)
@@ -32,6 +34,8 @@
   (interactive)
   (call-process "ct" nil nil nil default-directory))
 
+(bind-key "C-x M-w" 'home.d/rename-current-buffer-file)
+(bind-key "C-x M-k" 'home.d/delete-current-buffer-and-delete-file)
 (bind-key "C-c r" 'replace-string)
 (bind-key "C-c g" 'rgrep)
 ;; Make sure that the last letter of the keybinding does not
