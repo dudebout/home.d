@@ -37,6 +37,19 @@ main = do
                                                     -- FIXME put this in profile
                                                     , ("M-S-l", spawn "sudo systemctl suspend")
                                                     , ("M-S-x", spawn "xkill")
+                                                    , ("<XF86MonBrightnessDown>", spawn "xbacklight -dec 10")
+                                                    , ("<XF86MonBrightnessUp>", spawn "xbacklight -inc 10")
+                                                    , ("S-<XF86MonBrightnessDown>", spawn "xbacklight -dec 5")
+                                                    , ("S-<XF86MonBrightnessUp>", spawn "xbacklight -inc 5")
+                                                    , ("C-<XF86MonBrightnessDown>", spawn "xbacklight -dec 1")
+                                                    , ("C-<XF86MonBrightnessUp>", spawn "xbacklight -inc 1")
+                                                    , ("<XF86AudioRaiseVolume>", spawn "amixer set Master 10%+")
+                                                    , ("<XF86AudioLowerVolume>", spawn "amixer set Master 10%-")
+                                                    , ("S-<XF86AudioRaiseVolume>", spawn "amixer set Master 5%+")
+                                                    , ("S-<XF86AudioLowerVolume>", spawn "amixer set Master 5%-")
+                                                    , ("C-<XF86AudioRaiseVolume>", spawn "amixer set Master 1%+")
+                                                    , ("C-<XF86AudioLowerVolume>", spawn "amixer set Master 1%-")
+                                                    , ("<XF86AudioMute>", spawn "amixer set Master toggle")
                                                     ]
   where sessionName = "scratch"
         xtermTitle = "NS:tmux:" ++ sessionName
