@@ -1,5 +1,3 @@
-# -*- mode: sh; -*-
-
 __emacs_echo () {
     if [[ -n ${EMACS_ECHO+x} ]]; then
         echo "$@"
@@ -64,21 +62,21 @@ __emacsclient_in_X_frame_no_wait () {
 }
 
 
-e () {
+emacs-attach () {
     __emacs_daemon_start
     __emacsclient_in_X_frame_no_wait "$@"
 }
 
-ew () {
+emacs-wait () {
     __emacs_daemon_start
     __emacsclient_in_X_frame "$@"
 }
 
-ek () {
+emacs-kill () {
     __emacs_daemon_stop
 }
 
-er () {
+emacs-restart () {
     __emacs_daemon_restart
     __emacsclient_in_X_frame_no_wait "$@"
 }

@@ -29,7 +29,7 @@ main = do
                                 } `additionalKeysP` [ ("M-s", saneNSAction scratchpads nsScratch)
                                                     , ("M-u", withFocused (windows . W.sink))
                                                     , ("M-t", runOrRaise "xt" (title =? "tmux:default"))
-                                                    , ("M-e", runOrRaise "e" (title =? "emacs_X_frame"))
+                                                    , ("M-e", runOrRaise "emacs-attach" (title =? "emacs_X_frame"))
                                                     , ("M-i", runOrRaise "firefox" (className =? "Firefox"))
                                                     , ("M-a", runOrRaise "slack" (className =? "Slack"))
                                                     , ("M-n", runOrRaise "nautilus" (className =? "Nautilus"))

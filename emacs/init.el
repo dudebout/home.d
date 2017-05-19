@@ -147,6 +147,18 @@
   :init (setq recentf-max-saved-items nil
               recentf-auto-cleanup 10))
 
+;; maybe put in use-package sh-script
+(defun add-shell-extension (shell &optional ext)
+  (let* ((ext (or ext shell))
+         (rx (format "\\.%s\\'" ext)))
+    (add-to-list 'auto-mode-alist `(,rx . sh-mode))
+    (add-hook 'sh-mode-hook `(lambda ()
+                              (when (string-match ,rx buffer-file-name)
+                                (sh-set-shell ,shell))))))
+
+(use-package sh-script
+  :init (add-shell-extension "zsh"))
+
 (use-package whitespace
   :bind ("C-c w" . whitespace-mode))
 

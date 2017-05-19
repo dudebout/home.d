@@ -1,5 +1,3 @@
-# -*- mode: sh; -*-
-
 __xterm-char-class () {
     # In xterm, double click selects a word. A word is defined as a
     # contiguous sequence of characters belonging to the same
