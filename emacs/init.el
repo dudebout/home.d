@@ -147,14 +147,15 @@
   :init (setq recentf-max-saved-items nil
               recentf-auto-cleanup 10))
 
-;; maybe put in use-package sh-script
 (defun add-shell-extension (shell &optional ext)
   (let* ((ext (or ext shell))
          (rx (format "\\.%s\\'" ext)))
     (add-to-list 'auto-mode-alist `(,rx . sh-mode))
+    ;; Usually do not quote lambda in a hook, as a lambda is self-quoting.
+    ;; Here we want to quote it, to force the "evaluation" of the let-bound variables
     (add-hook 'sh-mode-hook `(lambda ()
-                              (when (string-match ,rx buffer-file-name)
-                                (sh-set-shell ,shell))))))
+                               (when (string-match ,rx buffer-file-name)
+                                 (sh-set-shell ,shell))))))
 
 (use-package sh-script
   :init (add-shell-extension "zsh"))
