@@ -129,7 +129,8 @@
   :bind ("C-c a" . org-agenda)
   :init (progn
           (setq org-agenda-skip-scheduled-if-done t
-                org-agenda-skip-deadline-if-done t)
+                org-agenda-skip-deadline-if-done t
+                org-startup-indented t)
           (add-hook 'org-agenda-mode-hook (lambda () (setq default-directory org-directory)))))
 
 (use-package org-capture
