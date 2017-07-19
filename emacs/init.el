@@ -36,6 +36,7 @@
 
 (bind-key "C-x M-w" 'home.d/rename-current-buffer-file)
 (bind-key "C-x M-k" 'home.d/delete-current-buffer-and-delete-file)
+(bind-key "M-g M-g" 'home.d/goto-line-with-feedback)
 (bind-key "C-c r" 'replace-string)
 (bind-key "C-c g" 'rgrep)
 ;; Make sure that the last letter of the keybinding does not
@@ -47,7 +48,7 @@
 (bind-key "C-c d" 'tmux-default-directory)
 
 ;; Not sure that this is such a good idea anyway
-;; When this is turned on, we get a message about the latest loade module instead...
+;; When this is turned on, we get a message about the latest loaded module instead...
 ;; (defmacro inhibit-startup-echo-area-message ()
 ;;   (list 'setq 'inhibit-startup-echo-area-message (getenv "USER")))
 ;; (inhibit-startup-echo-area-message)
@@ -59,7 +60,9 @@
 (use-package avy
   :bind (("C-=" . avy-goto-word-1)
          ("M-g g" . avy-goto-line))
-  :init (setq avy-keys '(?a ?r ?s ?t ?d ?h ?n ?e ?i ?o)))
+  :init (progn
+          (setq avy-keys '(?a ?r ?s ?t ?d ?h ?n ?e ?i ?o)) ;; put the keys on the colemak row
+          (avy-setup-default))) ;; setup C-' in isearch
 
 (use-package company
   :init (global-company-mode))
@@ -85,6 +88,9 @@
                   (add-hook 'flycheck-mode-hook 'flycheck-haskell-setup)
                   (global-flycheck-mode))))
 
+(use-package git-gutter
+  :init (global-git-gutter-mode))
+
 (use-package haskell-mode
   :init (progn
           (setq haskell-stylish-on-save t)
@@ -102,6 +108,11 @@
          ("M-s o" . helm-occur)
          ("C-x C-f" . helm-find-files)
          ("C-x b" . helm-buffers-list)))
+
+(use-package helm-ag
+  :init (setq helm-ag-insert-at-point 'symbol)
+  :bind (("C-c /" . helm-ag)
+         ("C-c s" . helm-ag-project-root)))
 
 (use-package helm-descbinds
   :bind ("C-h b" . helm-descbinds))
@@ -130,8 +141,15 @@
   :init (progn
           (setq org-agenda-skip-scheduled-if-done t
                 org-agenda-skip-deadline-if-done t
-                org-startup-indented t)
-          (add-hook 'org-agenda-mode-hook (lambda () (setq default-directory org-directory)))))
+                org-startup-indented t
+                org-agenda-custom-commands
+                '(("u" alltodo ""
+                   ((org-agenda-skip-function
+                     (lambda nil
+                       (org-agenda-skip-entry-if 'scheduled 'deadline))))
+                   (org-agenda-overriding-header "Unscheduled TODO entries: "))))
+          (add-hook 'org-agenda-mode-hook
+                    (lambda () (setq default-directory org-directory)))))
 
 (use-package org-capture
   :bind ("C-c c" . org-capture))
@@ -146,7 +164,7 @@
 
 (use-package recentf
   :init (setq recentf-max-saved-items nil
-              recentf-auto-cleanup 10))
+              recentf-auto-cleanup 60))
 
 (defun add-shell-extension (shell &optional ext)
   (let* ((ext (or ext shell))
