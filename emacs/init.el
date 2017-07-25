@@ -72,6 +72,9 @@
           (toggle-cursor-type-when-idle 1)
           (change-cursor-mode 1)))
 
+(use-package dante
+  :init  (add-hook 'haskell-mode-hook 'dante-mode))
+
 (use-package ediff
   :init (setq ediff-window-setup-function 'ediff-setup-windows-plain))
 
@@ -95,7 +98,11 @@
   :init (progn
           (setq haskell-stylish-on-save t)
           (add-hook 'haskell-mode-hook 'haskell-indentation-mode)
-          (add-hook 'haskell-mode-hook 'interactive-haskell-mode)))
+          ;; dante has conflicting install instructions with
+          ;; haskell-mode. Ensure the haskell-mode instructions are
+          ;; followed when dante is not installed.
+          (unless (locate-library "dante")
+            (add-hook 'haskell-mode-hook 'interactive-haskell-mode))))
 
 (use-package helm
   :init (progn
@@ -153,6 +160,8 @@
 
 (use-package org-capture
   :bind ("C-c c" . org-capture))
+
+(use-package org-protocol)
 
 (use-package paren
   :init (progn
