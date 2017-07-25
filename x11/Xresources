@@ -1,3 +1,11 @@
+! https://superuser.com/questions/630757/point-size-with-x11-fonts
+! http://askubuntu.com/questions/378386/how-to-get-the-right-dpi-resolution-on-ubuntu-13-04-saucy
+! Xft*dpi: 100
+! xrandr --dpi 96 fixed it
+! multiple resizing end up corrupting the resolution
+! at some point the skew is huge 96x126 and that makes the Xft.dpi 126 which blows up my 9pt font
+! $ xdpyinfo | grep -B2 resolution
+
 XTerm*termName: xterm-256color
 XTerm*metaSendsEscape: true
 
