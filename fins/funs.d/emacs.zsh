@@ -13,7 +13,7 @@ __emacs_daemon_socket_exists () {
 }
 
 __emacs_daemon_is_up () {
-    __emacs_daemon_socket_exists && pgrep emacs > /dev/null
+    __emacs_daemon_socket_exists && pgrep --full 'emacs --daemon' > /dev/null
 }
 
 __emacs_X_frame_exists () {
