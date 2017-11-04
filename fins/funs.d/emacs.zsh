@@ -1,5 +1,5 @@
 __emacs_echo () {
-    if [[ -v ${EMACS_ECHO} ]]; then
+    if [[ -v EMACS_ECHO ]]; then
         echo "$@"
     fi
 }
