@@ -57,6 +57,12 @@
 (setq use-package-verbose t)
 (require 'use-package)
 
+(use-package ace-window
+  :bind ("M-p" . ace-window)
+  :init (progn
+          (setq aw-keys '(?a ?r ?s ?t ?n ?e ?i ?o))
+          (ace-window-display-mode)))
+
 (use-package avy
   :bind (("C-=" . avy-goto-word-1)
          ("M-g g" . avy-goto-line))
@@ -67,10 +73,10 @@
 (use-package company
   :init (global-company-mode))
 
-(use-package cursor-chg
-  :init (progn
-          (toggle-cursor-type-when-idle 1)
-          (change-cursor-mode 1)))
+(use-package counsel
+  :bind (("M-x" . counsel-M-x)
+         ("C-h b" . counsel-descbinds)
+         ("C-x C-f" . counsel-find-file)))
 
 (use-package dante
   :init  (add-hook 'haskell-mode-hook 'dante-mode))
@@ -111,21 +117,21 @@
                 helm-mode-fuzzy-match t
                 helm-completion-in-region-fuzzy-match t))
   :bind (("C-c h" . helm-command-prefix)
-         ("M-x" . helm-M-x)
-         ("M-s o" . helm-occur)
-         ("C-x C-f" . helm-find-files)
-         ("C-x b" . helm-buffers-list)))
+         ("M-s o" . helm-occur)))
 
 (use-package helm-ag
   :init (setq helm-ag-insert-at-point 'symbol)
   :bind (("C-c /" . helm-ag)
          ("C-c s" . helm-ag-project-root)))
 
-(use-package helm-descbinds
-  :bind ("C-h b" . helm-descbinds))
-
 (use-package helm-git-ls
   :bind ("C-x C-d" . helm-browse-project))
+
+(use-package hydra)
+
+(use-package ivy
+  :bind ("C-x b" . ivy-switch-buffer)
+  :init (setq ivy-use-virtual-buffers t))
 
 (use-package macrostep
   :bind ("C-c e" . macrostep-expand))
@@ -187,6 +193,9 @@
 
 (use-package sh-script
   :init (add-shell-extension "zsh"))
+
+(use-package swiper
+  :bind ("C-s" . swiper))
 
 (use-package whitespace
   :bind ("C-c w" . whitespace-mode))
