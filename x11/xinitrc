@@ -1,3 +1,29 @@
+#!/usr/bin/zsh
+
 xsetroot -cursor_name left_ptr
 xrdb-reload
+
+home.d-file () {
+    local rel_path=$1
+    local abs_path=$HOME_D/$rel_path
+    local abs_path2=$HOME_D/profile/$rel_path
+    if [[ -e $abs_path ]]; then
+        echo $abs_path
+    elif [[ -e $abs_path2 ]]; then
+        echo $abs_path2
+    else
+        echo Nothing
+    fi
+}
+
+source-home.d () {
+    local rel_path=$1
+    local abs_path=$(home.d-file $rel_path)
+    if [[ $abs_path != Nothing  ]]; then
+        source $abs_path
+    fi
+}
+
+source-home.d x11/monitors
+
 exec $HOME_D_XMONAD
