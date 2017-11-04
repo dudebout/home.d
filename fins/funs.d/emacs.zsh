@@ -1,5 +1,5 @@
 __emacs_echo () {
-    if [[ -n ${EMACS_ECHO+x} ]]; then
+    if [[ -v ${EMACS_ECHO} ]]; then
         echo "$@"
     fi
 }
@@ -13,7 +13,7 @@ __emacs_daemon_socket_exists () {
 }
 
 __emacs_daemon_is_up () {
-    __emacs_daemon_socket_exists && pgrep --full 'emacs --daemon' > /dev/null
+    __emacs_daemon_socket_exists && lsof $(__emacs_daemon_socket) > /dev/null
 }
 
 __emacs_X_frame_exists () {
