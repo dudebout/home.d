@@ -76,7 +76,8 @@
 (use-package counsel
   :bind (("M-x" . counsel-M-x)
          ("C-h b" . counsel-descbinds)
-         ("C-x C-f" . counsel-find-file)))
+         ("C-x C-f" . counsel-find-file)
+         ("C-c j" . counsel-git-grep)))
 
 (use-package dante
   :init  (add-hook 'haskell-mode-hook 'dante-mode))
@@ -184,7 +185,13 @@
   :init (setq recentf-max-saved-items nil
               recentf-auto-cleanup 60))
 
-(defun add-shell-extension (shell &optional ext)
+(use-package smart-mode-line
+  ;; consider using powerline and smart-mode-line-powerline-theme
+  :init (progn
+          (setq sml/no-confirm-load-theme t)
+          (smart-mode-line-enable)))
+
+(defun ddb/add-shell-extension (shell &optional ext)
   (let* ((ext (or ext shell))
          (rx (format "\\.%s\\'" ext)))
     (add-to-list 'auto-mode-alist `(,rx . sh-mode))
@@ -195,7 +202,7 @@
                                  (sh-set-shell ,shell))))))
 
 (use-package sh-script
-  :init (add-shell-extension "zsh"))
+  :init (ddb/add-shell-extension "zsh"))
 
 (use-package swiper
   :bind ("C-s" . swiper))
