@@ -97,6 +97,9 @@
                   (add-hook 'flycheck-mode-hook 'flycheck-haskell-setup)
                   (global-flycheck-mode))))
 
+(use-package god-mode
+  :init (global-set-key (kbd "<escape>") 'god-local-mode))
+
 (use-package git-gutter
   :init (global-git-gutter-mode))
 
