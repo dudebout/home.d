@@ -188,8 +188,10 @@
 (use-package smart-mode-line
   ;; consider using powerline and smart-mode-line-powerline-theme
   :init (progn
-          (setq sml/no-confirm-load-theme t)
-          (smart-mode-line-enable)))
+          (setq sml/no-confirm-load-theme t
+                sml/theme nil
+                rm-blacklist '(" God"))
+          (sml/setup)))
 
 (defun ddb/add-shell-extension (shell &optional ext)
   (let* ((ext (or ext shell))
