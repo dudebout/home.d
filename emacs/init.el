@@ -58,7 +58,7 @@
 (require 'use-package)
 
 (use-package ace-window
-  :bind ("M-p" . ace-window)
+  :bind ("M-n" . ace-window)
   :init (progn
           (setq aw-keys '(?a ?r ?s ?t ?n ?e ?i ?o))
           (ace-window-display-mode)))
