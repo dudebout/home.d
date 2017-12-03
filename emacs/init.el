@@ -98,8 +98,26 @@
                   (add-hook 'flycheck-mode-hook 'flycheck-haskell-setup)
                   (global-flycheck-mode))))
 
+;;; https://emacs.stackexchange.com/questions/7281/how-to-modify-face-for-a-specific-buffer
+;;; https://www.gnu.org/software/emacs/manual/html_node/elisp/Face-Remapping.html
+(defun ddb/switch-mode-line-background-on-god-mode ()
+  (if god-local-mode
+      (progn
+        (setq ddb/mode-line-relative-cookie
+              (face-remap-add-relative 'mode-line `((:background ,(zenburn-with-color-variables zenburn-red-4)))))
+        (setq ddb/mode-line-inactive-relative-cookie
+              (face-remap-add-relative 'mode-line-inactive `((:background ,(zenburn-with-color-variables zenburn-red-3))))))
+    (progn
+      (face-remap-remove-relative ddb/mode-line-relative-cookie)
+      (face-remap-remove-relative ddb/mode-line-inactive-relative-cookie))))
+
 (use-package god-mode
-  :init (global-set-key (kbd "<escape>") 'god-local-mode))
+  :init (progn
+          (global-set-key (kbd "<escape>") 'god-local-mode)
+          (eval-after-load 'zenburn-theme
+            '(progn
+              (add-hook 'god-mode-enabled-hook 'ddb/switch-mode-line-background-on-god-mode)
+              (add-hook 'god-mode-disabled-hook 'ddb/switch-mode-line-background-on-god-mode)))))
 
 (use-package git-gutter
   :init (global-git-gutter-mode))
@@ -215,4 +233,7 @@
 (use-package yaml-mode)
 
 (use-package zenburn-theme
-  :init (load-theme 'zenburn t))
+  :init (progn
+          (load-theme 'zenburn t)
+          (zenburn-with-color-variables
+            (set-face-attribute 'sml/minor-modes nil :foreground zenburn-orange))))
