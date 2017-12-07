@@ -24,6 +24,7 @@
               require-final-newline t)
 
 (add-hook 'before-save-hook 'whitespace-cleanup)
+(add-hook 'after-save-hook 'executable-make-buffer-file-executable-if-script-p)
 
 (defalias 'yes-or-no-p 'y-or-n-p)
 
