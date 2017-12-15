@@ -238,3 +238,16 @@
           (load-theme 'zenburn t)
           (zenburn-with-color-variables
             (set-face-attribute 'sml/minor-modes nil :foreground zenburn-orange))))
+
+;; ;; https://emacs.stackexchange.com/questions/34670/how-does-one-set-input-decode-map-on-gui-frames-in-emacsclient
+;;
+;; None of the following is enough to reclaim C-m in a new emacsclient
+
+;; (defun ~/setup-C-m (&rest args)
+;;   (define-key input-decode-map [?\C-m] [C-m]))
+
+;; (~/setup-C-m)
+;; (add-hook 'tty-setup-hook #'~/setup-C-m)
+;; (add-hook 'window-setup-hook #'~/setup-C-m)
+;; (add-hook 'terminal-init-xterm-hook #'~/setup-C-m)
+;; (add-hook 'after-make-frame-functions #'~/setup-C-m)
