@@ -47,13 +47,17 @@ __emacs_daemon_restart () {
     __emacs_daemon_start
 }
 
+__emacsclient () {
+    emacsclient --eval '(define-key input-decode-map [?\C-m] [C-m])' "$@"
+}
+
 __emacsclient_in_X_frame () {
     if $(__emacs_X_frame_exists); then
         __emacs_echo 'Attaching to existing X frame'
-        emacsclient "$@"
+        __emacsclient "$@"
     else
         __emacs_echo 'Starting X frame'
-        emacsclient --create-frame "$@"
+        __emacsclient --create-frame "$@"
     fi
 }
 
