@@ -304,3 +304,8 @@
               ("Y"   . mc/mark-previous-symbol-like-this)
               ("w"   . mc/mark-next-word-like-this)
               ("W"   . mc/mark-previous-word-like-this)))
+
+(use-package proof-site)
+
+(use-package company-coq
+  :init (add-hook 'coq-mode-hook #'company-coq-mode))
