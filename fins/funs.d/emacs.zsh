@@ -48,7 +48,8 @@ __emacs_daemon_restart () {
 }
 
 __emacsclient () {
-    emacsclient --eval '(define-key input-decode-map [?\C-m] [C-m])' "$@"
+    emacsclient --eval '(define-key input-decode-map [?\C-m] [C-m])'
+    emacsclient "$@"
 }
 
 __emacsclient_in_X_frame () {
