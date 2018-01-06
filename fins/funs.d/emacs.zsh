@@ -1,5 +1,13 @@
 __emacs_echo () {
-    if [[ -v EMACS_ECHO ]]; then
+    # only works since zsh 5.3
+    # if [[ -v EMACS_ECHO ]]; then
+    # would also work
+    # if [[ -n ${EMACS_ECHO+x} ]]; then
+    # man zshexpn(1)
+    #    ${+name}
+    #        If name is the name of a set parameter `1' is substituted, otherwise
+    #        `0' is substituted.
+    if (( ${+EMACS_ECHO} )); then
         echo "$@"
     fi
 }
