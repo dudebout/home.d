@@ -80,8 +80,13 @@
          ("C-x C-f" . counsel-find-file)
          ("C-c j" . counsel-git-grep)))
 
-(use-package dante
-  :init  (add-hook 'haskell-mode-hook 'dante-mode))
+;; (use-package dante
+;;   :init  (progn
+;;            (put 'dante-project-root 'safe-local-variable #'stringp)
+;;            (add-hook 'haskell-mode-hook 'dante-mode)))
+;;
+;; .dir-locals.el example
+;; ((haskell-mode . ((dante-project-root . "/codemill/dudebout/repos/arc-systems/"))))
 
 (use-package ediff
   :init (setq ediff-window-setup-function 'ediff-setup-windows-plain))
@@ -309,3 +314,53 @@
 
 (use-package company-coq
   :init (add-hook 'coq-mode-hook #'company-coq-mode))
+
+
+;; https://github.com/abo-abo/swiper/issues/776
+
+(defun counsel-env-res (res path)
+  (let ((apath (abbreviate-file-name path)))
+    (list (car res)
+          (if (file-accessible-directory-p path)
+              (file-name-as-directory apath)
+            apath))))
+
+(defun counsel-env ()
+  (delq nil
+        (mapcar
+         (lambda (s)
+           (let* ((res (split-string s "=" t))
+                  (path (cadr res)))
+             (when (stringp path)
+               (cond ((file-exists-p path)
+                      (counsel-env-res res path))
+                     ((file-exists-p (expand-file-name path ivy--directory))
+                      (counsel-env-res
+                       res (expand-file-name path ivy--directory)))
+                     (t nil)))))
+         process-environment)))
+
+(defun counsel-expand-env ()
+  (interactive)
+  (if (equal ivy-text "")
+      (progn
+        (let ((enable-recursive-minibuffers t)
+              (history (symbol-value (ivy-state-history ivy-last)))
+              (old-last ivy-last)
+              (ivy-recursive-restore nil))
+          (ivy-read "Env: " (counsel-env)
+                    :action (lambda (x)
+                              (ivy--reset-state (setq ivy-last old-last))
+                              (setq ivy--directory "")
+                              (delete-minibuffer-contents)
+                              (insert (cadr x))))))
+    (insert "$")))
+(eval-after-load 'counsel
+      '(define-key counsel-find-file-map (kbd "$") 'counsel-expand-env))
+
+;; (require 'haskell-interactive-mode)
+;; (require 'haskell-process)
+;; (add-hook 'haskell-mode-hook 'interactive-haskell-mode)
+;; ;;; does not seem to work
+;; (define-key haskell-interactive-mode-map (kbd "M-.") 'haskell-mode-goto-loc)
+;; (define-key haskell-interactive-mode-map (kbd "C-c C-t") 'haskell-mode-show-type-at)
