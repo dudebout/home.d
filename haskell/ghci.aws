@@ -1,0 +1,2 @@
+:def profile (\x -> System.Environment.setEnv "AWS_PROFILE" x >> return "")
+:def loglevel (\x -> System.Environment.setEnv "AWS_LOGLEVEL" x >> return "")
