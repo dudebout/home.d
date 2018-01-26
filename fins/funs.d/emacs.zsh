@@ -20,8 +20,13 @@ __emacs_daemon_socket_exists () {
     test -S $(__emacs_daemon_socket)
 }
 
+__emacs_daemon_socket_is_open () {
+    __emacs_echo 'Skip the socket open test because it takes 2s'
+    true || lsof -w $(__emacs_daemon_socket) > /dev/null
+}
+
 __emacs_daemon_is_up () {
-    __emacs_daemon_socket_exists && lsof $(__emacs_daemon_socket) > /dev/null
+    __emacs_daemon_socket_exists && __emacs_daemon_socket_is_open
 }
 
 __emacs_X_frame_exists () {
