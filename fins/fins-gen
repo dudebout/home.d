@@ -1,12 +1,15 @@
 #!/usr/bin/zsh
 
 FINSDIR="${FINSDIR:-$HOME_D/fins}"
+BINDIR="$FINSDIR/bin"
+
+typeset -A fins
 
 for file in $FINSDIR/funs.d/?*.zsh ; do
     echo "Working on $file"
     source "$file"
 
-    mkdir -p "$FINSDIR/bin"
+    mkdir -p "$BINDIR"
 
     set -A function_list $(functions | sed -n 's/^\([^ ]\+\) () {$/\1/p')
 
@@ -15,7 +18,9 @@ for file in $FINSDIR/funs.d/?*.zsh ; do
             continue
         fi
 
-        fin="$FINSDIR/bin/$fun"
+        fins[$fun]=1
+
+        fin="$BINDIR/$fun"
         echo "  Creating $fin"
         cat > "$fin" <<EOF
 #!/usr/bin/zsh
@@ -36,4 +41,16 @@ EOF
         echo "  Removing function $fun from scope"
         unfunction $fun
     done
+done
+
+typeset -a existing_fins
+existing_fins=($(cd $BINDIR; ls))
+
+echo "Checking for fins to remove"
+for existing_fin in ${existing_fins[@]}; do
+    if [[ ${fins[$existing_fin]} != 1 ]]; then
+        fin="$BINDIR/$existing_fin"
+        echo "  Removing $fin"
+        rm "$fin"
+    fi
 done
