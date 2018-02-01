@@ -59,17 +59,23 @@
 (require 'use-package)
 
 (use-package ace-window
-  :bind ("M-n" . ace-window)
+  :bind ("M-o" . ace-window)
   :init (progn
-          (setq aw-keys '(?a ?r ?s ?t ?n ?e ?i ?o))
+          ;; colemak home row, minus n, and o which are reserved
+          ;; should consider ordering them by finger strength
+          (setq aw-keys '(?a ?r ?s ?t ?d ?h ?e ?i)
+                aw-dispatch-always t)
           (ace-window-display-mode)))
 
 (use-package avy
   :bind (("C-=" . avy-goto-word-1)
-         ("M-g g" . avy-goto-line))
+         ("M-g g" . avy-goto-line)
+         ("C-c W" . avy-org-refile-as-child))
   :init (progn
-          (setq avy-keys '(?a ?r ?s ?t ?d ?h ?n ?e ?i ?o)) ;; put the keys on the colemak row
-          (avy-setup-default))) ;; setup C-' in isearch
+           ;; colemak home row
+          (setq avy-keys '(?a ?r ?s ?t ?d ?h ?n ?e ?i ?o))
+          ;; setup C-' in isearch
+          (avy-setup-default)))
 
 (use-package company
   :init (global-company-mode))
