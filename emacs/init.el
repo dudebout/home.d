@@ -5,6 +5,7 @@
     (load-file pre-init)))
 
 (require 'home.d-interactives (concat (getenv "HOME_D") "/emacs/home.d-interactives.el"))
+(require 'home.d-org (concat (getenv "HOME_D") "/emacs/home.d-org.el"))
 
 (menu-bar-mode 0)
 (tool-bar-mode 0)
@@ -135,6 +136,7 @@
   :init (global-git-gutter-mode))
 
 (use-package haskell-mode
+  :interpreter ("stack" . haskell-mode)
   :init (progn
           (setq haskell-stylish-on-save t)
           (add-hook 'haskell-mode-hook 'haskell-indentation-mode)
@@ -183,23 +185,66 @@
 (use-package menu-bar
   :bind ("C-c m" . menu-bar-mode))
 
+(use-package org
+  :defer t
+  :init
+  (setq org-log-into-drawer t
+        org-log-note-clock-out t
+        org-todo-keywords '((type "TODO(t!)"
+                                  "WAITING(w@/@)"
+                                  "DELEGATED(D@/!)"
+                                  "READ(r)" "WATCH(w)"
+                                  "|"
+                                  "DONE(d!)"
+                                  "CANCELED(c@)"))))
+
 (use-package org-agenda
   :bind ("C-c a" . org-agenda)
-  :init (progn
-          (setq org-agenda-skip-scheduled-if-done t
-                org-agenda-skip-deadline-if-done t
-                org-startup-indented t
-                org-agenda-custom-commands
-                '(("u" alltodo ""
-                   ((org-agenda-skip-function
-                     (lambda nil
-                       (org-agenda-skip-entry-if 'scheduled 'deadline))))
-                   (org-agenda-overriding-header "Unscheduled TODO entries: "))))
-          (add-hook 'org-agenda-mode-hook
-                    (lambda () (setq default-directory org-directory)))))
+  :init
+  (setq org-agenda-skip-scheduled-if-done t
+        org-agenda-skip-deadline-if-done t
+        org-startup-indented t
+        org-agenda-files (list org-directory)
+        org-agenda-custom-commands '(("u" alltodo ""
+                                      ((org-agenda-skip-function
+                                        (lambda ()
+                                          (org-agenda-skip-entry-if 'scheduled 'deadline))))
+                                      (org-agenda-overriding-header "Unscheduled TODO entries: "))
+                                     ("n" "Next actions"
+                                      ((agenda "")
+                                       (tags "-inbox+ready"
+                                             ((org-agenda-skip-function #'home.d/org-agenda-skip-not-next-action)))))))
+  (add-hook 'org-agenda-mode-hook
+            (lambda () (setq default-directory org-directory)))
+  :config
+  (mapc (lambda (type)
+          (setf (alist-get type org-agenda-prefix-format)
+                "%-20(home.d/org-agenda-prefix-format) "))
+        '(todo agenda tags)))
 
 (use-package org-capture
-  :bind ("C-c c" . org-capture))
+  :bind ("C-c c" . org-capture)
+  :init
+  ;; consider merging the inbox into a single tree (what is the purpose of tasks vs notes?)
+  (setq org-capture-templates '(("t" "task" entry
+                                 (file+olp home.d/capture-file "inbox" "tasks")
+                                 "* TODO %?\n%U")
+                                ("r" "read" entry
+                                 (file+olp home.d/capture-file "inbox" "tasks")
+                                 "* READ [[%:link][%:description]]\n%U"
+                                 :immediate-finish t)
+                                ("w" "watch" entry
+                                 (file+olp home.d/capture-file "inbox" "tasks")
+                                 "* WATCH [[%:link][%:description]]\n%U"
+                                 :immediate-finish t)
+                                ("n" "note" entry
+                                 (file+olp home.d/capture-file "inbox" "notes")
+                                 "* NOTE %?\n%U"))))
+
+(use-package org-clock
+  :defer t
+  :init
+  (setq org-clock-continuously t))
 
 (use-package org-protocol)
 
@@ -370,3 +415,25 @@
 ;; ;;; does not seem to work
 ;; (define-key haskell-interactive-mode-map (kbd "M-.") 'haskell-mode-goto-loc)
 ;; (define-key haskell-interactive-mode-map (kbd "C-c C-t") 'haskell-mode-show-type-at)
+
+;;; https://scripter.co/converting-org-keywords-to-lower-case/
+(defun modi/lower-case-org-keywords ()
+  "Lower case Org keywords and block identifiers.
+
+Example: \"#+TITLE\" -> \"#+title\"
+         \"#+BEGIN_EXAMPLE\" -> \"#+begin_example\"
+
+Inspiration:
+https://code.orgmode.org/bzg/org-mode/commit/13424336a6f30c50952d291e7a82906c1210daf0."
+  (interactive)
+  (save-excursion
+    (goto-char (point-min))
+    (let ((case-fold-search nil)
+          (count 0))
+      ;; Match examples: "#+FOO bar", "#+FOO:", "=#+FOO=", "~#+FOO~",
+      ;;                 "‘#+FOO’", "“#+FOO”", ",#+FOO bar",
+      ;;                 "#+FOO_bar<eol>", "#+FOO<eol>".
+      (while (re-search-forward "\\(?1:#\\+[A-Z_]+\\(?:_[[:alpha:]]+\\)*\\)\\(?:[ :=~’”]\\|$\\)" nil :noerror)
+        (setq count (1+ count))
+        (replace-match (downcase (match-string-no-properties 1)) :fixedcase nil nil 1))
+      (message "Lower-cased %d matches" count))))
