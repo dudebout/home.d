@@ -222,7 +222,11 @@
   (mapc (lambda (type)
           (setf (alist-get type org-agenda-prefix-format)
                 "%-20(home.d/org-agenda-prefix-format) "))
-        '(todo agenda tags)))
+        ;; FIXME
+        ;; There is a bug when applying this to agenda
+        ;; It results in an error, when log mode is activated and there is a clock-in activity for the current day.
+        ;; This is probably due to the way on the current day a grid with all the hours of the day is displayed.
+        '(todo tags)))
 
 (use-package org-capture
   :bind ("C-c c" . org-capture)
