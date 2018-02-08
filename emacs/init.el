@@ -190,6 +190,7 @@
   :init
   (setq org-log-into-drawer t
         org-log-note-clock-out t
+        org-startup-indented t
         org-todo-keywords '((type "TODO(t!)"
                                   "WAITING(w@/@)"
                                   "DELEGATED(D@/!)"
@@ -203,7 +204,8 @@
   :init
   (setq org-agenda-skip-scheduled-if-done t
         org-agenda-skip-deadline-if-done t
-        org-startup-indented t
+        org-agenda-start-with-clockreport-mode t
+        org-agenda-start-with-log-mode t
         org-agenda-files (list org-directory)
         org-agenda-custom-commands '(("u" alltodo ""
                                       ((org-agenda-skip-function
