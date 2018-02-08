@@ -1,6 +1,8 @@
 (defun home.d/org-agenda-skip-not-next-action ()
   (unless (home.d/org-is-next-action)
-    (outline-next-heading)))
+    (save-excursion
+      (outline-next-heading)
+      (point))))
 
 (defun home.d/org-is-next-action ()
   ;; For the current heading to be a next action, it needs:
