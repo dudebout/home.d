@@ -206,8 +206,8 @@
   :init
   (setq org-agenda-skip-scheduled-if-done t
         org-agenda-skip-deadline-if-done t
-        org-agenda-start-with-clockreport-mode t
-        org-agenda-start-with-log-mode t
+        ;; org-agenda-start-with-clockreport-mode t
+        ;; org-agenda-start-with-log-mode t
         org-agenda-files (list org-directory)
         org-agenda-custom-commands '(("u" alltodo ""
                                       ((org-agenda-skip-function
