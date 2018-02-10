@@ -1,4 +1,4 @@
-;;; homed-org.el ---- home.d org mode components -* lexical-binding: t; -*-
+;;; home.d-org.el ---- home.d org mode components -* lexical-binding: t; -*-
 
 ;;; Commentary:
 ;;

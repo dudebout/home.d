@@ -4,8 +4,10 @@
   (when (file-exists-p pre-init)
     (load-file pre-init)))
 
-(require 'home.d-interactives (concat (getenv "HOME_D") "/emacs/home.d-interactives.el"))
-(require 'home.d-org (concat (getenv "HOME_D") "/emacs/home.d-org.el"))
+(add-to-list 'load-path (concat (getenv "HOME_D") "/emacs"))
+
+(use-package home.d-interactives)
+(use-package home.d-org)
 
 (menu-bar-mode 0)
 (tool-bar-mode 0)
