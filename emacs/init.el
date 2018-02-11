@@ -242,13 +242,11 @@
                                               (org-agenda-prefix-format '((tags . "%-32(home.d/org-agenda-project-prefix-format) ")))))
                                        (agenda ""
                                                ((org-agenda-span 'month)
+                                                (org-agenda-overriding-header "Next month")
                                                 (org-agenda-show-all-dates nil)
                                                 (org-agenda-skip-function
                                                  (lambda ()
-                                                   (org-agenda-skip-entry-if 'scheduled 'deadline)))))
-                                       (tags "TIMESTAMP>=\"<now>\"&TIMESTAMP<\"<+1m>\""
-                                             ((org-agenda-overriding-header "Next month")
-                                              (org-agenda-sorting-strategy '((tags ts-up)))))))))
+                                                   (org-agenda-skip-entry-if 'scheduled 'deadline)))))))))
   (add-hook 'org-agenda-mode-hook
             (lambda () (setq default-directory org-directory)))
   ;; FIXME this should not be in a hook because:
