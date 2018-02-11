@@ -98,16 +98,20 @@
 ;; ((haskell-mode . ((dante-project-root . "/codemill/dudebout/repos/arc-systems/"))))
 
 (use-package ediff
+  :defer t
   :init (setq ediff-window-setup-function 'ediff-setup-windows-plain))
 
 (use-package elisp-slime-nav
+  :defer t
   :init (progn
           (add-hook 'emacs-lisp-mode-hook 'elisp-slime-nav-mode)
           (add-hook 'c-mode-hook 'elisp-slime-nav-mode)))
 
 ;; TODO integrate flycheck-color-mode-line and flycheck-pos-tip
 (use-package flycheck
+  :defer t
   :init (use-package flycheck-haskell
+          :defer t
           :init (progn
                   (add-hook 'haskell-mode-hook 'flycheck-mode)
                   (add-hook 'flycheck-mode-hook 'flycheck-haskell-setup)
@@ -262,6 +266,7 @@
           (show-paren-mode 1)))
 
 (use-package paredit
+  :commands paredit-mode
   :init (add-hook 'emacs-lisp-mode-hook 'paredit-mode))
 
 (use-package recentf
@@ -287,6 +292,7 @@
                                  (sh-set-shell ,shell))))))
 
 (use-package sh-script
+  :defer t
   :init (ddb/add-shell-extension "zsh"))
 
 (use-package swiper
@@ -295,7 +301,8 @@
 (use-package whitespace
   :bind ("C-c w" . whitespace-mode))
 
-(use-package yaml-mode)
+(use-package yaml-mode
+  :defer t)
 
 (use-package zenburn-theme
   :init (progn
@@ -369,9 +376,11 @@
               ("w"   . mc/mark-next-word-like-this)
               ("W"   . mc/mark-previous-word-like-this)))
 
-(use-package proof-site)
+(use-package proof-site
+  :defer t)
 
 (use-package company-coq
+  :defer t
   :init (add-hook 'coq-mode-hook #'company-coq-mode))
 
 
