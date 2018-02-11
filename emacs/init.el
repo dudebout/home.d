@@ -220,11 +220,13 @@
                                           (org-agenda-skip-entry-if 'scheduled 'deadline)))
                                        (org-agenda-overriding-header "Unscheduled TODO entries: ")
                                        ))
-                                     ("f" "Next year events"
+                                     ("f" "Future events"
                                       tags "TIMESTAMP>=\"<now>\""
                                       ((org-agenda-sorting-strategy '((tags ts-up)))))
-                                     ("F" "Events in agenda" agenda "<+1y>"
-                                      ((org-agenda-skip-function
+                                     ("y" "Year's events" agenda ""
+                                      ((org-agenda-span 'year)
+                                       (org-agenda-show-all-dates nil)
+                                       (org-agenda-skip-function
                                         (lambda ()
                                           (org-agenda-skip-entry-if 'scheduled 'deadline)))))
                                      ("n" "Next actions"
@@ -238,6 +240,12 @@
 ;; It results in an error, when log mode is activated and there is a clock-in activity for the current day.
 ;; This is probably due to the way on the current day a grid with all the hours of the day is displayed.
                                               (org-agenda-prefix-format '((tags . "%-32(home.d/org-agenda-project-prefix-format) ")))))
+                                       (agenda ""
+                                               ((org-agenda-span 'month)
+                                                (org-agenda-show-all-dates nil)
+                                                (org-agenda-skip-function
+                                                 (lambda ()
+                                                   (org-agenda-skip-entry-if 'scheduled 'deadline)))))
                                        (tags "TIMESTAMP>=\"<now>\"&TIMESTAMP<\"<+1m>\""
                                              ((org-agenda-overriding-header "Next month")
                                               (org-agenda-sorting-strategy '((tags ts-up)))))))))
