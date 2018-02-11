@@ -200,7 +200,8 @@
         org-todo-keywords '((type "TODO(t!)"
                                   "WAITING(w@/@)"
                                   "DELEGATED(D@/!)"
-                                  "READ(r)" "WATCH(w)"
+                                  "READ(r)"
+                                  "WATCH(w)"
                                   "|"
                                   "DONE(d!)"
                                   "CANCELED(c@)"))))
@@ -213,26 +214,43 @@
         ;; org-agenda-start-with-clockreport-mode t
         ;; org-agenda-start-with-log-mode t
         org-agenda-files (list org-directory)
-        org-agenda-custom-commands '(("u" alltodo ""
+        org-agenda-custom-commands '(("u" "Unscheduled" alltodo ""
                                       ((org-agenda-skip-function
                                         (lambda ()
-                                          (org-agenda-skip-entry-if 'scheduled 'deadline))))
-                                      (org-agenda-overriding-header "Unscheduled TODO entries: "))
+                                          (org-agenda-skip-entry-if 'scheduled 'deadline)))
+                                       (org-agenda-overriding-header "Unscheduled TODO entries: ")
+                                       ))
+                                     ("f" "Next year events"
+                                      tags "TIMESTAMP>=\"<now>\""
+                                      ((org-agenda-sorting-strategy '((tags ts-up)))))
+                                     ("F" "Events in agenda" agenda "<+1y>"
+                                      ((org-agenda-skip-function
+                                        (lambda ()
+                                          (org-agenda-skip-entry-if 'scheduled 'deadline)))))
                                      ("n" "Next actions"
                                       ((agenda "")
                                        (tags "-inbox+ready"
-                                             ((org-agenda-skip-function #'home.d/org-agenda-skip-not-next-action)))))))
+                                             ((org-agenda-overriding-header "Next actions")
+                                              (org-agenda-remove-tags t)
+                                              (org-agenda-skip-function #'home.d/org-agenda-skip-not-next-action)
+;; FIXME
+;; There is a bug when applying this to agenda
+;; It results in an error, when log mode is activated and there is a clock-in activity for the current day.
+;; This is probably due to the way on the current day a grid with all the hours of the day is displayed.
+                                              (org-agenda-prefix-format '((tags . "%-32(home.d/org-agenda-project-prefix-format) ")))))
+                                       (tags "TIMESTAMP>=\"<now>\"&TIMESTAMP<\"<+1m>\""
+                                             ((org-agenda-overriding-header "Next month")
+                                              (org-agenda-sorting-strategy '((tags ts-up)))))))))
   (add-hook 'org-agenda-mode-hook
             (lambda () (setq default-directory org-directory)))
-  :config
-  (mapc (lambda (type)
-          (setf (alist-get type org-agenda-prefix-format)
-                "%-32(home.d/org-agenda-project-prefix-format) "))
-        ;; FIXME
-        ;; There is a bug when applying this to agenda
-        ;; It results in an error, when log mode is activated and there is a clock-in activity for the current day.
-        ;; This is probably due to the way on the current day a grid with all the hours of the day is displayed.
-        '(todo tags)))
+  ;; FIXME this should not be in a hook because:
+  ;; + it gets set every time an org-mode buffer is open
+  ;; + it only works after one buffer has been open (if you run
+  ;;   org-agenda-list-stuck-projects before opening any org buffer,
+  ;;   you end up using the default value
+  (add-hook 'org-mode-hook
+            (lambda ()
+              (setq org-stuck-projects `("ready&LEVEL=2" ,org-not-done-keywords nil "")))))
 
 (use-package org-capture
   :bind ("C-c c" . org-capture)
