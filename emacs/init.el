@@ -230,7 +230,8 @@
                                         (lambda ()
                                           (org-agenda-skip-entry-if 'scheduled 'deadline)))))
                                      ("n" "Next actions"
-                                      ((agenda "")
+                                      ((agenda ""
+                                               ((org-agenda-span 'day)))
                                        (tags "-inbox+ready"
                                              ((org-agenda-overriding-header "Next actions")
                                               (org-agenda-remove-tags t)
