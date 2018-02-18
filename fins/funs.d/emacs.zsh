@@ -64,7 +64,7 @@ __emacs-daemon-restart () {
 
 __emacsclient () {
     # FIXME: it does not always work
-    emacsclient --eval '(define-key input-decode-map [?\C-m] [C-m])'
+    emacsclient --eval '(define-key input-decode-map [?\C-m] [C-m])' > /dev/null
     emacsclient "$@"
 }
 
