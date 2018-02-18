@@ -32,7 +32,7 @@ __emacs-daemon-is-up () {
 
 # FIXME make the name a variable in .home.d
 __emacs-X-frame-exists () {
-    xprop -name emacs-X-frame > /dev/null 2>&1
+    xprop -name emacs_X_frame > /dev/null 2>&1
 }
 
 __emacs-daemon-start () {
