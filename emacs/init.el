@@ -276,7 +276,7 @@
                                  :immediate-finish t)
                                 ("n" "note" entry
                                  (file+olp home.d/capture-file "inbox" "notes")
-                                 "* NOTE %?\n%U"))))
+                                 "* %?\n%U"))))
 
 (use-package org-clock
   :defer t
