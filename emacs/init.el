@@ -211,8 +211,6 @@
   :init
   (setq org-agenda-skip-scheduled-if-done t
         org-agenda-skip-deadline-if-done t
-        ;; org-agenda-start-with-clockreport-mode t
-        ;; org-agenda-start-with-log-mode t
         org-agenda-files (list org-directory)
         org-agenda-custom-commands '(("u" "Unscheduled" alltodo ""
                                       ((org-agenda-skip-function
@@ -229,9 +227,15 @@
                                        (org-agenda-skip-function
                                         (lambda ()
                                           (org-agenda-skip-entry-if 'scheduled 'deadline)))))
+                                     ("d" "Daily" agenda ""
+                                      ((org-agenda-start-with-clockreport-mode t)
+                                       (org-agenda-start-with-log-mode 'clockcheck)
+                                       (org-agenda-span 'day)
+                                       (org-agenda-start-on-weekday nil)))
                                      ("n" "Next actions"
                                       ((agenda ""
-                                               ((org-agenda-span 'day)))
+                                               ((org-agenda-span 'week)
+                                                (org-agenda-start-on-weekday nil)))
                                        (tags "-inbox+ready"
                                              ((org-agenda-overriding-header "Next actions")
                                               (org-agenda-remove-tags t)
@@ -247,7 +251,16 @@
                                                 (org-agenda-show-all-dates nil)
                                                 (org-agenda-skip-function
                                                  (lambda ()
-                                                   (org-agenda-skip-entry-if 'scheduled 'deadline)))))))))
+
+                                                   (or
+                                                    (org-agenda-skip-entry-if 'scheduled 'deadline)
+                                                    (let ((next-headline (save-excursion
+                                                                           (or (outline-next-heading) (point-max))))
+                                                          (current-headline (or (and (org-at-heading-p)
+                                                                                     (point))
+                                                                                (save-excursion (org-back-to-heading)))))
+                                                      (when (member "recurring" (org-get-tags-at (point)))
+                                                        next-headline)))))))))))
   (add-hook 'org-agenda-mode-hook
             (lambda () (setq default-directory org-directory)))
   ;; FIXME this should not be in a hook because:
