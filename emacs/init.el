@@ -236,7 +236,7 @@
                                       ((agenda ""
                                                ((org-agenda-span 'week)
                                                 (org-agenda-start-on-weekday nil)))
-                                       (tags "-inbox+ready"
+                                       (tags "projects"
                                              ((org-agenda-overriding-header "Next actions")
                                               (org-agenda-remove-tags t)
                                               (org-agenda-skip-function #'home.d/org-agenda-skip-not-next-action)
