@@ -195,8 +195,10 @@
   :defer t
   :init
   (setq org-log-into-drawer t
-        org-log-note-clock-out t
         org-startup-indented t
+        org-use-property-inheritance t
+        org-blank-before-new-entry '((heading . nil)
+                                     (plain-list-item . nil))
         org-todo-keywords '((type "TODO(t!)"
                                   "WAITING(w@/@)"
                                   "DELEGATED(D@/!)"
@@ -211,7 +213,8 @@
   :init
   (setq org-agenda-skip-scheduled-if-done t
         org-agenda-skip-deadline-if-done t
-        org-agenda-files (list org-directory)
+        org-agenda-files (or org-agenda-files
+                             (list org-directory))
         org-agenda-custom-commands '(("u" "Unscheduled" alltodo ""
                                       ((org-agenda-skip-function
                                         (lambda ()
@@ -230,15 +233,17 @@
                                      ("d" "Daily" agenda ""
                                       ((org-agenda-start-with-clockreport-mode t)
                                        (org-agenda-start-with-log-mode 'clockcheck)
+                                       (org-agenda-use-time-grid nil)
                                        (org-agenda-span 'day)
                                        (org-agenda-start-on-weekday nil)))
                                      ("n" "Next actions"
                                       ((agenda ""
                                                ((org-agenda-span 'week)
                                                 (org-agenda-start-on-weekday nil)))
+                                       (tags-todo "interruptions"
+                                             ((org-agenda-overriding-header "Interruptions")))
                                        (tags "projects"
                                              ((org-agenda-overriding-header "Next actions")
-                                              (org-agenda-remove-tags t)
                                               (org-agenda-skip-function #'home.d/org-agenda-skip-not-next-action)
 ;; FIXME
 ;; There is a bug when applying this to agenda
