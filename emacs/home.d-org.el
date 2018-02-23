@@ -10,12 +10,17 @@
 (require 'dash)
 (require 'org)
 
-(defun home.d/org-agenda-skip-not-next-action ()
-  "Determines next actions as an org-agenda-skip-function."
-  (unless (home.d/org-is-next-action)
+(defun home.d/org-agenda-skip-if (condition)
+  "`org-agenda-skip-function' to discard headings matching CONDITION."
+  (when condition
     (save-excursion
-      (outline-next-heading)
-      (point))))
+      (or
+       (outline-next-heading)
+       (point-max)))))
+
+(defun home.d/org-agenda-skip-not-next-action ()
+  "Determines next actions as an `org-agenda-skip-function'."
+  (home.d/org-agenda-skip-if (not (home.d/org-is-next-action))))
 
 (defun home.d/org-is-next-action ()
   "Determines if the heading at point is a next action.
@@ -41,6 +46,14 @@ is unscheduled."
   "Agenda prefix determining the project a TODO item is part of."
   (org-up-heading-safe)
   (org-get-heading 'no-tags 'no-todo 'no-priority 'no-comment))
+
+(defun home.d/org-agenda-skip-if-property (name value)
+  "`org-agenda-skip-function' to discard headings whose property NAME is VALUE."
+  (home.d/org-agenda-skip-if (equal value (org-entry-get (point) name t))))
+
+(defun home.d/org-agenda-skip-if-tag (tag)
+  "`org-agenda-skip-function' to discard headings tagged with TAG."
+  (home.d/org-agenda-skip-if (member tag (org-get-tags-at (point)))))
 
 (provide 'home.d-org)
 

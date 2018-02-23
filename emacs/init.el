@@ -250,17 +250,9 @@
                                                 (org-agenda-overriding-header "Next month")
                                                 (org-agenda-show-all-dates nil)
                                                 (org-agenda-skip-function
-                                                 (lambda ()
-
-                                                   (or
-                                                    (org-agenda-skip-entry-if 'scheduled 'deadline)
-                                                    (let ((next-headline (save-excursion
-                                                                           (or (outline-next-heading) (point-max))))
-                                                          (current-headline (or (and (org-at-heading-p)
-                                                                                     (point))
-                                                                                (save-excursion (org-back-to-heading)))))
-                                                      (when (member "recurring" (org-get-tags-at (point)))
-                                                        next-headline)))))))))))
+                                                 '(or
+                                                   (org-agenda-skip-entry-if 'scheduled 'deadline)
+                                                   (home.d/org-agenda-skip-if-tag "recurring")))))))))
   (add-hook 'org-agenda-mode-hook
             (lambda () (setq default-directory org-directory)))
   ;; FIXME this should not be in a hook because:
