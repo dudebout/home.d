@@ -1,11 +1,10 @@
 ;;; home.d-org.el ---- home.d org mode components -* lexical-binding: t; -*-
 
 ;;; Commentary:
-;;
-;; Set of org-agenda functions.
-;;
-;;; Code:
 
+;; Set of org-agenda functions.
+
+;;; Code:
 
 (require 'dash)
 (require 'org)
@@ -50,6 +49,10 @@ is unscheduled."
 (defun home.d/org-agenda-skip-if-property (name value)
   "`org-agenda-skip-function' to discard headings whose property NAME is VALUE."
   (home.d/org-agenda-skip-if (equal value (org-entry-get (point) name t))))
+
+(defun home.d/org-agenda-skip-unless-property (name value)
+  "`org-agenda-skip-function' to discard headings whose property NAME is not VALUE."
+  (home.d/org-agenda-skip-if (not (equal value (org-entry-get (point) name t)))))
 
 (defun home.d/org-agenda-skip-if-tag (tag)
   "`org-agenda-skip-function' to discard headings tagged with TAG."
