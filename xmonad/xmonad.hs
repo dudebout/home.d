@@ -13,6 +13,7 @@ import XMonad                      (XConfig (..), className, defaultConfig,
 import XMonad.Actions.WindowGo     (raise, runOrRaise)
 import XMonad.Hooks.EwmhDesktops   (ewmh)
 import XMonad.Hooks.ManageHelpers  (doCenterFloat)
+import XMonad.Layout.NoBorders     (smartBorders)
 import XMonad.Util.EZConfig        (additionalKeysP)
 import XMonad.Util.NamedScratchpad (NamedScratchpad (NS), namedScratchpadAction,
                                     namedScratchpadManageHook)
@@ -26,6 +27,7 @@ main = do
                                 , normalBorderColor = normalColor
                                 , focusedBorderColor = focusedColor
                                 , manageHook = namedScratchpadManageHook scratchpads <+> manageHook defaultConfig
+                                , layoutHook = smartBorders (layoutHook defaultConfig)
                                 } `additionalKeysP` [ ("M-s", saneNSAction scratchpads nsScratch)
                                                     , ("M-u", withFocused (windows . W.sink))
                                                     , ("M-t", runOrRaise "xt" (title =? "tmux:default"))
