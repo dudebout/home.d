@@ -1,0 +1,29 @@
+#+PROPERTY: bucket_ALL a b
+* category I
+** context 1
+:PROPERTIES:
+:bucket:   a
+:END:
+*** task A
+:LOGBOOK:
+CLOCK: [2018-02-23 Fri 12:00]--[2018-02-23 Fri 13:00]
+:END:
+*** task B
+:LOGBOOK:
+CLOCK: [2018-02-23 Fri 13:00]--[2018-02-23 Fri 14:00]
+:END:
+** context 2
+:PROPERTIES:
+:bucket:   b
+:END:
+*** task A
+:PROPERTIES:
+:bucket:   a
+:END:
+:LOGBOOK:
+CLOCK: [2018-02-23 Fri 14:00]--[2018-02-23 Fri 15:00]
+:END:
+*** task B
+:LOGBOOK:
+CLOCK: [2018-02-23 Fri 15:00]--[2018-02-23 Fri 16:00]
+:END:

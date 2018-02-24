@@ -46,17 +46,84 @@ is unscheduled."
   (org-up-heading-safe)
   (org-get-heading 'no-tags 'no-todo 'no-priority 'no-comment))
 
+(defun home.d/has-property (name value)
+  (equal value (org-entry-get (point) name t)))
+
+(defun home.d/has-tag (tag)
+  (member tag (org-get-tags-at (point))))
+
 (defun home.d/org-agenda-skip-if-property (name value)
   "`org-agenda-skip-function' to discard headings whose property NAME is VALUE."
-  (home.d/org-agenda-skip-if (equal value (org-entry-get (point) name t))))
+  (home.d/org-agenda-skip-if (home.d/has-property name value)))
 
 (defun home.d/org-agenda-skip-unless-property (name value)
   "`org-agenda-skip-function' to discard headings whose property NAME is not VALUE."
-  (home.d/org-agenda-skip-if (not (equal value (org-entry-get (point) name t)))))
+  (home.d/org-agenda-skip-if (not (home.d/has-property name value))))
 
 (defun home.d/org-agenda-skip-if-tag (tag)
   "`org-agenda-skip-function' to discard headings tagged with TAG."
-  (home.d/org-agenda-skip-if (member tag (org-get-tags-at (point)))))
+  (home.d/org-agenda-skip-if (home.d/has-tag tag)))
+
+(defun home.d/at-level (level)
+  (eq level (org-element-property :level (org-element-at-point))))
+
+(defun home.d/categoryp ()
+  (home.d/at-level 1))
+
+(defun home.d/contextp ()
+  (home.d/at-level 2))
+
+(defun home.d/taskp ()
+  (home.d/at-level 3))
+
+(defun home.d/get-heading ()
+  (substring-no-properties (org-get-heading 'no-tags 'no-todo 'no-priority 'no-comment)))
+
+(defun home.d/get-task ()
+  (save-excursion
+    (let ((task
+           (home.d/get-heading))
+          (context
+           (progn
+             (outline-up-heading 1)
+             (home.d/get-heading)))
+          (category
+           (progn
+             (outline-up-heading 1)
+             (home.d/get-heading))))
+     `((:category . ,category)
+       (:context . ,context)
+       (:task . ,task)))))
+
+(defun home.d/org-clock-sum-current-item (&optional tstart tend)
+  "Return time, clocked on current item in total."
+  (save-excursion
+    (save-restriction
+      (org-narrow-to-subtree)
+      (org-clock-sum tstart tend)
+      org-clock-file-total-minutes)))
+
+
+(defun home.d/get-clocked-tasks-in-bucket (bucket)
+  (home.d/get-clocked-tasks-if
+   (lambda ()
+     (home.d/has-property "bucket" bucket))))
+
+(defun home.d/get-clocked-tasks-if (headline-filter)
+  (setq result ())
+  (save-excursion
+    (goto-char (point-min))
+    (while (not (equal (point) (point-max)))
+      (when
+          (and
+           (funcall headline-filter)
+           (home.d/taskp))
+        (let ((time (home.d/org-clock-sum-current-item))
+              (task (home.d/get-task)))
+          (add-to-list 'result `(,task . ,time))
+          (message (format "%s %d" task time))))
+      (outline-next-heading)))
+  result)
 
 (provide 'home.d-org)
 
