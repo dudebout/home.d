@@ -180,8 +180,7 @@
 
 (use-package magit
   :bind (("C-c i" . magit-status)
-         ;; TODO make C-c I chose the directory first
-         ("C-c I" . magit-status))
+         ("C-c f" . magit-file-popup))
   :init (progn
           (require 'helm-mode)
           (setq magit-delete-by-moving-to-trash nil
@@ -228,8 +227,7 @@
                                       ((org-agenda-span 'year)
                                        (org-agenda-show-all-dates nil)
                                        (org-agenda-skip-function
-                                        (lambda ()
-                                          (org-agenda-skip-entry-if 'scheduled 'deadline)))))
+                                        (org-agenda-skip-entry-if 'scheduled 'deadline))))
                                      ("d" "Daily" agenda ""
                                       ((org-agenda-start-with-clockreport-mode t)
                                        (org-agenda-start-with-log-mode 'clockcheck)
@@ -238,10 +236,14 @@
                                        (org-agenda-start-on-weekday nil)))
                                      ("n" "Next actions"
                                       ((agenda ""
-                                               ((org-agenda-span 'week)
+                                               ((org-agenda-span 'day)
                                                 (org-agenda-start-on-weekday nil)))
                                        (tags-todo "interruptions"
-                                             ((org-agenda-overriding-header "Interruptions")))
+                                                  ((org-agenda-overriding-header "Interruptions")))
+                                       (agenda ""
+                                               ((org-agenda-span 'week)
+                                                (org-agenda-start-day "+1d")
+                                                (org-agenda-start-on-weekday nil)))
                                        (tags "projects"
                                              ((org-agenda-overriding-header "Next actions")
                                               (org-agenda-skip-function #'home.d/org-agenda-skip-not-next-action)
@@ -286,7 +288,11 @@
                                  :immediate-finish t)
                                 ("n" "note" entry
                                  (file+olp home.d/capture-file "inbox" "notes")
-                                 "* %?\n%U"))))
+                                 "* %?\n%U")
+                                ("m" "meeting" entry
+                                 (file+olp home.d/capture-file "inbox" "meetings")
+                                 "* meeting with %? about \n%U"
+                                 :clock-in t :clock-resume t))))
 
 (use-package org-clock
   :defer t
