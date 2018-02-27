@@ -114,6 +114,7 @@ FIXME TSTART TEND"
 (defun clocked-bucket-compute-task-trees (tasks)
   "FIXME TASKS."
   (let (task-trees)
+    ;; FIXME fix the order in which the tasks are added
     (dolist (task tasks task-trees)
       (let* ((category (task-category task))
              (task-tree-pos (seq-position task-trees category (lambda (tt c) (equal (task-tree-category tt) c)))))
@@ -130,8 +131,15 @@ FIXME TSTART TEND"
           (push task (context-tree-tasks (nth context-tree-pos (task-tree-context-trees (nth task-tree-pos task-trees))))))))))
 
 
-(defun clocked-bucket-display-task-trees (task-tree)
-  "FIXME TASK-TREE.")
+(defun clocked-bucket-display-task-tree (task-tree)
+  "FIXME TASK-TREE."
+  (let ((result ""))
+    (setq result (concat result (format "%s\n" (task-tree-category task-tree))))
+    (dolist (context-tree (task-tree-context-trees task-tree) result)
+      (setq result (concat result (format "  %s\n" (context-tree-name context-tree))))
+      (dolist (task (context-tree-tasks context-tree))
+        ;; FIXME use something like intersperse
+        (setq result (concat result (format "    %s\n" (task-name task))))))))
 
 (provide 'clocked-bucket)
 
