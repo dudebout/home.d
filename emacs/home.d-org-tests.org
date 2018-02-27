@@ -6,7 +6,7 @@
 :END:
 *** task A
 :LOGBOOK:
-CLOCK: [2018-02-23 Fri 12:00]--[2018-02-23 Fri 13:00]
+CLOCK: [2018-02-23 Fri 12:00]--[2018-02-23 Fri 13:00] =>  1:00
 :END:
 *** task B
 :LOGBOOK:

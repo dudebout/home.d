@@ -79,21 +79,27 @@ is unscheduled."
 (defun home.d/get-heading ()
   (substring-no-properties (org-get-heading 'no-tags 'no-todo 'no-priority 'no-comment)))
 
-(defun home.d/get-task ()
+
+(require 'cl)
+(cl-defstruct (task (:constructor task-create)
+                    (:copier nil))
+  category context name)
+
+(defun home.d/task-at-point ()
   (save-excursion
-    (let ((task
+    (let ((name
            (home.d/get-heading))
           (context
            (progn
-             (outline-up-heading 1)
+             (outline-up-heading 1 t)
              (home.d/get-heading)))
           (category
            (progn
-             (outline-up-heading 1)
+             (outline-up-heading 1 t)
              (home.d/get-heading))))
-     `((:category . ,category)
-       (:context . ,context)
-       (:task . ,task)))))
+      (task-create :category category
+                   :context context
+                   :name name))))
 
 (defun home.d/org-clock-sum-current-item (&optional tstart tend)
   "Return time, clocked on current item in total."
@@ -102,12 +108,6 @@ is unscheduled."
       (org-narrow-to-subtree)
       (org-clock-sum tstart tend)
       org-clock-file-total-minutes)))
-
-
-(defun home.d/get-clocked-tasks-in-bucket (bucket)
-  (home.d/get-clocked-tasks-if
-   (lambda ()
-     (home.d/has-property "bucket" bucket))))
 
 (defun home.d/get-clocked-tasks-if (headline-filter)
   (setq result ())
@@ -119,11 +119,21 @@ is unscheduled."
            (funcall headline-filter)
            (home.d/taskp))
         (let ((time (home.d/org-clock-sum-current-item))
-              (task (home.d/get-task)))
+              (task (home.d/task-at-point)))
           (add-to-list 'result `(,task . ,time))
           (message (format "%s %d" task time))))
       (outline-next-heading)))
   result)
+
+(format-seconds "%h:%02m" (* 60 (* 60 25)))
+
+(defun home.d/get-clocked-tasks-in-bucket (bucket)
+  (home.d/get-clocked-tasks-if
+   (lambda ()
+     (home.d/has-property "bucket" bucket))))
+
+(defun home.d/display-tasks (tasks))
+
 
 (provide 'home.d-org)
 
