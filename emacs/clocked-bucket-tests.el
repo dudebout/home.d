@@ -17,6 +17,26 @@
 (ert-deftest my-test ()
   (find-file "./clocked-bucket-tests.org")
   (clocked-bucket-get-clocked-tasks-if (lambda () (home.d/has-property "bucket" "a")))
-  (clocked-bucket-get-clocked-tasks-if (lambda () (home.d/has-property "bucket" "b"))))
+  (clocked-bucket-get-clocked-tasks-if (lambda () (home.d/has-property "bucket" "b")))
+  (clocked-bucket-get-clocked-tasks-in-buckets '((lambda () (home.d/has-property "bucket" "a"))
+                                                 (lambda () (home.d/has-property "bucket" "b")))))
+
+(ert-deftest display-test ()
+  (let ((t1 (task-create :category "category 1"
+                         :context "context 1"
+                         :name "task 1")))
+    (should (equal "category 1\n  context 1\n    task 1" (clocked-bucket-display-tasks (list t1))))))
+
+(ert-deftest task-trees-test ()
+  (let ((t1 (task-create :category "category 1"
+                         :context "context 1"
+                         :name "task 1"))
+        (t2 (task-create :category "category 1"
+                         :context "context 2"
+                         :name "task 1"))
+        (t3 (task-create :category "category 1"
+                         :context "context 1"
+                         :name "task 2")))
+    (message (format "%s" (clocked-bucket-compute-task-trees (list t1 t2 t3))))))
 
 ;;; clocked-bucket-tests.el ends here

@@ -1,4 +1,4 @@
-;;; clocked-bucket.el ---- FIXME
+;;; clocked-bucket.el --- FIXME -*- lexical-binding: t; -*-
 
 ;;; Commentary:
 
@@ -6,7 +6,8 @@
 
 ;;; Code:
 
-(require 'cl)
+(eval-when-compile 'cl)
+(require 'seq)
 (require 'org)
 (require 'org-clock)
 
@@ -33,6 +34,14 @@
 (cl-defstruct (task (:constructor task-create)
                     (:copier nil))
   category context name)
+
+(cl-defstruct (context-tree (:constructor context-tree-create)
+                            (:copier nil))
+  name tasks)
+
+(cl-defstruct (task-tree (:constructor task-tree-create)
+                         (:copier nil))
+  category context-trees)
 
 (defun clocked-bucket-task-at-point ()
   "FIXME."
@@ -62,7 +71,7 @@ FIXME TSTART TEND"
 
 (defun clocked-bucket-get-clocked-tasks-if (headline-filter)
   "FIXME HEADLINE-FILTER."
-  (let ((result ()))
+  (let (result)
     (save-excursion
       (goto-char (point-min))
       (while (not (equal (point) (point-max)))
@@ -77,6 +86,11 @@ FIXME TSTART TEND"
         (outline-next-heading)))
     result))
 
+(defun clocked-bucket-get-clocked-tasks-in-buckets (headline-filters)
+  "FIXME HEADLINE-FILTERS."
+  (mapcar #'clocked-bucket-get-clocked-tasks-if headline-filters))
+
+;; https://www.gnu.org/software/emacs/manual/html_node/elisp/Time-Parsing.html
 ;; (format-seconds "%h:%02m" (* 60 (* 60 25)))
 
 ;; (defun clocked-bucket-get-clocked-tasks-in-bucket (bucket)
@@ -88,11 +102,41 @@ FIXME TSTART TEND"
 ;; (defun clocked-bucket-display-tasks (tasks)
 ;;   "FIXME TASKS.")
 
+(defun clocked-bucket-display-tasks (tasks)
+  "FIXME TASKS."
+  (let ((task (car tasks)))
+    (format "%s\n  %s\n    %s"
+            (task-category task)
+            (task-context task)
+            (task-name task))))
+
+
+(defun clocked-bucket-compute-task-trees (tasks)
+  "FIXME TASKS."
+  (let (task-trees)
+    (dolist (task tasks task-trees)
+      (let* ((category (task-category task))
+             (task-tree-pos (seq-position task-trees category (lambda (tt c) (equal (task-tree-category tt) c)))))
+        (unless task-tree-pos
+          (setq task-tree-pos 0)
+          (push (task-tree-create :category category :context-trees nil) task-trees))
+        (let* ((task-tree (nth task-tree-pos task-trees))
+               (context (task-context task))
+               (context-trees (task-tree-context-trees task-tree))
+               (context-tree-pos (seq-position context-trees context (lambda (ct c) (equal (context-tree-name ct) c)))))
+          (unless context-tree-pos
+            (setq context-tree-pos 0)
+            (push (context-tree-create :name context :tasks ()) (task-tree-context-trees (nth task-tree-pos task-trees))))
+          (push task (context-tree-tasks (nth context-tree-pos (task-tree-context-trees (nth task-tree-pos task-trees))))))))))
+
+
+(defun clocked-bucket-display-task-trees (task-tree)
+  "FIXME TASK-TREE.")
+
 (provide 'clocked-bucket)
 
 ;; Local Variables:
 ;; indent-tabs-mode: nil
-;; lexical-binding: t
 ;; End:
 
 ;;; clocked-bucket.el ends here
