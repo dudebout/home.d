@@ -1,4 +1,4 @@
 test:
 	@emacs -Q --batch -L . --eval "(progn\
-	(load-file \"home.d-org-tests.el\")\
+	(load-file \"clocked-bucket-tests.el\")\
 	(ert-run-tests-batch-and-exit))"
