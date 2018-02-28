@@ -21,9 +21,18 @@ CLOCK: [2018-02-23 Fri 13:00]--[2018-02-23 Fri 14:00] =>  1:00
 :bucket:   a
 :END:
 :LOGBOOK:
-CLOCK: [2018-02-23 Fri 14:00]--[2018-02-23 Fri 15:00]
+CLOCK: [2018-02-23 Fri 14:00]--[2018-02-23 Fri 15:00] =>  1:00
 :END:
 *** task B
 :LOGBOOK:
-CLOCK: [2018-02-23 Fri 15:00]--[2018-02-23 Fri 16:00]
+CLOCK: [2018-02-23 Fri 15:00]--[2018-02-23 Fri 16:00] =>  1:00
+:END:
+* category II
+** context 1
+:PROPERTIES:
+:bucket:   b
+:END:
+*** task A
+:LOGBOOK:
+CLOCK: [2018-02-23 Fri 15:00]--[2018-02-23 Fri 16:00] =>  1:00
 :END:

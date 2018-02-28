@@ -11,6 +11,21 @@
 (require 'org)
 (require 'org-clock)
 
+(defmacro push-end (newelt place)
+  "Add NEWELT to the list stored in the generalized variable PLACE.
+This is morally equivalent to (setf PLACE (nconc PLACE (list NEWELT))),
+except that PLACE is only evaluated once (after NEWELT)."
+  (declare (debug (form gv-place)))
+  (if (symbolp place)
+      ;; Important special case, to avoid triggering GV too early in
+      ;; the bootstrap.
+      (list 'setq place
+            (list 'nconc place (list 'list newelt)))
+    (require 'macroexp)
+    (macroexp-let2 macroexp-copyable-p v newelt
+      (gv-letplace (getter setter) place
+        (funcall setter `(nconc ,getter (list ,v)))))))
+
 (defun clocked-bucket-at-level (level)
   "FIXME LEVEL."
   (eq level (org-element-property :level (org-element-at-point))))
@@ -89,41 +104,6 @@ FIXME TSTART TEND"
   "FIXME HEADLINE-FILTERS."
   (mapcar #'clocked-bucket-get-clocked-tasks-if headline-filters))
 
-;; https://www.gnu.org/software/emacs/manual/html_node/elisp/Time-Parsing.html
-;; (format-seconds "%h:%02m" (* 60 (* 60 25)))
-
-;; (defun clocked-bucket-get-clocked-tasks-in-bucket (bucket)
-;;   "FIXME BUCKET."
-;;   (clocked-bucket-get-clocked-tasks-if
-;;    (lambda ()
-;;      (clocked-bucket-has-property "bucket" bucket))))
-
-;; (defun clocked-bucket-display-tasks (tasks)
-;;   "FIXME TASKS.")
-
-(defun clocked-bucket-display-tasks (tasks)
-  "FIXME TASKS."
-  (let ((task (car tasks)))
-    (format "%s\n  %s\n    %s"
-            (task-category task)
-            (task-context task)
-            (task-name task))))
-
-(defmacro push-end (newelt place)
-  "Add NEWELT to the list stored in the generalized variable PLACE.
-This is morally equivalent to (setf PLACE (nconc PLACE (list NEWELT))),
-except that PLACE is only evaluated once (after NEWELT)."
-  (declare (debug (form gv-place)))
-  (if (symbolp place)
-      ;; Important special case, to avoid triggering GV too early in
-      ;; the bootstrap.
-      (list 'setq place
-            (list 'nconc place (list 'list newelt)))
-    (require 'macroexp)
-    (macroexp-let2 macroexp-copyable-p v newelt
-      (gv-letplace (getter setter) place
-        (funcall setter `(nconc ,getter (list ,v)))))))
-
 (defun clocked-bucket-compute-task-trees (tasks)
   "FIXME TASKS."
   (let (task-trees)
@@ -155,6 +135,11 @@ except that PLACE is only evaluated once (after NEWELT)."
 (defun clocked-bucket-display-task-trees (task-trees)
   "FIXME TASK-TREES."
   (apply #'concat (mapcar #'clocked-bucket-display-task-tree task-trees)))
+
+(defun clocked-bucket-format-time (minutes)
+  "FIXME MINUTES."
+  ;; https://www.gnu.org/software/emacs/manual/html_node/elisp/Time-Parsing.html
+  (format-seconds "%h:%02m" (* 60 minutes)))
 
 (provide 'clocked-bucket)
 
