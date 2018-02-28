@@ -81,8 +81,7 @@ FIXME TSTART TEND"
              (clocked-bucket-taskp))
           (let ((time (clocked-bucket-org-clock-sum-current-item))
                 (task (clocked-bucket-task-at-point)))
-            (add-to-list 'result `(,task . ,time))
-            (message (format "%s %d" task time))))
+            (push-end `(,task . ,time) result)))
         (outline-next-heading)))
     result))
 
@@ -154,6 +153,7 @@ except that PLACE is only evaluated once (after NEWELT)."
         (setq result (concat result (format "    %s\n" (task-name task))))))))
 
 (defun clocked-bucket-display-task-trees (task-trees)
+  "FIXME TASK-TREES."
   (apply #'concat (mapcar #'clocked-bucket-display-task-tree task-trees)))
 
 (provide 'clocked-bucket)

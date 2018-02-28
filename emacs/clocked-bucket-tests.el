@@ -21,6 +21,12 @@
   (clocked-bucket-get-clocked-tasks-in-buckets '((lambda () (home.d/has-property "bucket" "a"))
                                                  (lambda () (home.d/has-property "bucket" "b")))))
 
+(ert-deftest my-test2 ()
+  (find-file "./clocked-bucket-tests.org")
+  (let ((result "category I\n  context 1\n    task A\n    task B\n  context 2\n    task A\n")
+        (tasks (mapcar #'car (clocked-bucket-get-clocked-tasks-if (lambda () (home.d/has-property "bucket" "a"))))))
+    (should (equal result (clocked-bucket-display-task-trees (clocked-bucket-compute-task-trees tasks))))))
+
 (ert-deftest display-test ()
   (let ((t1 (task-create :category "category 1"
                          :context "context 1"
