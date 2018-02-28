@@ -110,6 +110,20 @@ FIXME TSTART TEND"
             (task-context task)
             (task-name task))))
 
+(defmacro push-end (newelt place)
+  "Add NEWELT to the list stored in the generalized variable PLACE.
+This is morally equivalent to (setf PLACE (nconc PLACE (list NEWELT))),
+except that PLACE is only evaluated once (after NEWELT)."
+  (declare (debug (form gv-place)))
+  (if (symbolp place)
+      ;; Important special case, to avoid triggering GV too early in
+      ;; the bootstrap.
+      (list 'setq place
+            (list 'nconc place (list 'list newelt)))
+    (require 'macroexp)
+    (macroexp-let2 macroexp-copyable-p v newelt
+      (gv-letplace (getter setter) place
+        (funcall setter `(nconc ,getter (list ,v)))))))
 
 (defun clocked-bucket-compute-task-trees (tasks)
   "FIXME TASKS."
@@ -119,17 +133,16 @@ FIXME TSTART TEND"
       (let* ((category (task-category task))
              (task-tree-pos (seq-position task-trees category (lambda (tt c) (equal (task-tree-category tt) c)))))
         (unless task-tree-pos
-          (setq task-tree-pos 0)
-          (push (task-tree-create :category category :context-trees nil) task-trees))
+          (setq task-tree-pos (length task-trees))
+          (push-end (task-tree-create :category category :context-trees nil) task-trees))
         (let* ((task-tree (nth task-tree-pos task-trees))
                (context (task-context task))
                (context-trees (task-tree-context-trees task-tree))
                (context-tree-pos (seq-position context-trees context (lambda (ct c) (equal (context-tree-name ct) c)))))
           (unless context-tree-pos
-            (setq context-tree-pos 0)
-            (push (context-tree-create :name context :tasks ()) (task-tree-context-trees (nth task-tree-pos task-trees))))
-          (push task (context-tree-tasks (nth context-tree-pos (task-tree-context-trees (nth task-tree-pos task-trees))))))))))
-
+            (setq context-tree-pos (length context-trees))
+            (push-end (context-tree-create :name context :tasks ()) (task-tree-context-trees (nth task-tree-pos task-trees))))
+          (push-end task (context-tree-tasks (nth context-tree-pos (task-tree-context-trees (nth task-tree-pos task-trees))))))))))
 
 (defun clocked-bucket-display-task-tree (task-tree)
   "FIXME TASK-TREE."
@@ -138,8 +151,10 @@ FIXME TSTART TEND"
     (dolist (context-tree (task-tree-context-trees task-tree) result)
       (setq result (concat result (format "  %s\n" (context-tree-name context-tree))))
       (dolist (task (context-tree-tasks context-tree))
-        ;; FIXME use something like intersperse
         (setq result (concat result (format "    %s\n" (task-name task))))))))
+
+(defun clocked-bucket-display-task-trees (task-trees)
+  (apply #'concat (mapcar #'clocked-bucket-display-task-tree task-trees)))
 
 (provide 'clocked-bucket)
 

@@ -38,7 +38,7 @@
                           :context "context 1"
                           :name "task 2"))
          (l (list t1 t2 t3))
-         (result "category 1\n  context 2\n    task 1\n  context 1\n    task 2\n    task 1\n"))
-    (should (equal result (apply #'concat (mapcar #'clocked-bucket-display-task-tree (clocked-bucket-compute-task-trees l)))))))
+         (result "category 1\n  context 1\n    task 1\n    task 2\n  context 2\n    task 1\n"))
+    (should (equal result (clocked-bucket-display-task-trees (clocked-bucket-compute-task-trees l))))))
 
 ;;; clocked-bucket-tests.el ends here
