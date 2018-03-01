@@ -42,7 +42,6 @@
 (bind-key "C-x M-k" 'home.d/delete-current-buffer-and-delete-file)
 (bind-key "M-g M-g" 'home.d/goto-line-with-feedback)
 (bind-key "C-c r" 'replace-string)
-(bind-key "C-c g" 'rgrep)
 ;; Make sure that the last letter of the keybinding does not
 ;; correspond to the letter of the XMonad binding called by ct, else
 ;; xdotool key does not seem to be called properly / there is an
@@ -71,7 +70,7 @@
           (ace-window-display-mode)))
 
 (use-package avy
-  :bind (("C-=" . avy-goto-word-1)
+  :bind (("C-=" . avy-goto-char-2)
          ("M-g g" . avy-goto-line)
          ("C-c W" . avy-org-refile-as-child))
   :init (progn
@@ -87,7 +86,15 @@
   :bind (("M-x" . counsel-M-x)
          ("C-h b" . counsel-descbinds)
          ("C-x C-f" . counsel-find-file)
-         ("C-c j" . counsel-git-grep)))
+         ("C-s" . counsel-grep-or-swiper)
+         ("C-c j" . counsel-git-grep)
+         ("C-c s g" . rgrep)
+         ("C-c s r" . counsel-rg)
+         ("C-c s s" . counsel-ag)
+         ("C-c s z" . zrgrep)))
+
+(use-package counsel-projectile
+  :init (counsel-projectile-mode))
 
 ;; (use-package dante
 ;;   :init  (progn
@@ -152,22 +159,23 @@
           (unless (locate-library "dante")
             (add-hook 'haskell-mode-hook 'interactive-haskell-mode))))
 
-(use-package helm
-  :init (progn
-          (require 'helm-config)
-          (setq ido-use-virtual-buffers t
-                helm-mode-fuzzy-match t
-                helm-completion-in-region-fuzzy-match t))
-  :bind (("C-c h" . helm-command-prefix)
-         ("M-s o" . helm-occur)))
+(defvar ddb/hs-state nil
+  "Current state of hideshow ddb/hs-toggle-all.")
 
-(use-package helm-ag
-  :init (setq helm-ag-insert-at-point 'symbol)
-  :bind (("C-c /" . helm-ag)
-         ("C-c s" . helm-ag-project-root)))
+  ;;;###autoload
+(defun ddb/hs-toggle-all ()
+  "Toggle hideshow all."
+    (interactive)
+    (setq ddb/hs-state (not ddb/hs-state))
+    (if ddb/hs-state
+        (hs-hide-all)
+      (hs-show-all)))
 
-(use-package helm-git-ls
-  :bind ("C-x C-d" . helm-browse-project))
+(use-package hideshow
+  :commands hs-minor-mode
+  :init (add-hook 'emacs-lisp-mode-hook #'hs-minor-mode)
+  ;; could be bound specifically for the emacs-lisp mode map
+  :bind ("<C-tab>" . ddb/hs-toggle-all))
 
 (use-package hydra)
 
@@ -337,9 +345,6 @@
 (use-package sh-script
   :defer t
   :init (ddb/add-shell-extension "zsh"))
-
-(use-package swiper
-  :bind ("C-s" . swiper))
 
 (use-package whitespace
   :bind ("C-c w" . whitespace-mode))
