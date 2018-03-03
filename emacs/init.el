@@ -23,7 +23,8 @@
       vc-follow-symlinks t
       disabled-command-function nil)
 
-(setq-default indent-tabs-mode nil
+(setq-default fill-column 80
+              indent-tabs-mode nil
               require-final-newline t)
 
 (add-hook 'before-save-hook 'whitespace-cleanup)
