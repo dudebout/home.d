@@ -179,6 +179,9 @@
 
 (use-package hydra)
 
+(use-package ibuffer
+  :bind ("C-x C-b" . 'ibuffer))
+
 (use-package ivy
   :bind ("C-x b" . ivy-switch-buffer)
   :init (setq ivy-use-virtual-buffers t))
