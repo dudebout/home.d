@@ -12,9 +12,11 @@
 (require 'org-clock)
 
 (defmacro push-end (newelt place)
-  "Add NEWELT to the list stored in the generalized variable PLACE.
-This is morally equivalent to (setf PLACE (nconc PLACE (list NEWELT))),
-except that PLACE is only evaluated once (after NEWELT)."
+  "Add NEWELT to the end of the list stored in the generalized variable PLACE.
+
+This is morally equivalent to (setf PLACE (nconc PLACE (list
+NEWELT))), except that PLACE is only evaluated once (after
+NEWELT)."
   (declare (debug (form gv-place)))
   (if (symbolp place)
       ;; Important special case, to avoid triggering GV too early in
@@ -48,7 +50,7 @@ except that PLACE is only evaluated once (after NEWELT)."
 
 (cl-defstruct (task (:constructor task-create)
                     (:copier nil))
-  category context name)
+  category context name clocked)
 
 (cl-defstruct (context-tree (:constructor context-tree-create)
                             (:copier nil))
@@ -73,7 +75,8 @@ except that PLACE is only evaluated once (after NEWELT)."
              (clocked-bucket-get-heading))))
       (task-create :category category
                    :context context
-                   :name name))))
+                   :name name
+                   :clocked 0))))
 
 (defun clocked-bucket-org-clock-sum-current-item (&optional tstart tend)
   "Return time, clocked on current item in total.
@@ -84,7 +87,7 @@ FIXME TSTART TEND"
       (org-clock-sum tstart tend)
       org-clock-file-total-minutes)))
 
-(defun clocked-bucket-get-clocked-tasks-if (headline-filter)
+(defun clocked-bucket-get-clocked-tasks-if (headline-filter &optional tstart tend)
   "FIXME HEADLINE-FILTER."
   (let (result)
     (save-excursion
@@ -94,15 +97,17 @@ FIXME TSTART TEND"
             (and
              (funcall headline-filter)
              (clocked-bucket-taskp))
-          (let ((time (clocked-bucket-org-clock-sum-current-item))
+          (let ((time (clocked-bucket-org-clock-sum-current-item tstart tend))
                 (task (clocked-bucket-task-at-point)))
-            (push-end `(,task . ,time) result)))
+            (when (> time 0)
+              (setf (task-clocked task) time)
+              (push-end task result))))
         (outline-next-heading)))
     result))
 
-(defun clocked-bucket-get-clocked-tasks-in-buckets (headline-filters)
+(defun clocked-bucket-get-clocked-tasks-in-buckets (headline-filters &optional tstart tend)
   "FIXME HEADLINE-FILTERS."
-  (mapcar #'clocked-bucket-get-clocked-tasks-if headline-filters))
+  (mapcar #'clocked-bucket-get-clocked-tasks-if headline-filters tstart tend))
 
 (defun clocked-bucket-compute-task-trees (tasks)
   "FIXME TASKS."
@@ -130,7 +135,7 @@ FIXME TSTART TEND"
     (dolist (context-tree (task-tree-context-trees task-tree) result)
       (setq result (concat result (format "  %s\n" (context-tree-name context-tree))))
       (dolist (task (context-tree-tasks context-tree))
-        (setq result (concat result (format "    %s\n" (task-name task))))))))
+        (setq result (concat result (format "    %s %s\n" (task-name task) (clocked-bucket-format-time (task-clocked task)))))))))
 
 (defun clocked-bucket-display-task-trees (task-trees)
   "FIXME TASK-TREES."
@@ -140,6 +145,17 @@ FIXME TSTART TEND"
   "FIXME MINUTES."
   ;; https://www.gnu.org/software/emacs/manual/html_node/elisp/Time-Parsing.html
   (format-seconds "%h:%02m" (* 60 minutes)))
+
+(defun total-bucket (&optional bucket-name tstart tend)
+  (find-file "./clocked-bucket-tests.org")
+  (let* ((bucket-name (or bucket-name "a"))
+         (headline-filter (lambda () (home.d/has-property "bucket" bucket-name)))
+         (tasks (clocked-bucket-get-clocked-tasks-if headline-filter tstart tend))
+         (result (clocked-bucket-display-task-trees (clocked-bucket-compute-task-trees tasks)))
+         (buffer (generate-new-buffer "*clocked bucket*")))
+    (with-current-buffer buffer
+      (insert result))
+    (display-buffer buffer)))
 
 (provide 'clocked-bucket)
 
