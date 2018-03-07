@@ -226,6 +226,7 @@
         org-agenda-skip-deadline-if-done t
         org-agenda-files (or org-agenda-files
                              (list org-directory))
+        org-agenda-clockreport-parameter-plist '(:link t :maxlevel 3)
         org-agenda-custom-commands '(("u" "Unscheduled" alltodo ""
                                       ((org-agenda-skip-function
                                         (lambda ()
@@ -291,27 +292,27 @@
   ;; consider merging the inbox into a single tree (what is the purpose of tasks vs notes?)
   (setq org-capture-templates '(("t" "task" entry
                                  (file+olp home.d/capture-file "inbox" "tasks")
-                                 "* TODO %?\n%U")
+                                 "* TODO %?\n:LOGBOOK:\n- Created on %U\n:END:")
                                 ("r" "read" entry
                                  (file+olp home.d/capture-file "inbox" "tasks")
-                                 "* READ [[%:link][%:description]]\n%U"
+                                 "* READ [[%:link][%:description]]\n:LOGBOOK:\n- Created on %U\n:END:"
                                  :immediate-finish t)
                                 ("w" "watch" entry
                                  (file+olp home.d/capture-file "inbox" "tasks")
-                                 "* WATCH [[%:link][%:description]]\n%U"
+                                 "* WATCH [[%:link][%:description]]\n:LOGBOOK:\n- Created on %U\n:END:"
                                  :immediate-finish t)
                                 ("n" "note" entry
                                  (file+olp home.d/capture-file "inbox" "notes")
-                                 "* %?\n%U")
+                                 "* %?\n:LOGBOOK:\n- Created on %U\n:END:")
                                 ("m" "meeting" entry
                                  (file+olp home.d/capture-file "inbox" "meetings")
-                                 "* meeting with %? about \n%U"
+                                 "* meeting with %? about \n:LOGBOOK:\n- Created on %U\n:END:"
                                  :clock-in t :clock-resume t))))
 
 (use-package org-clock
   :defer t
   :init
-  (setq org-clock-continuously t))
+  (setq org-clock-report-include-clocking-task t))
 
 (use-package org-protocol)
 
