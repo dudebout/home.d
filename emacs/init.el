@@ -88,7 +88,8 @@
          ("C-h b" . counsel-descbinds)
          ("C-x C-f" . counsel-find-file)
          ("C-s" . counsel-grep-or-swiper)
-         ("C-c j" . counsel-git-grep)
+         ("C-c s f" . counsel-git)
+         ("C-c s i" . counsel-git-grep)
          ("C-c s g" . rgrep)
          ("C-c s r" . counsel-rg)
          ("C-c s s" . counsel-ag)
@@ -114,6 +115,11 @@
   :init (progn
           (add-hook 'emacs-lisp-mode-hook 'elisp-slime-nav-mode)
           (add-hook 'c-mode-hook 'elisp-slime-nav-mode)))
+
+(use-package fill-column-indicator
+  :config
+  (define-globalized-minor-mode ddb/global-fci-mode fci-mode turn-on-fci-mode)
+  (ddb/global-fci-mode 1))
 
 ;; TODO integrate flycheck-color-mode-line and flycheck-pos-tip
 (use-package flycheck
@@ -172,6 +178,14 @@
         (hs-hide-all)
       (hs-show-all)))
 
+(use-package helpful
+  :bind (("C-h f" . helpful-callable)
+         ("C-h o" . helpful-symbol)
+         ("C-h v" . helpful-variable)
+         ("C-h k" . helpful-key)
+         ("C-c C-d" . helpful-at-point)
+         ("C-h C" . helpful-command)))
+
 (use-package hideshow
   :commands hs-minor-mode
   :init (add-hook 'emacs-lisp-mode-hook #'hs-minor-mode)
@@ -227,13 +241,7 @@
         org-agenda-files (or org-agenda-files
                              (list org-directory))
         org-agenda-clockreport-parameter-plist '(:link t :maxlevel 3)
-        org-agenda-custom-commands '(("u" "Unscheduled" alltodo ""
-                                      ((org-agenda-skip-function
-                                        (lambda ()
-                                          (org-agenda-skip-entry-if 'scheduled 'deadline)))
-                                       (org-agenda-overriding-header "Unscheduled TODO entries: ")
-                                       ))
-                                     ("f" "Future events"
+        org-agenda-custom-commands '(("f" "Future events"
                                       tags "TIMESTAMP>=\"<now>\""
                                       ((org-agenda-sorting-strategy '((tags ts-up)))))
                                      ("y" "Year's events" agenda ""
@@ -284,7 +292,7 @@
   ;;   you end up using the default value
   (add-hook 'org-mode-hook
             (lambda ()
-              (setq org-stuck-projects `("ready&LEVEL=2" ,org-not-done-keywords nil "")))))
+              (setq org-stuck-projects `("projects&LEVEL=2" ,org-not-done-keywords nil "")))))
 
 (use-package org-capture
   :bind ("C-c c" . org-capture)
@@ -315,6 +323,10 @@
   (setq org-clock-report-include-clocking-task t))
 
 (use-package org-protocol)
+
+(use-package org-pdfview)
+
+(use-package pdf-tools)
 
 (use-package paren
   :init (progn
