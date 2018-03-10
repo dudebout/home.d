@@ -27,6 +27,8 @@
               indent-tabs-mode nil
               require-final-newline t)
 
+(require 'ivy-hydra)
+
 (add-hook 'before-save-hook 'whitespace-cleanup)
 (add-hook 'after-save-hook 'executable-make-buffer-file-executable-if-script-p)
 
@@ -87,6 +89,7 @@
   :bind (("M-x" . counsel-M-x)
          ("C-h b" . counsel-descbinds)
          ("C-x C-f" . counsel-find-file)
+         ("<f1> l" . counsel-find-library)
          ("C-s" . counsel-grep-or-swiper)
          ("C-c s f" . counsel-git)
          ("C-c s i" . counsel-git-grep)
@@ -201,7 +204,10 @@
 
 (use-package ivy
   :bind ("C-x b" . ivy-switch-buffer)
-  :init (setq ivy-use-virtual-buffers t))
+  :init
+  (ivy-mode 1)
+  (setq ivy-wrap t
+        ivy-use-virtual-buffers t))
 
 (use-package macrostep
   :bind ("C-c e" . macrostep-expand))
