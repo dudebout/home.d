@@ -195,7 +195,9 @@
 (use-package hydra)
 
 (use-package ibuffer
-  :bind ("C-x C-b" . 'ibuffer))
+  :bind ("C-x C-b" . ibuffer))
+
+(use-package iedit)
 
 (use-package ivy
   :bind ("C-x b" . ivy-switch-buffer)
