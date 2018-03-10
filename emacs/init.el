@@ -209,11 +209,10 @@
 (use-package magit
   :bind (("C-c i" . magit-status)
          ("C-c f" . magit-file-popup))
-  :init (progn
-          (require 'helm-mode)
-          (setq magit-delete-by-moving-to-trash nil
-                magit-diff-refine-hunk 'all
-                magit-completing-read-function 'helm--completing-read-default)))
+  :init
+  (setq magit-delete-by-moving-to-trash nil
+        magit-diff-refine-hunk 'all
+        magit-completing-read-function 'ivy-completing-read))
 
 (use-package menu-bar
   :bind ("C-c m" . menu-bar-mode))
