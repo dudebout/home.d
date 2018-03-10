@@ -27,8 +27,6 @@
               indent-tabs-mode nil
               require-final-newline t)
 
-(require 'ivy-hydra)
-
 (add-hook 'before-save-hook 'whitespace-cleanup)
 (add-hook 'after-save-hook 'executable-make-buffer-file-executable-if-script-p)
 
