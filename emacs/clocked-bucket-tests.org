@@ -36,3 +36,10 @@ CLOCK: [2018-02-23 Fri 15:00]--[2018-02-23 Fri 16:00] =>  1:00
 :LOGBOOK:
 CLOCK: [2018-02-23 Fri 15:00]--[2018-02-23 Fri 16:00] =>  1:00
 :END:
+*** task B
+:PROPERTIES:
+:bucket:   a
+:END:
+:LOGBOOK:
+CLOCK: [2018-02-23 Fri 16:00]--[2018-02-23 Fri 17:00] =>  1:00
+:END:
