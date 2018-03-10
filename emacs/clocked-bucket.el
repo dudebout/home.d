@@ -54,11 +54,11 @@ NEWELT)."
 
 (cl-defstruct (context-tree (:constructor context-tree-create)
                             (:copier nil))
-  name tasks)
+  name tasks clocked)
 
 (cl-defstruct (task-tree (:constructor task-tree-create)
                          (:copier nil))
-  category context-trees)
+  category context-trees clocked)
 
 (defun clocked-bucket-task-at-point ()
   "FIXME."
@@ -112,28 +112,38 @@ FIXME TSTART TEND"
 (defun clocked-bucket-compute-task-trees (tasks)
   "FIXME TASKS."
   (let (task-trees)
-    ;; FIXME fix the order in which the tasks are added
     (dolist (task tasks task-trees)
       (let* ((category (task-category task))
-             (task-tree-pos (seq-position task-trees category (lambda (tt c) (equal (task-tree-category tt) c)))))
+             (task-tree-pos (seq-position task-trees category (lambda (tt c)
+                                                                (equal (task-tree-category tt) c)))))
         (unless task-tree-pos
           (setq task-tree-pos (length task-trees))
-          (push-end (task-tree-create :category category :context-trees nil) task-trees))
+          (push-end (task-tree-create :category category
+                                      :context-trees nil
+                                      :clocked 0)
+                    task-trees))
         (let* ((task-tree (nth task-tree-pos task-trees))
                (context (task-context task))
                (context-trees (task-tree-context-trees task-tree))
-               (context-tree-pos (seq-position context-trees context (lambda (ct c) (equal (context-tree-name ct) c)))))
+               (context-tree-pos (seq-position context-trees context (lambda (ct c)
+                                                                       (equal (context-tree-name ct) c)))))
           (unless context-tree-pos
             (setq context-tree-pos (length context-trees))
-            (push-end (context-tree-create :name context :tasks ()) (task-tree-context-trees (nth task-tree-pos task-trees))))
-          (push-end task (context-tree-tasks (nth context-tree-pos (task-tree-context-trees (nth task-tree-pos task-trees))))))))))
+            (push-end (context-tree-create :name context
+                                           :tasks ()
+                                           :clocked 0)
+                      (task-tree-context-trees (nth task-tree-pos task-trees))))
+          (push-end task
+                    (context-tree-tasks (nth context-tree-pos (task-tree-context-trees (nth task-tree-pos task-trees)))))
+          (cl-incf (task-tree-clocked (nth task-tree-pos task-trees)) (task-clocked task))
+          (cl-incf (context-tree-clocked (nth context-tree-pos (task-tree-context-trees (nth task-tree-pos task-trees)))) (task-clocked task)))))))
 
 (defun clocked-bucket-display-task-tree (task-tree)
   "FIXME TASK-TREE."
   (let ((result ""))
-    (setq result (concat result (format "%s\n" (task-tree-category task-tree))))
+    (setq result (concat result (format "%s %s\n" (task-tree-category task-tree) (clocked-bucket-format-time (task-tree-clocked task-tree)))))
     (dolist (context-tree (task-tree-context-trees task-tree) result)
-      (setq result (concat result (format "  %s\n" (context-tree-name context-tree))))
+      (setq result (concat result (format "  %s %s\n" (context-tree-name context-tree) (clocked-bucket-format-time (context-tree-clocked context-tree)))))
       (dolist (task (context-tree-tasks context-tree))
         (setq result (concat result (format "    %s %s\n" (task-name task) (clocked-bucket-format-time (task-clocked task)))))))))
 
@@ -146,7 +156,9 @@ FIXME TSTART TEND"
   ;; https://www.gnu.org/software/emacs/manual/html_node/elisp/Time-Parsing.html
   (format-seconds "%h:%02m" (* 60 minutes)))
 
+(require 'home.d-org)
 (defun total-bucket (&optional bucket-name tstart tend)
+  (interactive)
   (find-file "./clocked-bucket-tests.org")
   (let* ((bucket-name (or bucket-name "a"))
          (headline-filter (lambda () (home.d/has-property "bucket" bucket-name)))
