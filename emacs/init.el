@@ -116,10 +116,10 @@
           (add-hook 'emacs-lisp-mode-hook 'elisp-slime-nav-mode)
           (add-hook 'c-mode-hook 'elisp-slime-nav-mode)))
 
-(use-package fill-column-indicator
-  :config
-  (define-globalized-minor-mode ddb/global-fci-mode fci-mode turn-on-fci-mode)
-  (ddb/global-fci-mode 1))
+(use-package fill-column-indicator)
+  ;; :config
+  ;; (define-globalized-minor-mode ddb/global-fci-mode fci-mode turn-on-fci-mode)
+  ;; (ddb/global-fci-mode 1)
 
 ;; TODO integrate flycheck-color-mode-line and flycheck-pos-tip
 (use-package flycheck
