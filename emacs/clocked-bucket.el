@@ -193,44 +193,51 @@ FIXME TSTART TEND"
    (get-buffer clocked-bucket-buffer-name)
    (generate-new-buffer clocked-bucket-buffer-name)))
 
-(cl-defstruct (bucket-definition (:constructor bucket-definition-create)
-                                 (:copier nil))
-  name headline-filter)
+(cl-defstruct (bucket (:constructor bucket-create)
+                      (:copier nil))
+  name headline-filter task-trees clocked)
 
-(defun total-buckets (bucket-definitions &optional tstart tend)
-  "FIXME BUCKET-DEFINITIONS TSTART TEND."
+(defun display-bucket (bucket)
+  "FIXME BUCKET."
+  (let* ((result (clocked-bucket-display-task-trees (bucket-task-trees bucket))))
+    (with-current-buffer (clocked-bucket-buffer)
+      (insert (format "%s: %s %.2s%%\n\n" (bucket-name bucket) (clocked-bucket-format-time (clocked-minutes (bucket-clocked bucket))) (clocked-percentage (bucket-clocked bucket))))
+      (insert result)
+      (insert "\n\n"))
+    (display-buffer (clocked-bucket-buffer))))
+
+(defun total-buckets (buckets &optional tstart tend)
+  "FIXME BUCKETS TSTART TEND."
   (interactive)
   (with-current-buffer (clocked-bucket-buffer)
     (erase-buffer))
 
-  (dolist (bd bucket-definitions)
-    (total-bucket (bucket-definition-name bd)  (bucket-definition-headline-filter bd) tstart tend))
+  (dolist (bucket buckets)
+    (total-bucket bucket tstart tend))
 
   (with-current-buffer (clocked-bucket-buffer)
     (whitespace-cleanup)))
 
-(defun total-bucket (name headline-filter &optional tstart tend)
-  "FIXME NAME HEADLINE-FILTER TSTART TEND."
-  (let* ((tasks (clocked-bucket-get-clocked-tasks-if headline-filter tstart tend))
+(defun total-bucket (bucket &optional tstart tend)
+  "FIXME BUCKET TSTART TEND."
+  (let* ((tasks (clocked-bucket-get-clocked-tasks-if (bucket-headline-filter bucket) tstart tend))
          (task-trees (clocked-bucket-compute-task-trees tasks))
          (total-minutes (-sum (mapcar #'clocked-bucket-propagate-clocked-minutes task-trees))))
     (mapc (apply-partially #'clocked-bucket-compute-clocked-percentages total-minutes) task-trees)
-    (let* ((result (clocked-bucket-display-task-trees task-trees)))
-      (with-current-buffer (clocked-bucket-buffer)
-        (insert (format "%s: %s\n\n" name (clocked-bucket-format-time total-minutes)))
-        (insert result)
-        (insert "\n\n"))
-      (display-buffer (clocked-bucket-buffer)))))
+    (setf (bucket-task-trees bucket) task-trees)
+    (setf (bucket-clocked bucket) (clocked-create :minutes total-minutes
+                                                  :percentage 34))
+    (display-bucket bucket)))
 
 (defun quick-test ()
   "FIXME."
   (find-file "/home/ddb/.home.d/emacs/clocked-bucket-tests.org")
   (total-buckets
    (list
-    (bucket-definition-create :name "bucket a"
-                              :headline-filter (lambda () (home.d/has-property "bucket" "a")))
-    (bucket-definition-create :name "bucket b"
-                              :headline-filter (lambda () (home.d/has-property "bucket" "b")))))
+    (bucket-create :name "bucket a"
+                   :headline-filter (lambda () (home.d/has-property "bucket" "a")))
+    (bucket-create :name "bucket b"
+                   :headline-filter (lambda () (home.d/has-property "bucket" "b")))))
   (bury-buffer))
 (quick-test)
 
