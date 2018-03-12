@@ -154,24 +154,24 @@ FIXME TSTART TEND"
   (message "%d" total-minutes)
   (dolist (context-tree (task-tree-context-trees task-tree))
     (dolist (task (context-tree-tasks context-tree))
-      (setf (clocked-percentage (task-tree-clocked task-tree)) (round (/ (* 100.0 (clocked-minutes (task-tree-clocked task-tree))) total-minutes)))
-      (setf (clocked-percentage (context-tree-clocked context-tree)) (round (/ (* 100.0 (clocked-minutes (context-tree-clocked context-tree))) total-minutes)))
-      (setf (clocked-percentage (task-clocked task)) (round (/ (* 100.0 (clocked-minutes (task-clocked task))) total-minutes))))))
+      (setf (clocked-percentage (task-tree-clocked task-tree)) (/ (* 100.0 (clocked-minutes (task-tree-clocked task-tree))) total-minutes))
+      (setf (clocked-percentage (context-tree-clocked context-tree)) (/ (* 100.0 (clocked-minutes (context-tree-clocked context-tree))) total-minutes))
+      (setf (clocked-percentage (task-clocked task)) (/ (* 100.0 (clocked-minutes (task-clocked task))) total-minutes)))))
 
 (defun clocked-bucket-display-task-tree (task-tree)
   "FIXME TASK-TREE."
   (let ((result ""))
-    (setq result (concat result (format "%-50s%s %d%%\n"
+    (setq result (concat result (format "%-50s%s %.2f%%\n"
                                         (task-tree-category task-tree)
                                         (clocked-bucket-format-time (clocked-minutes (task-tree-clocked task-tree)))
                                         (clocked-percentage (task-tree-clocked task-tree)))))
     (dolist (context-tree (task-tree-context-trees task-tree) result)
-      (setq result (concat result (format "  %-50s          %s %d%%\n"
+      (setq result (concat result (format "  %-50s          %s %.2f%%\n"
                                           (context-tree-name context-tree)
                                           (clocked-bucket-format-time (clocked-minutes (context-tree-clocked context-tree)))
                                           (clocked-percentage (context-tree-clocked context-tree)))))
       (dolist (task (context-tree-tasks context-tree))
-        (setq result (concat result (format "    %-50s                    %s %d%%\n"
+        (setq result (concat result (format "    %-50s                    %s %.2f%%\n"
                                             (task-name task)
                                             (clocked-bucket-format-time (clocked-minutes (task-clocked task)))
                                             (clocked-percentage (task-clocked task)))))))))
@@ -185,20 +185,31 @@ FIXME TSTART TEND"
   ;; https://www.gnu.org/software/emacs/manual/html_node/elisp/Time-Parsing.html
   (format-seconds "%h:%02m" (* 60 minutes)))
 
-(require 'home.d-org)
-(defun total-bucket (&optional bucket-name tstart tend)
+(defvar clocked-bucket-buffer-name "*clocked bucket*")
+
+(defun total-buckets (&optional tstart tend)
+  "FIXME TSTART TEND."
   (interactive)
   (find-file "./clocked-bucket-tests.org")
-  (let* ((bucket-name (or bucket-name "a"))
-         (headline-filter (lambda () (home.d/has-property "bucket" bucket-name)))
-         (tasks (clocked-bucket-get-clocked-tasks-if headline-filter tstart tend))
+  (with-current-buffer clocked-bucket-buffer-name
+    (erase-buffer))
+  (total-bucket "bucket a" (lambda () (home.d/has-property "bucket" "a")))
+  (with-current-buffer clocked-bucket-buffer-name
+    (insert "\n"))
+  (total-bucket "bucket b" (lambda () (home.d/has-property "bucket" "b"))))
+
+(defun total-bucket (name headline-filter &optional tstart tend)
+  ""
+  (let* ((tasks (clocked-bucket-get-clocked-tasks-if headline-filter tstart tend))
          (task-trees (clocked-bucket-compute-task-trees tasks))
          (total-minutes (-sum (mapcar #'clocked-bucket-propagate-clocked-minutes task-trees))))
     (mapc (apply-partially #'clocked-bucket-compute-clocked-percentages total-minutes) task-trees)
-    (let ((result (clocked-bucket-display-task-trees task-trees))
-          (buffer (generate-new-buffer "*clocked bucket*")))
+    (let* ((result (clocked-bucket-display-task-trees task-trees))
+           (buffer (or
+                    (get-buffer clocked-bucket-buffer-name)
+                    (generate-new-buffer clocked-bucket-buffer-name))))
       (with-current-buffer buffer
-        (insert (format "Total: %s\n\n" (clocked-bucket-format-time total-minutes)))
+        (insert (format "%s: %s\n" name (clocked-bucket-format-time total-minutes)))
         (insert result))
       (display-buffer buffer))))
 
