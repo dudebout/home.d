@@ -193,17 +193,21 @@ FIXME TSTART TEND"
    (get-buffer clocked-bucket-buffer-name)
    (generate-new-buffer clocked-bucket-buffer-name)))
 
-(defun total-buckets (&optional tstart tend)
-  "FIXME TSTART TEND."
+(cl-defstruct (bucket-definition (:constructor bucket-definition-create)
+                                 (:copier nil))
+  name headline-filter)
+
+(defun total-buckets (bucket-definitions &optional tstart tend)
+  "FIXME BUCKET-DEFINITIONS TSTART TEND."
   (interactive)
-  (find-file "/home/ddb/.home.d/emacs/clocked-bucket-tests.org")
   (with-current-buffer (clocked-bucket-buffer)
     (erase-buffer))
-  (total-bucket "bucket a" (lambda () (home.d/has-property "bucket" "a")) tstart tend)
+
+  (dolist (bd bucket-definitions)
+    (total-bucket (bucket-definition-name bd)  (bucket-definition-headline-filter bd) tstart tend))
+
   (with-current-buffer (clocked-bucket-buffer)
-    (insert "\n"))
-  (total-bucket "bucket b" (lambda () (home.d/has-property "bucket" "b")) tstart tend)
-  (bury-buffer))
+    (whitespace-cleanup)))
 
 (defun total-bucket (name headline-filter &optional tstart tend)
   "FIXME NAME HEADLINE-FILTER TSTART TEND."
@@ -213,9 +217,22 @@ FIXME TSTART TEND"
     (mapc (apply-partially #'clocked-bucket-compute-clocked-percentages total-minutes) task-trees)
     (let* ((result (clocked-bucket-display-task-trees task-trees)))
       (with-current-buffer (clocked-bucket-buffer)
-        (insert (format "%s: %s\n" name (clocked-bucket-format-time total-minutes)))
-        (insert result))
+        (insert (format "%s: %s\n\n" name (clocked-bucket-format-time total-minutes)))
+        (insert result)
+        (insert "\n\n"))
       (display-buffer (clocked-bucket-buffer)))))
+
+(defun quick-test ()
+  "FIXME."
+  (find-file "/home/ddb/.home.d/emacs/clocked-bucket-tests.org")
+  (total-buckets
+   (list
+    (bucket-definition-create :name "bucket a"
+                              :headline-filter (lambda () (home.d/has-property "bucket" "a")))
+    (bucket-definition-create :name "bucket b"
+                              :headline-filter (lambda () (home.d/has-property "bucket" "b")))))
+  (bury-buffer))
+(quick-test)
 
 (provide 'clocked-bucket)
 
