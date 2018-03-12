@@ -212,22 +212,22 @@ FIXME TSTART TEND"
   (with-current-buffer (clocked-bucket-buffer)
     (erase-buffer))
 
-  (dolist (bucket buckets)
-    (total-bucket bucket tstart tend))
+  (let ((total-minutes 0))
+    (dolist (bucket buckets)
+      (let* ((tasks (clocked-bucket-get-clocked-tasks-if (bucket-headline-filter bucket) tstart tend))
+             (task-trees (clocked-bucket-compute-task-trees tasks))
+             (minutes (-sum (mapcar #'clocked-bucket-propagate-clocked-minutes task-trees))))
+        (setf (bucket-task-trees bucket) task-trees)
+        (setf (bucket-clocked bucket) (clocked-create :minutes minutes))
+        (cl-incf total-minutes minutes)))
+
+    (dolist (bucket buckets)
+      (mapc (apply-partially #'clocked-bucket-compute-clocked-percentages total-minutes) (bucket-task-trees bucket))
+      (setf (clocked-percentage (bucket-clocked bucket)) (/ (* 100.0 (clocked-minutes (bucket-clocked bucket))) total-minutes))
+      (display-bucket bucket)))
 
   (with-current-buffer (clocked-bucket-buffer)
     (whitespace-cleanup)))
-
-(defun total-bucket (bucket &optional tstart tend)
-  "FIXME BUCKET TSTART TEND."
-  (let* ((tasks (clocked-bucket-get-clocked-tasks-if (bucket-headline-filter bucket) tstart tend))
-         (task-trees (clocked-bucket-compute-task-trees tasks))
-         (total-minutes (-sum (mapcar #'clocked-bucket-propagate-clocked-minutes task-trees))))
-    (mapc (apply-partially #'clocked-bucket-compute-clocked-percentages total-minutes) task-trees)
-    (setf (bucket-task-trees bucket) task-trees)
-    (setf (bucket-clocked bucket) (clocked-create :minutes total-minutes
-                                                  :percentage 34))
-    (display-bucket bucket)))
 
 (defun quick-test ()
   "FIXME."
