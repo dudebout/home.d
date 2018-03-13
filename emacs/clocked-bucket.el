@@ -206,7 +206,7 @@ FIXME TSTART TEND"
       (insert "\n\n"))
     (display-buffer (clocked-bucket-buffer))))
 
-(defun total-buckets (buckets &optional tstart tend)
+(defun total-buckets (buckets translations &optional tstart tend)
   "FIXME BUCKETS TSTART TEND."
   (interactive)
   (with-current-buffer (clocked-bucket-buffer)
@@ -234,20 +234,25 @@ FIXME TSTART TEND"
         (display-bucket bucket)))
 
     (with-current-buffer (clocked-bucket-buffer)
-      (whitespace-cleanup))
-    allocations))
+      (whitespace-cleanup)
+      (goto-char (point-min))
+      (dolist (allocation allocations)
+        (insert (format "%s: %.2f\n"  (alist-get (car allocation) translations) (cdr allocation))))
+      (insert "\n\n"))))
 
 (defun quick-test ()
   "FIXME."
   (find-file "/home/ddb/.home.d/emacs/clocked-bucket-tests.org")
-  (message "%s" (total-buckets
+  (total-buckets
     (list
      (bucket-create :name "bucket a"
                     :allocations '((:A . 0.1) (:B . 0.9))
                     :headline-filter (lambda () (home.d/has-property "bucket" "a")))
      (bucket-create :name "bucket b"
                     :allocations :A
-                    :headline-filter (lambda () (home.d/has-property "bucket" "b"))))))
+                    :headline-filter (lambda () (home.d/has-property "bucket" "b"))))
+    '((:A . "Allocation A")
+      (:B . "Allocation B")))
   (bury-buffer))
 (quick-test)
 
