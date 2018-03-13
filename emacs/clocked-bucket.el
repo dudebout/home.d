@@ -195,7 +195,7 @@ FIXME TSTART TEND"
 
 (cl-defstruct (bucket (:constructor bucket-create)
                       (:copier nil))
-  name headline-filter task-trees clocked)
+  name headline-filter allocations task-trees clocked)
 
 (defun display-bucket (bucket)
   "FIXME BUCKET."
@@ -212,7 +212,8 @@ FIXME TSTART TEND"
   (with-current-buffer (clocked-bucket-buffer)
     (erase-buffer))
 
-  (let ((total-minutes 0))
+  (let ((total-minutes 0)
+        allocations)
     (dolist (bucket buckets)
       (let* ((tasks (clocked-bucket-get-clocked-tasks-if (bucket-headline-filter bucket) tstart tend))
              (task-trees (clocked-bucket-compute-task-trees tasks))
@@ -223,21 +224,30 @@ FIXME TSTART TEND"
 
     (dolist (bucket buckets)
       (mapc (apply-partially #'clocked-bucket-compute-clocked-percentages total-minutes) (bucket-task-trees bucket))
-      (setf (clocked-percentage (bucket-clocked bucket)) (/ (* 100.0 (clocked-minutes (bucket-clocked bucket))) total-minutes))
-      (display-bucket bucket)))
+      (let ((percentage (/ (* 100.0 (clocked-minutes (bucket-clocked bucket))) total-minutes)))
+        (setf (clocked-percentage (bucket-clocked bucket)) percentage)
+        (let ((allocs (bucket-allocations bucket)))
+          (unless (listp allocs)
+            (setq allocs `((,allocs . 1))))
+          (dolist (alloc allocs)
+            (cl-incf (alist-get (car alloc) allocations 0) (* percentage (cdr alloc)))))
+        (display-bucket bucket)))
 
-  (with-current-buffer (clocked-bucket-buffer)
-    (whitespace-cleanup)))
+    (with-current-buffer (clocked-bucket-buffer)
+      (whitespace-cleanup))
+    allocations))
 
 (defun quick-test ()
   "FIXME."
   (find-file "/home/ddb/.home.d/emacs/clocked-bucket-tests.org")
-  (total-buckets
-   (list
-    (bucket-create :name "bucket a"
-                   :headline-filter (lambda () (home.d/has-property "bucket" "a")))
-    (bucket-create :name "bucket b"
-                   :headline-filter (lambda () (home.d/has-property "bucket" "b")))))
+  (message "%s" (total-buckets
+    (list
+     (bucket-create :name "bucket a"
+                    :allocations '((:A . 0.1) (:B . 0.9))
+                    :headline-filter (lambda () (home.d/has-property "bucket" "a")))
+     (bucket-create :name "bucket b"
+                    :allocations :A
+                    :headline-filter (lambda () (home.d/has-property "bucket" "b"))))))
   (bury-buffer))
 (quick-test)
 
