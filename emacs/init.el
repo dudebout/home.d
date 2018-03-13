@@ -27,8 +27,8 @@
               indent-tabs-mode nil
               require-final-newline t)
 
-(add-hook 'before-save-hook 'whitespace-cleanup)
-(add-hook 'after-save-hook 'executable-make-buffer-file-executable-if-script-p)
+(add-hook 'before-save-hook #'whitespace-cleanup)
+(add-hook 'after-save-hook #'executable-make-buffer-file-executable-if-script-p)
 
 (defalias 'yes-or-no-p 'y-or-n-p)
 
@@ -217,6 +217,10 @@
   (setq magit-delete-by-moving-to-trash nil
         magit-diff-refine-hunk 'all
         magit-completing-read-function 'ivy-completing-read))
+
+(use-package markdown-mode
+  :bind (:map markdown-mode-map
+              ("C-c W" . home.d/toggle-trailing-whitespace-cleanup)))
 
 (use-package menu-bar
   :bind ("C-c m" . menu-bar-mode))

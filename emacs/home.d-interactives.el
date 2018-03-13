@@ -198,4 +198,13 @@ Start `ielm' if it's not already running."
                :scroll-bar t
                :margin t)))
 
+(defun home.d/toggle-trailing-whitespace-cleanup ()
+  "Toggle the inclustion of 'trailing in whitespace-style."
+  (interactive)
+  (require 'whitespace)
+  (make-local-variable 'whitespace-style)
+  (if (member 'trailing whitespace-style)
+      (setq whitespace-style (delete 'trailing whitespace-style))
+    (add-to-list 'whitespace-style 'trailing)))
+
 (provide 'home.d-interactives)
