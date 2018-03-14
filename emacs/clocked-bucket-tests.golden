@@ -1,0 +1,25 @@
+Allocation A: 40.00%
+Allocation B: 60.00%
+
+
+bucket a (10% A + 90% B): 4:00 66%
+
+category I                                        3:00 50.00%
+  context 1                                                     2:00 33.33%
+    task A                                                                    1:00 16.67%
+    task B                                                                    1:00 16.67%
+  context 2                                                     1:00 16.67%
+    task A                                                                    1:00 16.67%
+category II                                       1:00 16.67%
+  context 1                                                     1:00 16.67%
+    task B                                                                    1:00 16.67%
+
+
+bucket b (A): 2:00 33%
+
+category I                                        1:00 16.67%
+  context 2                                                     1:00 16.67%
+    task B                                                                    1:00 16.67%
+category II                                       1:00 16.67%
+  context 1                                                     1:00 16.67%
+    task A                                                                    1:00 16.67%
