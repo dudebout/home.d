@@ -1,8 +1,28 @@
 ;;; clocked-bucket.el --- FIXME -*- lexical-binding: t; -*-
 
+;; Copyright (C) 2018 Nicolas Dudebout
+
+;; Author: Nicolas Dudebout <nicolas.dudebout@gmail.com>
+;; Maintainer: Nicolas Dudebout <nicolas.dudebout@gmail.com>
+;; Created: 23 Feb 2018
+;; Modified: 13 Mar 2018
+;; Version: 0.1
+;; Package-Requires: FIXME
+;; Keywords: FIXME
+;; URL: https://github.com/dudebout/home.d FIXME
+
 ;;; Commentary:
 
 ;; FIXME
+;;
+;; 3 levels:
+;;   + category
+;;   + context
+;;   + task
+
+;; TODO
+;;   + make a display toggle to go from percentages to minutes
+;;   + compute the percentages in the bucket name automatically
 
 ;;; Code:
 
@@ -11,6 +31,16 @@
 (require 'org)
 (require 'org-clock)
 (require 'seq)
+
+(defvar clocked-bucket-buffer-name "*clocked bucket*")
+
+;;; Utilities
+
+(defun clocked-bucket-buffer ()
+  "FIXME."
+  (or
+   (get-buffer clocked-bucket-buffer-name)
+   (generate-new-buffer clocked-bucket-buffer-name)))
 
 (defmacro push-end (newelt place)
   "Add NEWELT to the end of the list stored in the generalized variable PLACE.
@@ -29,25 +59,7 @@ NEWELT)."
       (gv-letplace (getter setter) place
         (funcall setter `(nconc ,getter (list ,v)))))))
 
-(defun clocked-bucket-at-level (level)
-  "FIXME LEVEL."
-  (eq level (org-element-property :level (org-element-at-point))))
-
-(defun clocked-bucket-categoryp ()
-  "FIXME."
-  (clocked-bucket-at-level 1))
-
-(defun clocked-bucket-contextp ()
-  "FIXME."
-  (clocked-bucket-at-level 2))
-
-(defun clocked-bucket-taskp ()
-  "FIXME."
-  (clocked-bucket-at-level 3))
-
-(defun clocked-bucket-get-heading ()
-  "FIXME."
-  (substring-no-properties (org-get-heading 'no-tags 'no-todo 'no-priority 'no-comment)))
+;;; Data structures
 
 (cl-defstruct (task (:constructor task-create)
                     (:copier nil))
@@ -64,6 +76,35 @@ NEWELT)."
 (cl-defstruct (clocked (:constructor clocked-create)
                        (:copier nil))
   minutes percentage)
+
+(cl-defstruct (bucket (:constructor bucket-create)
+                      (:copier nil))
+  name headline-filter allocations task-trees clocked)
+
+;;; FIXME
+
+(defun clocked-bucket-at-level (level)
+  "FIXME LEVEL."
+  (eq level (org-element-property :level (org-element-at-point))))
+
+(defun clocked-bucket-categoryp ()
+  "FIXME."
+  (clocked-bucket-at-level 1))
+
+(defun clocked-bucket-contextp ()
+  "FIXME."
+  (clocked-bucket-at-level 2))
+
+(defun clocked-bucket-taskp ()
+  "FIXME."
+  (clocked-bucket-at-level 3))
+
+;;; FIXME
+
+(defun clocked-bucket-get-heading ()
+  "FIXME."
+  (substring-no-properties (org-get-heading 'no-tags 'no-todo 'no-priority 'no-comment)))
+
 
 (defun clocked-bucket-task-at-point ()
   "FIXME."
@@ -108,10 +149,6 @@ FIXME TSTART TEND"
               (push-end task result))))
         (outline-next-heading)))
     result))
-
-;; (defun clocked-bucket-get-clocked-tasks-in-buckets (headline-filters &optional tstart tend)
-;;   "FIXME HEADLINE-FILTERS TSTART TEND."
-;;   (mapcar #'clocked-bucket-get-clocked-tasks-if headline-filters tstart tend))
 
 (defun clocked-bucket-compute-task-trees (tasks)
   "FIXME TASKS."
@@ -161,56 +198,43 @@ FIXME TSTART TEND"
 
 (defun clocked-bucket-display-task-tree (task-tree)
   "FIXME TASK-TREE."
-  (let ((result ""))
-    (setq result (concat result (format "%-50s%s %.2f%%\n"
+  (let ((result))
+    (setq result (concat result (format "|%s|%.2f%%|||\n"
                                         (task-tree-category task-tree)
-                                        (clocked-bucket-format-time (clocked-minutes (task-tree-clocked task-tree)))
                                         (clocked-percentage (task-tree-clocked task-tree)))))
     (dolist (context-tree (task-tree-context-trees task-tree) result)
-      (setq result (concat result (format "  %-50s            %s %.2f%%\n"
+      (setq result (concat result (format "|    %s||%.2f%%||\n"
                                           (context-tree-name context-tree)
-                                          (clocked-bucket-format-time (clocked-minutes (context-tree-clocked context-tree)))
                                           (clocked-percentage (context-tree-clocked context-tree)))))
       (dolist (task (context-tree-tasks context-tree))
-        (setq result (concat result (format "    %-50s                        %s %.2f%%\n"
+        (setq result (concat result (format "|        %s|||%.2f%% (%s)|\n"
                                             (task-name task)
-                                            (clocked-bucket-format-time (clocked-minutes (task-clocked task)))
-                                            (clocked-percentage (task-clocked task)))))))))
+                                            (clocked-percentage (task-clocked task))
+                                            (clocked-bucket-format-time (clocked-minutes (task-tree-clocked task-tree))))))))))
 
 (defun clocked-bucket-display-task-trees (task-trees)
   "FIXME TASK-TREES."
-  (apply #'concat (mapcar #'clocked-bucket-display-task-tree task-trees)))
+  (concat "|-|\n" (apply #'concat (mapcar #'clocked-bucket-display-task-tree task-trees)) "|-|\n"))
 
 (defun clocked-bucket-format-time (minutes)
   "FIXME MINUTES."
   ;; https://www.gnu.org/software/emacs/manual/html_node/elisp/Time-Parsing.html
   (format-seconds "%h:%02m" (* 60 minutes)))
 
-(defvar clocked-bucket-buffer-name "*clocked bucket*")
-
-(defun clocked-bucket-buffer ()
-  "FIXME."
-  (or
-   (get-buffer clocked-bucket-buffer-name)
-   (generate-new-buffer clocked-bucket-buffer-name)))
-
-(cl-defstruct (bucket (:constructor bucket-create)
-                      (:copier nil))
-  name headline-filter allocations task-trees clocked)
-
 (defun display-bucket (bucket)
   "FIXME BUCKET."
   (let* ((result (clocked-bucket-display-task-trees (bucket-task-trees bucket))))
     (with-current-buffer (clocked-bucket-buffer)
-      (insert (format "%s: %s %.2s%%\n\n" (bucket-name bucket) (clocked-bucket-format-time (clocked-minutes (bucket-clocked bucket))) (clocked-percentage (bucket-clocked bucket))))
+      (insert (format "* %s: %.2s%%\n" (bucket-name bucket) (clocked-percentage (bucket-clocked bucket))))
       (insert result)
-      (insert "\n\n"))
+      (org-table-align))
     (display-buffer (clocked-bucket-buffer))))
 
 (defun total-buckets (buckets translations &optional tstart tend)
   "FIXME BUCKETS TRANSLATIONS TSTART TEND."
   (interactive)
   (with-current-buffer (clocked-bucket-buffer)
+    (org-mode)
     (erase-buffer))
 
   (let ((total-minutes 0)
@@ -237,9 +261,9 @@ FIXME TSTART TEND"
     (with-current-buffer (clocked-bucket-buffer)
       (whitespace-cleanup)
       (goto-char (point-min))
+      (insert "* Allocations\n")
       (dolist (translation translations)
-        (insert (format "%s: %.2f%%\n"  (cdr translation) (alist-get (car translation) allocations))))
-      (insert "\n\n"))))
+        (insert (format "+ %s :: %.2f%%\n"  (cdr translation) (alist-get (car translation) allocations)))))))
 
 (provide 'clocked-bucket)
 
