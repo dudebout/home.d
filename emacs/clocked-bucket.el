@@ -34,6 +34,10 @@
 
 (defvar clocked-bucket-buffer-name "*clocked bucket*")
 
+(defvar clocked-bucket-percentage-fmt "%.1f%%")
+
+(defvar clocked-bucket-indent-fmt "    ")
+
 ;;; Utilities
 
 (defun clocked-bucket-buffer ()
@@ -81,7 +85,19 @@ NEWELT)."
                       (:copier nil))
   name headline-filter allocations task-trees clocked)
 
-;;; FIXME
+;;; Display
+
+
+(defun clocked-bucket-minutes-str (minutes)
+  "FIXME MINUTES."
+  ;; https://www.gnu.org/software/emacs/manual/html_node/elisp/Time-Parsing.html
+  (format-seconds "%h:%02m" (* 60 minutes)))
+
+(defun clocked-bucket-percentage-str (percentage)
+  "FIXME PERCENTAGE."
+  (format clocked-bucket-percentage-fmt percentage))
+
+;;; Identifying tasks in the org-mode file
 
 (defun clocked-bucket-at-level (level)
   "FIXME LEVEL."
@@ -177,6 +193,8 @@ FIXME TSTART TEND"
           (push-end task
                     (context-tree-tasks (nth context-tree-pos (task-tree-context-trees (nth task-tree-pos task-trees))))))))))
 
+;;; FIXME
+
 (defun clocked-bucket-propagate-clocked-minutes (task-tree)
   "FIXME TASK-TREE.  Return the total time."
   (let ((total-time 0))
@@ -196,36 +214,58 @@ FIXME TSTART TEND"
       (setf (clocked-percentage (context-tree-clocked context-tree)) (/ (* 100.0 (clocked-minutes (context-tree-clocked context-tree))) total-minutes))
       (setf (clocked-percentage (task-clocked task)) (/ (* 100.0 (clocked-minutes (task-clocked task))) total-minutes)))))
 
+(defun clocked-bucket-assemble-fmt (&rest columns-fmt)
+  "FIXME COLUMNS-FMT."
+  (concat "|"
+          (mapconcat 'identity columns-fmt "|")
+          "|\n"))
+
+(defun clocked-bucket-indent-fmt (num)
+  "FIXME NUM."
+  (concat (apply #'concat (make-list num clocked-bucket-indent-fmt)) "%s"))
+
 (defun clocked-bucket-display-task-tree (task-tree)
   "FIXME TASK-TREE."
-  (let ((result))
-    (setq result (concat result (format "|%s|%.2f%%|||\n"
+  (let ((result)
+        (category-fmt (clocked-bucket-assemble-fmt
+                       "%s"
+                       (clocked-bucket-indent-fmt 0)
+                       ""
+                       ""))
+        (context-fmt (clocked-bucket-assemble-fmt
+                      (clocked-bucket-indent-fmt 1)
+                      ""
+                      "%s"
+                      ""))
+        (task-fmt (clocked-bucket-assemble-fmt
+                   (clocked-bucket-indent-fmt 2)
+                   ""
+                   ""
+                   "%s (%s)")))
+    (setq result (concat result (format category-fmt
                                         (task-tree-category task-tree)
-                                        (clocked-percentage (task-tree-clocked task-tree)))))
+                                        (clocked-bucket-percentage-str (clocked-percentage (task-tree-clocked task-tree))))))
     (dolist (context-tree (task-tree-context-trees task-tree) result)
-      (setq result (concat result (format "|    %s||%.2f%%||\n"
+      (setq result (concat result (format context-fmt
                                           (context-tree-name context-tree)
-                                          (clocked-percentage (context-tree-clocked context-tree)))))
+                                          (clocked-bucket-percentage-str (clocked-percentage (context-tree-clocked context-tree))))))
       (dolist (task (context-tree-tasks context-tree))
-        (setq result (concat result (format "|        %s|||%.2f%% (%s)|\n"
+        (setq result (concat result (format task-fmt
                                             (task-name task)
-                                            (clocked-percentage (task-clocked task))
-                                            (clocked-bucket-format-time (clocked-minutes (task-tree-clocked task-tree))))))))))
+                                            (clocked-bucket-percentage-str (clocked-percentage (task-clocked task)))
+                                            (clocked-bucket-minutes-str (clocked-minutes (task-clocked task))))))))))
 
 (defun clocked-bucket-display-task-trees (task-trees)
   "FIXME TASK-TREES."
   (concat "|-|\n" (apply #'concat (mapcar #'clocked-bucket-display-task-tree task-trees)) "|-|\n"))
 
-(defun clocked-bucket-format-time (minutes)
-  "FIXME MINUTES."
-  ;; https://www.gnu.org/software/emacs/manual/html_node/elisp/Time-Parsing.html
-  (format-seconds "%h:%02m" (* 60 minutes)))
-
 (defun display-bucket (bucket)
   "FIXME BUCKET."
   (let* ((result (clocked-bucket-display-task-trees (bucket-task-trees bucket))))
     (with-current-buffer (clocked-bucket-buffer)
-      (insert (format "* %s: %.2s%%\n" (bucket-name bucket) (clocked-percentage (bucket-clocked bucket))))
+      (insert (format "* %s: %s\n"
+                      (bucket-name bucket)
+                      (clocked-bucket-percentage-str (clocked-percentage (bucket-clocked bucket)))))
       (insert result)
       (org-table-align))
     (display-buffer (clocked-bucket-buffer))))
