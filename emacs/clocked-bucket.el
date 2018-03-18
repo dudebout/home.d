@@ -41,7 +41,10 @@
 ;;; Utilities
 
 (defun clocked-bucket-buffer ()
-  "FIXME."
+  "Determine the clocked-bucket output buffer.
+
+Get the buffer named `clocked-bucket-buffer-name', and create it
+if it does not exist."
   (or
    (get-buffer clocked-bucket-buffer-name)
    (generate-new-buffer clocked-bucket-buffer-name)))
@@ -86,7 +89,6 @@ NEWELT)."
   name headline-filter allocations task-trees clocked)
 
 ;;; Display
-
 
 (defun clocked-bucket-minutes-str (minutes)
   "FIXME MINUTES."
@@ -193,8 +195,6 @@ FIXME TSTART TEND"
           (push-end task
                     (context-tree-tasks (nth context-tree-pos (task-tree-context-trees (nth task-tree-pos task-trees))))))))))
 
-;;; FIXME
-
 (defun clocked-bucket-propagate-clocked-minutes (task-tree)
   "FIXME TASK-TREE.  Return the total time."
   (let ((total-time 0))
@@ -204,6 +204,8 @@ FIXME TSTART TEND"
           (cl-incf (clocked-minutes (context-tree-clocked context-tree)) minutes)
           (cl-incf (clocked-minutes (task-tree-clocked task-tree)) minutes)
           (cl-incf total-time minutes))))))
+
+;;; The following needs to be generalized
 
 (defun clocked-bucket-compute-clocked-percentages (total-minutes task-tree)
   "FIXME TOTAL-MINUTES TASK-TREE."
