@@ -49,7 +49,7 @@ if it does not exist."
    (get-buffer clocked-bucket-buffer-name)
    (generate-new-buffer clocked-bucket-buffer-name)))
 
-(defmacro push-end (newelt place)
+(defmacro clocked-bucket--push-end (newelt place)
   "Add NEWELT to the end of the list stored in the generalized variable PLACE.
 
 This is morally equivalent to (setf PLACE (nconc PLACE (list
@@ -169,7 +169,7 @@ FIXME TSTART TEND"
                 (task (clocked-bucket-task-at-point)))
             (when (> time 0)
               (setf (clocked-bucket-task-clocked task) (clocked-bucket-clocked-create :minutes time))
-              (push-end task result))))
+              (clocked-bucket--push-end task result))))
         (outline-next-heading)))
     result))
 
@@ -182,7 +182,7 @@ FIXME TSTART TEND"
                                                                 (equal (clocked-bucket-category-name tt) c)))))
         (unless category-pos
           (setq category-pos (length categories))
-          (push-end (clocked-bucket-category-create :name category
+          (clocked-bucket--push-end (clocked-bucket-category-create :name category
                                                     :contexts nil
                                                     :clocked (clocked-bucket-clocked-create :minutes 0))
                     categories))
@@ -193,11 +193,11 @@ FIXME TSTART TEND"
                                                                        (equal (clocked-bucket-context-name ct) c)))))
           (unless context-pos
             (setq context-pos (length contexts))
-            (push-end (clocked-bucket-context-create :name context
+            (clocked-bucket--push-end (clocked-bucket-context-create :name context
                                                      :tasks ()
                                                      :clocked (clocked-bucket-clocked-create :minutes 0))
                       (clocked-bucket-category-contexts (nth category-pos categories))))
-          (push-end task
+          (clocked-bucket--push-end task
                     (clocked-bucket-context-tasks (nth context-pos (clocked-bucket-category-contexts (nth category-pos categories))))))))))
 
 (defun clocked-bucket-propagate-clocked-minutes (category)
