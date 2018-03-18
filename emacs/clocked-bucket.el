@@ -68,24 +68,29 @@ NEWELT)."
 
 ;;; Data structures
 
-(cl-defstruct (task (:constructor task-create)
-                    (:copier nil))
+(cl-defstruct (clocked-bucket-task
+               (:constructor clocked-bucket-task-create)
+               (:copier nil))
   category context name clocked)
 
-(cl-defstruct (context (:constructor context-create)
-                            (:copier nil))
+(cl-defstruct (clocked-bucket-context
+               (:constructor clocked-bucket-context-create)
+               (:copier nil))
   name tasks clocked)
 
-(cl-defstruct (category (:constructor category-create)
-                         (:copier nil))
+(cl-defstruct (clocked-bucket-category
+               (:constructor clocked-bucket-category-create)
+               (:copier nil))
   name contexts clocked)
 
-(cl-defstruct (clocked (:constructor clocked-create)
-                       (:copier nil))
+(cl-defstruct (clocked-bucket-clocked
+               (:constructor clocked-bucket-clocked-create)
+               (:copier nil))
   minutes percentage)
 
-(cl-defstruct (bucket (:constructor bucket-create)
-                      (:copier nil))
+(cl-defstruct (clocked-bucket-bucket
+               (:constructor clocked-bucket-bucket-create)
+               (:copier nil))
   name headline-filter allocations categories clocked)
 
 ;;; Display
@@ -137,9 +142,9 @@ NEWELT)."
            (progn
              (outline-up-heading 1 t)
              (clocked-bucket-get-heading))))
-      (task-create :category category
-                   :context context
-                   :name name))))
+      (clocked-bucket-task-create :category category
+                                  :context context
+                                  :name name))))
 
 (defun clocked-bucket-org-clock-sum-current-item (&optional tstart tend)
   "Return time, clocked on current item in total.
@@ -163,7 +168,7 @@ FIXME TSTART TEND"
           (let ((time (clocked-bucket-org-clock-sum-current-item tstart tend))
                 (task (clocked-bucket-task-at-point)))
             (when (> time 0)
-              (setf (task-clocked task) (clocked-create :minutes time))
+              (setf (clocked-bucket-task-clocked task) (clocked-bucket-clocked-create :minutes time))
               (push-end task result))))
         (outline-next-heading)))
     result))
@@ -172,37 +177,37 @@ FIXME TSTART TEND"
   "FIXME TASKS."
   (let (categories)
     (dolist (task tasks categories)
-      (let* ((category (task-category task))
+      (let* ((category (clocked-bucket-task-category task))
              (category-pos (seq-position categories category (lambda (tt c)
-                                                                (equal (category-name tt) c)))))
+                                                                (equal (clocked-bucket-category-name tt) c)))))
         (unless category-pos
           (setq category-pos (length categories))
-          (push-end (category-create :name category
-                                     :contexts nil
-                                     :clocked (clocked-create :minutes 0))
+          (push-end (clocked-bucket-category-create :name category
+                                                    :contexts nil
+                                                    :clocked (clocked-bucket-clocked-create :minutes 0))
                     categories))
         (let* ((category (nth category-pos categories))
-               (context (task-context task))
-               (contexts (category-contexts category))
+               (context (clocked-bucket-task-context task))
+               (contexts (clocked-bucket-category-contexts category))
                (context-pos (seq-position contexts context (lambda (ct c)
-                                                                       (equal (context-name ct) c)))))
+                                                                       (equal (clocked-bucket-context-name ct) c)))))
           (unless context-pos
             (setq context-pos (length contexts))
-            (push-end (context-create :name context
-                                      :tasks ()
-                                      :clocked (clocked-create :minutes 0))
-                      (category-contexts (nth category-pos categories))))
+            (push-end (clocked-bucket-context-create :name context
+                                                     :tasks ()
+                                                     :clocked (clocked-bucket-clocked-create :minutes 0))
+                      (clocked-bucket-category-contexts (nth category-pos categories))))
           (push-end task
-                    (context-tasks (nth context-pos (category-contexts (nth category-pos categories))))))))))
+                    (clocked-bucket-context-tasks (nth context-pos (clocked-bucket-category-contexts (nth category-pos categories))))))))))
 
 (defun clocked-bucket-propagate-clocked-minutes (category)
   "FIXME CATEGORY.  Return the total time."
   (let ((total-time 0))
-    (dolist (context (category-contexts category) total-time)
-      (dolist (task (context-tasks context))
-        (let ((minutes (clocked-minutes (task-clocked task))))
-          (cl-incf (clocked-minutes (context-clocked context)) minutes)
-          (cl-incf (clocked-minutes (category-clocked category)) minutes)
+    (dolist (context (clocked-bucket-category-contexts category) total-time)
+      (dolist (task (clocked-bucket-context-tasks context))
+        (let ((minutes (clocked-bucket-clocked-minutes (clocked-bucket-task-clocked task))))
+          (cl-incf (clocked-bucket-clocked-minutes (clocked-bucket-context-clocked context)) minutes)
+          (cl-incf (clocked-bucket-clocked-minutes (clocked-bucket-category-clocked category)) minutes)
           (cl-incf total-time minutes))))))
 
 ;;; The following needs to be generalized
@@ -210,11 +215,11 @@ FIXME TSTART TEND"
 (defun clocked-bucket-compute-clocked-percentages (total-minutes category)
   "FIXME TOTAL-MINUTES CATEGORY."
   (message "%d" total-minutes)
-  (dolist (context (category-contexts category))
-    (dolist (task (context-tasks context))
-      (setf (clocked-percentage (category-clocked category)) (/ (* 100.0 (clocked-minutes (category-clocked category))) total-minutes))
-      (setf (clocked-percentage (context-clocked context)) (/ (* 100.0 (clocked-minutes (context-clocked context))) total-minutes))
-      (setf (clocked-percentage (task-clocked task)) (/ (* 100.0 (clocked-minutes (task-clocked task))) total-minutes)))))
+  (dolist (context (clocked-bucket-category-contexts category))
+    (dolist (task (clocked-bucket-context-tasks context))
+      (setf (clocked-bucket-clocked-percentage (clocked-bucket-category-clocked category)) (/ (* 100.0 (clocked-bucket-clocked-minutes (clocked-bucket-category-clocked category))) total-minutes))
+      (setf (clocked-bucket-clocked-percentage (clocked-bucket-context-clocked context)) (/ (* 100.0 (clocked-bucket-clocked-minutes (clocked-bucket-context-clocked context))) total-minutes))
+      (setf (clocked-bucket-clocked-percentage (clocked-bucket-task-clocked task)) (/ (* 100.0 (clocked-bucket-clocked-minutes (clocked-bucket-task-clocked task))) total-minutes)))))
 
 (defun clocked-bucket-assemble-fmt (&rest columns-fmt)
   "FIXME COLUMNS-FMT."
@@ -245,17 +250,17 @@ FIXME TSTART TEND"
                    ""
                    "%s (%s)")))
     (setq result (concat result (format category-fmt
-                                        (category-name category)
-                                        (clocked-bucket-percentage-str (clocked-percentage (category-clocked category))))))
-    (dolist (context (category-contexts category) result)
+                                        (clocked-bucket-category-name category)
+                                        (clocked-bucket-percentage-str (clocked-bucket-clocked-percentage (clocked-bucket-category-clocked category))))))
+    (dolist (context (clocked-bucket-category-contexts category) result)
       (setq result (concat result (format context-fmt
-                                          (context-name context)
-                                          (clocked-bucket-percentage-str (clocked-percentage (context-clocked context))))))
-      (dolist (task (context-tasks context))
+                                          (clocked-bucket-context-name context)
+                                          (clocked-bucket-percentage-str (clocked-bucket-clocked-percentage (clocked-bucket-context-clocked context))))))
+      (dolist (task (clocked-bucket-context-tasks context))
         (setq result (concat result (format task-fmt
-                                            (task-name task)
-                                            (clocked-bucket-percentage-str (clocked-percentage (task-clocked task)))
-                                            (clocked-bucket-minutes-str (clocked-minutes (task-clocked task))))))))))
+                                            (clocked-bucket-task-name task)
+                                            (clocked-bucket-percentage-str (clocked-bucket-clocked-percentage (clocked-bucket-task-clocked task)))
+                                            (clocked-bucket-minutes-str (clocked-bucket-clocked-minutes (clocked-bucket-task-clocked task))))))))))
 
 (defun clocked-bucket-display-categories (categories)
   "FIXME CATEGORIES."
@@ -263,11 +268,11 @@ FIXME TSTART TEND"
 
 (defun display-bucket (bucket)
   "FIXME BUCKET."
-  (let* ((result (clocked-bucket-display-categories (bucket-categories bucket))))
+  (let* ((result (clocked-bucket-display-categories (clocked-bucket-bucket-categories bucket))))
     (with-current-buffer (clocked-bucket-buffer)
       (insert (format "* %s: %s\n"
-                      (bucket-name bucket)
-                      (clocked-bucket-percentage-str (clocked-percentage (bucket-clocked bucket)))))
+                      (clocked-bucket-bucket-name bucket)
+                      (clocked-bucket-percentage-str (clocked-bucket-clocked-percentage (clocked-bucket-bucket-clocked bucket)))))
       (insert result)
       (org-table-align))
     (display-buffer (clocked-bucket-buffer))))
@@ -282,18 +287,18 @@ FIXME TSTART TEND"
   (let ((total-minutes 0)
         allocations)
     (dolist (bucket buckets)
-      (let* ((tasks (clocked-bucket-get-clocked-tasks-if (bucket-headline-filter bucket) tstart tend))
+      (let* ((tasks (clocked-bucket-get-clocked-tasks-if (clocked-bucket-bucket-headline-filter bucket) tstart tend))
              (categories (clocked-bucket-compute-categories tasks))
              (minutes (-sum (mapcar #'clocked-bucket-propagate-clocked-minutes categories))))
-        (setf (bucket-categories bucket) categories)
-        (setf (bucket-clocked bucket) (clocked-create :minutes minutes))
+        (setf (clocked-bucket-bucket-categories bucket) categories)
+        (setf (clocked-bucket-bucket-clocked bucket) (clocked-bucket-clocked-create :minutes minutes))
         (cl-incf total-minutes minutes)))
 
     (dolist (bucket buckets)
-      (mapc (apply-partially #'clocked-bucket-compute-clocked-percentages total-minutes) (bucket-categories bucket))
-      (let ((percentage (/ (* 100.0 (clocked-minutes (bucket-clocked bucket))) total-minutes)))
-        (setf (clocked-percentage (bucket-clocked bucket)) percentage)
-        (let ((allocs (bucket-allocations bucket)))
+      (mapc (apply-partially #'clocked-bucket-compute-clocked-percentages total-minutes) (clocked-bucket-bucket-categories bucket))
+      (let ((percentage (/ (* 100.0 (clocked-bucket-clocked-minutes (clocked-bucket-bucket-clocked bucket))) total-minutes)))
+        (setf (clocked-bucket-clocked-percentage (clocked-bucket-bucket-clocked bucket)) percentage)
+        (let ((allocs (clocked-bucket-bucket-allocations bucket)))
           (unless (listp allocs)
             (setq allocs `((,allocs . 1))))
           (dolist (alloc allocs)
