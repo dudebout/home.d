@@ -96,7 +96,7 @@ NEWELT)."
 (cl-defstruct (clocked-bucket-bucket
                (:constructor clocked-bucket-bucket-create)
                (:copier nil))
-  name headline-filter allocations categories clocked)
+  name headline-filter allocations categories clocked is-overhead)
 
 ;;; Display
 
@@ -289,7 +289,8 @@ FIXME TSTART TEND"
     (org-mode)
     (erase-buffer))
 
-  (let ((total-accounted-minutes 0)
+  (let ((accounted-minutes 0)
+        (overhead-minutes 0)
         (total-minutes (org-clock-sum tstart tend))
         allocations)
     (dolist (bucket buckets)
@@ -298,18 +299,20 @@ FIXME TSTART TEND"
              (minutes (-sum (mapcar #'clocked-bucket-propagate-clocked-minutes categories))))
         (setf (clocked-bucket-bucket-categories bucket) categories)
         (setf (clocked-bucket-bucket-clocked bucket) (clocked-bucket-clocked-create :minutes minutes))
-        (cl-incf total-accounted-minutes minutes)))
-
+        (if (clocked-bucket-bucket-is-overhead bucket)
+            (cl-incf overhead-minutes minutes)
+          (cl-incf accounted-minutes minutes))))
     (dolist (bucket buckets)
-      (mapc (apply-partially #'clocked-bucket-compute-clocked-percentages total-accounted-minutes) (clocked-bucket-bucket-categories bucket))
-      (let ((percentage (/ (* 100.0 (clocked-bucket-clocked-minutes (clocked-bucket-bucket-clocked bucket))) total-accounted-minutes)))
-        (setf (clocked-bucket-clocked-percentage (clocked-bucket-bucket-clocked bucket)) percentage)
-        (let ((allocs (clocked-bucket-bucket-allocations bucket)))
-          (unless (listp allocs)
-            (setq allocs `((,allocs . 1))))
-          (dolist (alloc allocs)
-            (cl-incf (alist-get (car alloc) allocations 0) (* percentage (cdr alloc)))))
-        (display-bucket bucket)))
+      (unless (clocked-bucket-bucket-is-overhead bucket)
+        (mapc (apply-partially #'clocked-bucket-compute-clocked-percentages accounted-minutes) (clocked-bucket-bucket-categories bucket))
+        (let ((percentage (/ (* 100.0 (clocked-bucket-clocked-minutes (clocked-bucket-bucket-clocked bucket))) accounted-minutes)))
+          (setf (clocked-bucket-clocked-percentage (clocked-bucket-bucket-clocked bucket)) percentage)
+          (let ((allocs (clocked-bucket-bucket-allocations bucket)))
+            (unless (listp allocs)
+              (setq allocs `((,allocs . 1))))
+            (dolist (alloc allocs)
+              (cl-incf (alist-get (car alloc) allocations 0) (* percentage (cdr alloc)))))
+          (display-bucket bucket))))
 
     (with-current-buffer (clocked-bucket-buffer)
       (whitespace-cleanup)
@@ -317,10 +320,13 @@ FIXME TSTART TEND"
       (insert "* Allocations\n")
       (dolist (translation translations)
         (insert (format "+ %s :: %.2f%%\n"  (cdr translation) (alist-get (car translation) allocations))))
-      (let ((unaccounted-minutes (- total-minutes total-accounted-minutes)))
+      (let ((unaccounted-minutes (- total-minutes accounted-minutes overhead-minutes)))
         (unless (= 0 unaccounted-minutes)
           (goto-char (point-min))
-          (insert (format "* Unaccounted time: %s\n" (clocked-bucket-minutes-str unaccounted-minutes))))))))
+          (insert (format "* Unaccounted time: %s\n" (clocked-bucket-minutes-str unaccounted-minutes))))
+        (unless (= 0 overhead-minutes)
+          (goto-char (point-max))
+          (insert (format "* Overhead time: %s\n" (clocked-bucket-minutes-str overhead-minutes))))))))
 
 (provide 'clocked-bucket)
 
