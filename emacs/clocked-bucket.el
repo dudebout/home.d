@@ -289,7 +289,8 @@ FIXME TSTART TEND"
     (org-mode)
     (erase-buffer))
 
-  (let ((total-minutes 0)
+  (let ((total-accounted-minutes 0)
+        (total-minutes (org-clock-sum tstart tend))
         allocations)
     (dolist (bucket buckets)
       (let* ((tasks (clocked-bucket-get-clocked-tasks-if (clocked-bucket-bucket-headline-filter bucket) tstart tend))
@@ -297,11 +298,11 @@ FIXME TSTART TEND"
              (minutes (-sum (mapcar #'clocked-bucket-propagate-clocked-minutes categories))))
         (setf (clocked-bucket-bucket-categories bucket) categories)
         (setf (clocked-bucket-bucket-clocked bucket) (clocked-bucket-clocked-create :minutes minutes))
-        (cl-incf total-minutes minutes)))
+        (cl-incf total-accounted-minutes minutes)))
 
     (dolist (bucket buckets)
-      (mapc (apply-partially #'clocked-bucket-compute-clocked-percentages total-minutes) (clocked-bucket-bucket-categories bucket))
-      (let ((percentage (/ (* 100.0 (clocked-bucket-clocked-minutes (clocked-bucket-bucket-clocked bucket))) total-minutes)))
+      (mapc (apply-partially #'clocked-bucket-compute-clocked-percentages total-accounted-minutes) (clocked-bucket-bucket-categories bucket))
+      (let ((percentage (/ (* 100.0 (clocked-bucket-clocked-minutes (clocked-bucket-bucket-clocked bucket))) total-accounted-minutes)))
         (setf (clocked-bucket-clocked-percentage (clocked-bucket-bucket-clocked bucket)) percentage)
         (let ((allocs (clocked-bucket-bucket-allocations bucket)))
           (unless (listp allocs)
@@ -315,7 +316,11 @@ FIXME TSTART TEND"
       (goto-char (point-min))
       (insert "* Allocations\n")
       (dolist (translation translations)
-        (insert (format "+ %s :: %.2f%%\n"  (cdr translation) (alist-get (car translation) allocations)))))))
+        (insert (format "+ %s :: %.2f%%\n"  (cdr translation) (alist-get (car translation) allocations))))
+      (let ((unaccounted-minutes (- total-minutes total-accounted-minutes)))
+        (unless (= 0 unaccounted-minutes)
+          (goto-char (point-min))
+          (insert (format "* Unaccounted time: %s\n" (clocked-bucket-minutes-str unaccounted-minutes))))))))
 
 (provide 'clocked-bucket)
 
