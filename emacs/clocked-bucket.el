@@ -66,6 +66,11 @@ NEWELT)."
       (gv-letplace (getter setter) place
         (funcall setter `(nconc ,getter (list ,v)))))))
 
+(defun clocked-bucket-has-bucket-property (bucket-name)
+  "Return t if the entry at point has the bucket property BUCKET-NAME."
+  (equal bucket-name (org-entry-get (point) "bucket" t)))
+
+
 ;;; Data structures
 
 (cl-defstruct (clocked-bucket-task
