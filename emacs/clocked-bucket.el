@@ -271,7 +271,7 @@ FIXME TSTART TEND"
   "FIXME CATEGORIES."
   (concat "|-|\n" (apply #'concat (mapcar #'clocked-bucket-display-category categories)) "|-|\n"))
 
-(defun display-bucket (bucket)
+(defun clocked-bucket-display-bucket (bucket)
   "FIXME BUCKET."
   (let* ((result (clocked-bucket-display-categories (clocked-bucket-bucket-categories bucket))))
     (with-current-buffer (clocked-bucket-buffer)
@@ -282,14 +282,15 @@ FIXME TSTART TEND"
       (org-table-align))
     (display-buffer (clocked-bucket-buffer))))
 
-(defun total-buckets (buckets translations &optional tstart tend)
+(defun clocked-bucket-total-buckets (bucket-specs translations &optional tstart tend)
   "FIXME BUCKETS TRANSLATIONS TSTART TEND."
   (interactive)
   (with-current-buffer (clocked-bucket-buffer)
     (org-mode)
     (erase-buffer))
 
-  (let ((accounted-minutes 0)
+  (let ((buckets (mapcar (lambda (spec-list) (apply #'clocked-bucket-assemble-bucket spec-list)) bucket-specs))
+        (accounted-minutes 0)
         (overhead-minutes 0)
         (total-minutes (org-clock-sum tstart tend))
         allocations)
@@ -312,7 +313,7 @@ FIXME TSTART TEND"
               (setq allocs `((,allocs . 1))))
             (dolist (alloc allocs)
               (cl-incf (alist-get (car alloc) allocations 0) (* percentage (cdr alloc)))))
-          (display-bucket bucket))))
+          (clocked-bucket-display-bucket bucket))))
 
     (with-current-buffer (clocked-bucket-buffer)
       (whitespace-cleanup)
@@ -327,6 +328,14 @@ FIXME TSTART TEND"
         (unless (= 0 overhead-minutes)
           (goto-char (point-max))
           (insert (format "* Overhead time: %s\n" (clocked-bucket-minutes-str overhead-minutes))))))))
+
+(defun clocked-bucket-assemble-bucket (name allocations headline-filter &optional is-overhead)
+  "FIXME."
+  (message name)
+  (clocked-bucket-bucket-create :name name
+                                :allocations allocations
+                                :headline-filter headline-filter
+                                :is-overhead is-overhead))
 
 (provide 'clocked-bucket)
 
