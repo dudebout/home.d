@@ -309,8 +309,6 @@ FIXME TSTART TEND"
         (let ((percentage (/ (* 100.0 (clocked-bucket-clocked-minutes (clocked-bucket-bucket-clocked bucket))) accounted-minutes)))
           (setf (clocked-bucket-clocked-percentage (clocked-bucket-bucket-clocked bucket)) percentage)
           (let ((allocs (clocked-bucket-bucket-allocations bucket)))
-            (unless (listp allocs)
-              (setq allocs `((,allocs . 1))))
             (dolist (alloc allocs)
               (cl-incf (alist-get (car alloc) allocations 0) (* percentage (cdr alloc)))))
           (clocked-bucket-display-bucket bucket))))
@@ -331,11 +329,24 @@ FIXME TSTART TEND"
 
 (defun clocked-bucket-assemble-bucket (name allocations headline-filter &optional is-overhead)
   "FIXME."
-  (message name)
   (clocked-bucket-bucket-create :name name
-                                :allocations allocations
+                                :allocations (clocked-bucket-normalize-allocations allocations)
                                 :headline-filter headline-filter
                                 :is-overhead is-overhead))
+
+(defun clocked-bucket-normalize-allocations (allocations)
+  "FIXME ALLOCATIONS."
+  (let ((sum 0))
+    (unless (listp allocations)
+      (setq allocations `((,allocations . 1))))
+    (dolist (allocation allocations)
+      (let ((share (cdr allocation)))
+        (when (<= share 0)
+          (error "An allocation share has to be positive"))
+        (incf sum share)))
+    (dolist (allocation allocations allocations)
+      (let ((share (cdr allocation)))
+        (setf (cdr allocation) (/ share (float sum)))))))
 
 (provide 'clocked-bucket)
 
