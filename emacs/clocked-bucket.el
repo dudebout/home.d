@@ -289,8 +289,8 @@ FIXME TSTART TEND"
       (format "%s" (caar allocations))
     (mapconcat (lambda (allocation) (format "%s: %.2f" (car allocation) (cdr allocation))) allocations ", ")))
 
-(defun clocked-bucket-total-buckets (bucket-specs translations &optional tstart tend)
-  "FIXME BUCKETS TRANSLATIONS TSTART TEND."
+(defun clocked-bucket-total-buckets (bucket-specs &optional tstart tend)
+  "FIXME BUCKETS TSTART TEND."
   (interactive)
   (with-current-buffer (clocked-bucket-buffer)
     (org-mode)
@@ -324,8 +324,8 @@ FIXME TSTART TEND"
       (whitespace-cleanup)
       (goto-char (point-min))
       (insert "* Allocations\n")
-      (dolist (translation translations)
-        (insert (format "+ %s :: %.2f%%\n"  (cdr translation) (alist-get (car translation) allocations))))
+      (dolist (allocation (cl-sort allocations #'string-lessp :key #'car))
+        (insert (format "+ %s :: %.2f%%\n"  (car allocation) (cdr allocation))))
       (let ((unaccounted-minutes (- total-minutes accounted-minutes overhead-minutes)))
         (unless (= 0 unaccounted-minutes)
           (goto-char (point-min))
