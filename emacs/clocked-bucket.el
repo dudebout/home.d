@@ -96,7 +96,7 @@ NEWELT)."
 (cl-defstruct (clocked-bucket-bucket
                (:constructor clocked-bucket-bucket-create)
                (:copier nil))
-  name headline-filter allocations categories clocked is-overhead)
+  name headline-filter allocations categories clocked is-billable)
 
 ;;; Display
 
@@ -275,7 +275,7 @@ FIXME TSTART TEND"
   "FIXME BUCKET."
   (let* ((result (clocked-bucket-display-categories (clocked-bucket-bucket-categories bucket))))
     (with-current-buffer (clocked-bucket-buffer)
-      (insert (format "* %s (%s): %s\n"
+      (insert (format "** %s (%s): %s\n"
                       (clocked-bucket-bucket-name bucket)
                       (clocked-bucket-display-allocations (clocked-bucket-bucket-allocations bucket))
                       (clocked-bucket-percentage-str (clocked-bucket-clocked-percentage (clocked-bucket-bucket-clocked bucket)))))
@@ -297,8 +297,8 @@ FIXME TSTART TEND"
     (erase-buffer))
 
   (let ((buckets (mapcar (lambda (spec-list) (apply #'clocked-bucket-assemble-bucket spec-list)) bucket-specs))
-        (accounted-minutes 0)
-        (overhead-minutes 0)
+        (billable-minutes 0)
+        (non-billable-minutes 0)
         (total-minutes (org-clock-sum tstart tend))
         allocations)
     (dolist (bucket buckets)
@@ -307,13 +307,15 @@ FIXME TSTART TEND"
              (minutes (-sum (mapcar #'clocked-bucket-propagate-clocked-minutes categories))))
         (setf (clocked-bucket-bucket-categories bucket) categories)
         (setf (clocked-bucket-bucket-clocked bucket) (clocked-bucket-clocked-create :minutes minutes))
-        (if (clocked-bucket-bucket-is-overhead bucket)
-            (cl-incf overhead-minutes minutes)
-          (cl-incf accounted-minutes minutes))))
+        (if (clocked-bucket-bucket-is-billable bucket)
+            (cl-incf non-billable-minutes minutes)
+          (cl-incf billable-minutes minutes))))
+    (with-current-buffer (clocked-bucket-buffer)
+      (insert (format "* billable time: %s\n" (clocked-bucket-minutes-str billable-minutes))))
     (dolist (bucket buckets)
-      (unless (clocked-bucket-bucket-is-overhead bucket)
-        (mapc (apply-partially #'clocked-bucket-compute-clocked-percentages accounted-minutes) (clocked-bucket-bucket-categories bucket))
-        (let ((percentage (/ (* 100.0 (clocked-bucket-clocked-minutes (clocked-bucket-bucket-clocked bucket))) accounted-minutes)))
+      (unless (clocked-bucket-bucket-is-billable bucket)
+        (mapc (apply-partially #'clocked-bucket-compute-clocked-percentages billable-minutes) (clocked-bucket-bucket-categories bucket))
+        (let ((percentage (/ (* 100.0 (clocked-bucket-clocked-minutes (clocked-bucket-bucket-clocked bucket))) billable-minutes)))
           (setf (clocked-bucket-clocked-percentage (clocked-bucket-bucket-clocked bucket)) percentage)
           (let ((allocs (clocked-bucket-bucket-allocations bucket)))
             (dolist (alloc allocs)
@@ -323,23 +325,23 @@ FIXME TSTART TEND"
     (with-current-buffer (clocked-bucket-buffer)
       (whitespace-cleanup)
       (goto-char (point-min))
-      (insert "* Allocations\n")
+      (insert "* billed\n")
       (dolist (allocation (cl-sort allocations #'string-lessp :key #'car))
         (insert (format "+ %s :: %.2f%%\n"  (car allocation) (cdr allocation))))
-      (let ((unaccounted-minutes (- total-minutes accounted-minutes overhead-minutes)))
+      (unless (= 0 non-billable-minutes)
+        (goto-char (point-max))
+        (insert (format "* non-billable time: %s\n" (clocked-bucket-minutes-str non-billable-minutes))))
+      (let ((unaccounted-minutes (- total-minutes billable-minutes non-billable-minutes)))
         (unless (= 0 unaccounted-minutes)
           (goto-char (point-min))
-          (insert (format "* Unaccounted time: %s\n" (clocked-bucket-minutes-str unaccounted-minutes))))
-        (unless (= 0 overhead-minutes)
-          (goto-char (point-max))
-          (insert (format "* Overhead time: %s\n" (clocked-bucket-minutes-str overhead-minutes))))))))
+          (insert (format "* ERROR unaccounted time: %s\n" (clocked-bucket-minutes-str unaccounted-minutes))))))))
 
-(defun clocked-bucket-assemble-bucket (name allocations headline-filter &optional is-overhead)
-  "FIXME."
+(defun clocked-bucket-assemble-bucket (name allocations headline-filter &optional is-billable)
+  "FIXME NAME ALLOCATIONS HEADLINE-FILTER."
   (clocked-bucket-bucket-create :name name
                                 :allocations (clocked-bucket-normalize-allocations allocations)
                                 :headline-filter headline-filter
-                                :is-overhead is-overhead))
+                                :is-billable is-billable))
 
 (defun clocked-bucket-normalize-allocations (allocations)
   "FIXME ALLOCATIONS."

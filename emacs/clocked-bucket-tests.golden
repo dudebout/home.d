@@ -1,8 +1,9 @@
-* Unaccounted time: 1:00
-* Allocations
-+ Project1 :: 40.00%
-+ Project2 :: 60.00%
-* bucket a (Project1: 0.10, Project2: 0.90): 66.7%
+* ERROR unaccounted time: 1:00
+* billed
++ project1 :: 40.00%
++ project2 :: 60.00%
+* billable time: 6:00
+** bucket a (project1: 0.10, project2: 0.90): 66.7%
 |----------------+-------+-------+--------------|
 | category I     | 50.0% |       |              |
 |     context 1  |       | 33.3% |              |
@@ -14,7 +15,7 @@
 |     context 1  |       | 16.7% |              |
 |         task B |       |       | 16.7% (1:00) |
 |----------------+-------+-------+--------------|
-* bucket b (Project1): 33.3%
+** bucket b (project1): 33.3%
 |----------------+-------+-------+--------------|
 | category I     | 16.7% |       |              |
 |     context 2  |       | 16.7% |              |
@@ -23,4 +24,4 @@
 |     context 1  |       | 16.7% |              |
 |         task A |       |       | 16.7% (1:00) |
 |----------------+-------+-------+--------------|
-* Overhead time: 1:00
+* non-billable time: 1:00
