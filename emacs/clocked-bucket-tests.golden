@@ -1,17 +1,26 @@
 * Unaccounted time: 1:00
 * Allocations
-+ Allocation A :: 10.00%
-+ Allocation B :: 90.00%
-* bucket a (10% A + 90% B): 100.0%
++ Allocation A :: 40.00%
++ Allocation B :: 60.00%
+* bucket a (:A: 0.10, :B: 0.90): 66.7%
 |----------------+-------+-------+--------------|
-| category I     | 75.0% |       |              |
-|     context 1  |       | 50.0% |              |
-|         task A |       |       | 25.0% (1:00) |
-|         task B |       |       | 25.0% (1:00) |
-|     context 2  |       | 25.0% |              |
-|         task A |       |       | 25.0% (1:00) |
-| category II    | 25.0% |       |              |
-|     context 1  |       | 25.0% |              |
-|         task B |       |       | 25.0% (1:00) |
+| category I     | 50.0% |       |              |
+|     context 1  |       | 33.3% |              |
+|         task A |       |       | 16.7% (1:00) |
+|         task B |       |       | 16.7% (1:00) |
+|     context 2  |       | 16.7% |              |
+|         task A |       |       | 16.7% (1:00) |
+| category II    | 16.7% |       |              |
+|     context 1  |       | 16.7% |              |
+|         task B |       |       | 16.7% (1:00) |
 |----------------+-------+-------+--------------|
-* Overhead time: 2:00
+* bucket b (:A): 33.3%
+|----------------+-------+-------+--------------|
+| category I     | 16.7% |       |              |
+|     context 2  |       | 16.7% |              |
+|         task B |       |       | 16.7% (1:00) |
+| category II    | 16.7% |       |              |
+|     context 1  |       | 16.7% |              |
+|         task A |       |       | 16.7% (1:00) |
+|----------------+-------+-------+--------------|
+* Overhead time: 1:00

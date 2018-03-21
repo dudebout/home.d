@@ -275,12 +275,19 @@ FIXME TSTART TEND"
   "FIXME BUCKET."
   (let* ((result (clocked-bucket-display-categories (clocked-bucket-bucket-categories bucket))))
     (with-current-buffer (clocked-bucket-buffer)
-      (insert (format "* %s: %s\n"
+      (insert (format "* %s (%s): %s\n"
                       (clocked-bucket-bucket-name bucket)
+                      (clocked-bucket-display-allocations (clocked-bucket-bucket-allocations bucket))
                       (clocked-bucket-percentage-str (clocked-bucket-clocked-percentage (clocked-bucket-bucket-clocked bucket)))))
       (insert result)
       (org-table-align))
     (display-buffer (clocked-bucket-buffer))))
+
+(defun clocked-bucket-display-allocations (allocations)
+  "FIXME ALLOCATIONS."
+  (if (= 1 (length allocations))
+      (format "%s" (caar allocations))
+    (mapconcat (lambda (allocation) (format "%s: %.2f" (car allocation) (cdr allocation))) allocations ", ")))
 
 (defun clocked-bucket-total-buckets (bucket-specs translations &optional tstart tend)
   "FIXME BUCKETS TRANSLATIONS TSTART TEND."
