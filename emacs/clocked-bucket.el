@@ -253,7 +253,7 @@ FIXME TSTART TEND"
                    (clocked-bucket-indent-fmt 2)
                    ""
                    ""
-                   "%s (%s)")))
+                   "%-5s (%s)")))
     (setq result (concat result (format category-fmt
                                         (clocked-bucket-category-name category)
                                         (clocked-bucket-percentage-str (clocked-bucket-clocked-percentage (clocked-bucket-category-clocked category))))))
@@ -275,7 +275,7 @@ FIXME TSTART TEND"
   "FIXME BUCKET."
   (let* ((result (clocked-bucket-display-categories (clocked-bucket-bucket-categories bucket))))
     (with-current-buffer (clocked-bucket-buffer)
-      (insert (format "** %s (%s): %s\n"
+      (insert (format "|%s (%s): %s||||\n"
                       (clocked-bucket-bucket-name bucket)
                       (clocked-bucket-display-allocations (clocked-bucket-bucket-allocations bucket))
                       (clocked-bucket-percentage-str (clocked-bucket-clocked-percentage (clocked-bucket-bucket-clocked bucket)))))
@@ -287,7 +287,7 @@ FIXME TSTART TEND"
   "FIXME ALLOCATIONS."
   (if (= 1 (length allocations))
       (format "%s" (caar allocations))
-    (mapconcat (lambda (allocation) (format "%s: %.2f" (car allocation) (cdr allocation))) allocations ", ")))
+    (mapconcat (lambda (allocation) (format "%s: %.1f" (car allocation) (cdr allocation))) allocations ", ")))
 
 (defun clocked-bucket-total-buckets (bucket-specs &optional tstart tend)
   "FIXME BUCKETS TSTART TEND."
@@ -311,7 +311,8 @@ FIXME TSTART TEND"
             (cl-incf non-billable-minutes minutes)
           (cl-incf billable-minutes minutes))))
     (with-current-buffer (clocked-bucket-buffer)
-      (insert (format "* billable time: %s\n" (clocked-bucket-minutes-str billable-minutes))))
+      (insert (format "* billable time: %s\n" (clocked-bucket-minutes-str billable-minutes)))
+      (insert "|-|-|-|-|\n"))
     (dolist (bucket buckets)
       (unless (clocked-bucket-bucket-is-billable bucket)
         (mapc (apply-partially #'clocked-bucket-compute-clocked-percentages billable-minutes) (clocked-bucket-bucket-categories bucket))
