@@ -275,10 +275,11 @@ FIXME TSTART TEND"
   "FIXME BUCKET."
   (let* ((result (clocked-bucket-display-categories (clocked-bucket-bucket-categories bucket))))
     (with-current-buffer (clocked-bucket-buffer)
-      (insert (format "|%s (%s): %s||||\n"
+      (insert (format "|%s|%s|||\n"
                       (clocked-bucket-bucket-name bucket)
-                      (clocked-bucket-display-allocations (clocked-bucket-bucket-allocations bucket))
                       (clocked-bucket-percentage-str (clocked-bucket-clocked-percentage (clocked-bucket-bucket-clocked bucket)))))
+      (insert (format "|[%s]||||\n"
+                      (clocked-bucket-display-allocations (clocked-bucket-bucket-allocations bucket))))
       (insert result)
       (org-table-align))
     (display-buffer (clocked-bucket-buffer))))
