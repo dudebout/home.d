@@ -241,19 +241,17 @@ FIXME TSTART TEND"
   (let ((result)
         (category-fmt (clocked-bucket-assemble-fmt
                        "%s"
-                       (clocked-bucket-indent-fmt 0)
-                       ""
-                       ""))
+                       (clocked-bucket-indent-fmt 0)))
         (context-fmt (clocked-bucket-assemble-fmt
                       (clocked-bucket-indent-fmt 1)
                       ""
-                      "%s"
-                      ""))
+                      "%s"))
         (task-fmt (clocked-bucket-assemble-fmt
                    (clocked-bucket-indent-fmt 2)
                    ""
                    ""
-                   "%-5s (%s)")))
+                   "%s"
+                   "%s")))
     (setq result (concat result (format category-fmt
                                         (clocked-bucket-category-name category)
                                         (clocked-bucket-percentage-str (clocked-bucket-clocked-percentage (clocked-bucket-category-clocked category))))))
@@ -275,10 +273,10 @@ FIXME TSTART TEND"
   "FIXME BUCKET."
   (let* ((result (clocked-bucket-display-categories (clocked-bucket-bucket-categories bucket))))
     (with-current-buffer (clocked-bucket-buffer)
-      (insert (format "|%s|%s|||\n"
+      (insert (format "|%s|%s|\n"
                       (clocked-bucket-bucket-name bucket)
                       (clocked-bucket-percentage-str (clocked-bucket-clocked-percentage (clocked-bucket-bucket-clocked bucket)))))
-      (insert (format "|[%s]||||\n"
+      (insert (format "|%s|\n"
                       (clocked-bucket-display-allocations (clocked-bucket-bucket-allocations bucket))))
       (insert result)
       (org-table-align))
@@ -313,7 +311,7 @@ FIXME TSTART TEND"
           (cl-incf billable-minutes minutes))))
     (with-current-buffer (clocked-bucket-buffer)
       (insert (format "* billable time: %s\n" (clocked-bucket-minutes-str billable-minutes)))
-      (insert "|-|-|-|-|\n"))
+      (insert "|-|\n"))
     (dolist (bucket buckets)
       (unless (clocked-bucket-bucket-is-billable bucket)
         (mapc (apply-partially #'clocked-bucket-compute-clocked-percentages billable-minutes) (clocked-bucket-bucket-categories bucket))
