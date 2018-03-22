@@ -352,7 +352,7 @@ FIXME TSTART TEND"
       (let ((share (cdr allocation)))
         (when (<= share 0)
           (error "An allocation share has to be positive"))
-        (incf sum share)))
+        (cl-incf sum share)))
     (dolist (allocation allocations allocations)
       (let ((share (cdr allocation)))
         (setf (cdr allocation) (/ share (float sum)))))))
