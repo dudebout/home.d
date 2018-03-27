@@ -5,11 +5,11 @@
 ;; Author: Nicolas Dudebout <nicolas.dudebout@gmail.com>
 ;; Maintainer: Nicolas Dudebout <nicolas.dudebout@gmail.com>
 ;; Created: 23 Feb 2018
-;; Modified: 13 Mar 2018
+;; Modified: 27 Mar 2018
 ;; Version: 0.1
-;; Package-Requires: FIXME
-;; Keywords: FIXME
-;; URL: https://github.com/dudebout/home.d FIXME
+;; Package-Requires: (dash org seq)
+;; Keywords: gtd org clock
+;; URL: https://github.com/dudebout/gtb
 
 ;;; Commentary:
 
@@ -32,7 +32,7 @@
 (require 'org-clock)
 (require 'seq)
 
-(defvar gtb-buffer-name "*clocked bucket*")
+(defvar gtb-buffer-name "*gtb*")
 
 (defvar gtb-percentage-fmt "%.1f%%")
 
