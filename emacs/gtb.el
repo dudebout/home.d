@@ -219,7 +219,6 @@ FIXME TSTART TEND"
 
 (defun gtb-compute-clocked-percentages (total-minutes category)
   "FIXME TOTAL-MINUTES CATEGORY."
-  (message "%d" total-minutes)
   (dolist (context (gtb-category-contexts category))
     (dolist (task (gtb-context-tasks context))
       (setf (gtb-clocked-percentage (gtb-category-clocked category)) (/ (* 100.0 (gtb-clocked-minutes (gtb-category-clocked category))) total-minutes))
@@ -289,7 +288,7 @@ FIXME TSTART TEND"
     (mapconcat (lambda (allocation) (format "%s: %.1f" (car allocation) (cdr allocation))) allocations ", ")))
 
 (defun gtb-total-buckets (bucket-specs &optional tstart tend)
-  "FIXME BUCKETS TSTART TEND."
+  "FIXME BUCKET-SPECS TSTART TEND."
   (interactive)
   (with-current-buffer (gtb-buffer)
     (org-mode)
@@ -337,7 +336,7 @@ FIXME TSTART TEND"
           (insert (format "* ERROR unaccounted time: %s\n" (gtb-minutes-str unaccounted-minutes))))))))
 
 (defun gtb-assemble-bucket (name allocations headline-filter &optional is-billable)
-  "FIXME NAME ALLOCATIONS HEADLINE-FILTER."
+  "FIXME NAME ALLOCATIONS HEADLINE-FILTER IS-BILLABLE."
   (gtb-bucket-create :name name
                                 :allocations (gtb-normalize-allocations allocations)
                                 :headline-filter headline-filter
