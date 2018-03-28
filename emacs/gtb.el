@@ -5,7 +5,7 @@
 ;; Author: Nicolas Dudebout <nicolas.dudebout@gmail.com>
 ;; Maintainer: Nicolas Dudebout <nicolas.dudebout@gmail.com>
 ;; Created: 23 Feb 2018
-;; Modified: 27 Mar 2018
+;; Modified: 28 Mar 2018
 ;; Version: 0.1
 ;; Package-Requires: (dash org seq)
 ;; Keywords: clock gtd org
@@ -13,14 +13,48 @@
 
 ;;; Commentary:
 
-;; FIXME
+;; This package
+;;
+;;   #+PROPERTY: bucket_ALL a b
+;;   * category I
+;;   :PROPERTIES:
+;;   :bucket:   a
+;;   :END:
+;;   ** context 1
+;;   *** task A
+;;   :LOGBOOK:
+;;   CLOCK: [2018-02-23 Fri 12:00]--[2018-02-23 Fri 13:00] =>  1:00
+;;   :END:
+;;   *** task B
+;;   :PROPERTIES:
+;;   :bucket:   b
+;;   :END:
+;;   :LOGBOOK:
+;;   CLOCK: [2018-02-23 Fri 13:00]--[2018-02-23 Fri 14:00] =>  1:00
+;;   :END:
+;;
+;; groups things as follows
+;;
+;;   |------------------------------+-------+-------+-------+------|
+;;   | bucket a                     | 50.0% |       |       |      |
+;;   |------------------------------+-------+-------+-------+------|
+;;   | category I                   | 50.0% |       |       |      |
+;;   |     context 1                |       | 50.0% |       |      |
+;;   |         task A               |       |       | 50.0% | 1:00 |
+;;   |------------------------------+-------+-------+-------+------|
+;;   | bucket b                     | 50.0% |       |       |      |
+;;   |------------------------------+-------+-------+-------+------|
+;;   | category I                   | 50.0% |       |       |      |
+;;   |     context 1                |       | 50.0% |       |      |
+;;   |         task B               |       |       | 50.0% | 1:00 |
+;;   |------------------------------+-------+-------+-------+------|
 ;;
 ;; 3 levels:
 ;;   + category
 ;;   + context
 ;;   + task
 ;; And a notion of bucket
-
+;;
 ;; TODO
 ;;   + make sure hitting "g" in the gtb buffer does refresh
 ;;     - store the filter invocation in a property
