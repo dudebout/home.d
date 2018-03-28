@@ -12,7 +12,7 @@
   (equal bucket-name (org-entry-get (point) "bucket" t)))
 
 (defun gtb-test-run ()
-  "Run a test `gtb` invocation against the test buffer."
+  "Run a test `gtb' invocation against the test buffer."
   (find-file "./gtb-tests.org")
   (gtb
    '(("bucket a"

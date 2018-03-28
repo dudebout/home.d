@@ -19,12 +19,14 @@
 ;;   + category
 ;;   + context
 ;;   + task
+;; And a notion of bucket
 
 ;; TODO
 ;;   + make sure hitting "g" in the gtb buffer does refresh
 ;;     - store the filter invocation in a property
 ;;     - store the file info and/or use org-agenda files
 ;;   + remove all FIXMEs
+;;   + add overlap detection
 
 ;;; Code:
 
@@ -91,7 +93,9 @@
 
 This is morally equivalent to (setf PLACE (nconc PLACE (list
 NEWELT))), except that PLACE is only evaluated once (after
-NEWELT)."
+NEWELT).
+
+This is a variation of the `push' macro."
   (declare (debug (form gv-place)))
   (if (symbolp place)
       ;; Important special case, to avoid triggering GV too early in
@@ -210,7 +214,6 @@ FIXME TSTART TEND"
         (setf (gtb-clocked-percentage (gtb-task-clocked task)) task-pct)
         (setf (gtb-clocked-percentage (gtb-context-clocked context)) context-pct)
         (setf (gtb-clocked-percentage (gtb-category-clocked category)) category-pct)))))
-
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; Display
