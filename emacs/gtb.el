@@ -8,7 +8,7 @@
 ;; Modified: 27 Mar 2018
 ;; Version: 0.1
 ;; Package-Requires: (dash org seq)
-;; Keywords: gtd org clock
+;; Keywords: clock gtd org
 ;; URL: https://github.com/dudebout/gtb
 
 ;;; Commentary:
@@ -21,8 +21,9 @@
 ;;   + task
 
 ;; TODO
-;;   + make a display toggle to go from percentages to minutes
-;;   + compute the percentages in the bucket name automatically
+;;   + make sure hitting "g" in the gtb buffer does refresh
+;;     - store the filter invocation in a property
+;;     - store the file info and/or use org-agenda files
 
 ;;; Code:
 
@@ -66,11 +67,6 @@ NEWELT)."
       (gv-letplace (getter setter) place
         (funcall setter `(nconc ,getter (list ,v)))))))
 
-(defun gtb-has-bucket-property (bucket-name)
-  "Return t if the entry at point has the bucket property BUCKET-NAME."
-  (equal bucket-name (org-entry-get (point) "bucket" t)))
-
-
 ;;; Data structures
 
 (cl-defstruct (gtb-task
@@ -111,21 +107,9 @@ NEWELT)."
 
 ;;; Identifying tasks in the org-mode file
 
-(defun gtb-at-level (level)
-  "FIXME LEVEL."
-  (eq level (org-element-property :level (org-element-at-point))))
-
-(defun gtb-categoryp ()
-  "FIXME."
-  (gtb-at-level 1))
-
-(defun gtb-contextp ()
-  "FIXME."
-  (gtb-at-level 2))
-
 (defun gtb-taskp ()
   "FIXME."
-  (gtb-at-level 3))
+  (eq 3 (org-element-property :level (org-element-at-point))))
 
 ;;; FIXME
 

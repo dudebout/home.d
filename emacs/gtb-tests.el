@@ -7,6 +7,10 @@
 (require 'ert)
 (require 'gtb)
 
+(defun gtb-has-bucket-property (bucket-name)
+  "Return t if the entry at point has the bucket property BUCKET-NAME."
+  (equal bucket-name (org-entry-get (point) "bucket" t)))
+
 (ert-deftest end-to-end-test ()
   (find-file "./gtb-tests.org")
   (gtb-total-buckets
