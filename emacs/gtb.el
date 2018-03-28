@@ -24,6 +24,7 @@
 ;;   + make sure hitting "g" in the gtb buffer does refresh
 ;;     - store the filter invocation in a property
 ;;     - store the file info and/or use org-agenda files
+;;   + remove all FIXMEs
 
 ;;; Code:
 
@@ -33,41 +34,28 @@
 (require 'org-clock)
 (require 'seq)
 
-(defvar gtb-buffer-name "*gtb*")
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;; Variables
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(defvar gtb-percentage-fmt "%.1f%%")
+(defcustom gtb-buffer-name "*gtb*"
+  "The name of the output buffer."
+  :type 'string
+  :group 'gtb)
 
-(defvar gtb-indent-fmt "    ")
+(defcustom gtb-percentage-fmt "%.1f%%"
+  "Format string to display percentages."
+  :type 'string
+  :group 'gtb)
 
-;;; Utilities
+(defcustom gtb-indent-str "    "
+  "String used to indent categories from contexts and tasks from contexts."
+  :type 'string
+  :group 'gtb)
 
-(defun gtb-buffer ()
-  "Determine the gtb output buffer.
-
-Get the buffer named `gtb-buffer-name', and create it
-if it does not exist."
-  (or
-   (get-buffer gtb-buffer-name)
-   (generate-new-buffer gtb-buffer-name)))
-
-(defmacro gtb--push-end (newelt place)
-  "Add NEWELT to the end of the list stored in the generalized variable PLACE.
-
-This is morally equivalent to (setf PLACE (nconc PLACE (list
-NEWELT))), except that PLACE is only evaluated once (after
-NEWELT)."
-  (declare (debug (form gv-place)))
-  (if (symbolp place)
-      ;; Important special case, to avoid triggering GV too early in
-      ;; the bootstrap.
-      (list 'setq place
-            (list 'nconc place (list 'list newelt)))
-    (require 'macroexp)
-    (macroexp-let2 macroexp-copyable-p v newelt
-      (gv-letplace (getter setter) place
-        (funcall setter `(nconc ,getter (list ,v)))))))
-
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; Data structures
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (cl-defstruct (gtb-task
                (:constructor gtb-task-create)
@@ -94,29 +82,38 @@ NEWELT)."
                (:copier nil))
   name headline-filter allocations categories clocked is-billable)
 
-;;; Display
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;; Utilities
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(defun gtb-minutes-str (minutes)
-  "FIXME MINUTES."
-  ;; https://www.gnu.org/software/emacs/manual/html_node/elisp/Time-Parsing.html
-  (format-seconds "%h:%02m" (* 60 minutes)))
+(defmacro gtb--push-end (newelt place)
+  "Add NEWELT to the end of the list stored in the generalized variable PLACE.
 
-(defun gtb-percentage-str (percentage)
-  "FIXME PERCENTAGE."
-  (format gtb-percentage-fmt percentage))
+This is morally equivalent to (setf PLACE (nconc PLACE (list
+NEWELT))), except that PLACE is only evaluated once (after
+NEWELT)."
+  (declare (debug (form gv-place)))
+  (if (symbolp place)
+      ;; Important special case, to avoid triggering GV too early in
+      ;; the bootstrap.
+      (list 'setq place
+            (list 'nconc place (list 'list newelt)))
+    (require 'macroexp)
+    (macroexp-let2 macroexp-copyable-p v newelt
+      (gv-letplace (getter setter) place
+        (funcall setter `(nconc ,getter (list ,v)))))))
 
-;;; Identifying tasks in the org-mode file
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;; Extracting tasks from org file
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (defun gtb-taskp ()
   "FIXME."
   (eq 3 (org-element-property :level (org-element-at-point))))
 
-;;; FIXME
-
 (defun gtb-get-heading ()
   "FIXME."
   (substring-no-properties (org-get-heading 'no-tags 'no-todo 'no-priority 'no-comment)))
-
 
 (defun gtb-task-at-point ()
   "FIXME."
@@ -162,6 +159,10 @@ FIXME TSTART TEND"
         (outline-next-heading)))
     result))
 
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;; Building up categories from tasks
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
 (defun gtb-compute-categories (tasks)
   "FIXME TASKS."
   (let (categories)
@@ -199,15 +200,39 @@ FIXME TSTART TEND"
           (cl-incf (gtb-clocked-minutes (gtb-category-clocked category)) minutes)
           (cl-incf total-time minutes))))))
 
-;;; The following needs to be generalized
-
 (defun gtb-compute-clocked-percentages (total-minutes category)
   "FIXME TOTAL-MINUTES CATEGORY."
   (dolist (context (gtb-category-contexts category))
     (dolist (task (gtb-context-tasks context))
-      (setf (gtb-clocked-percentage (gtb-category-clocked category)) (/ (* 100.0 (gtb-clocked-minutes (gtb-category-clocked category))) total-minutes))
-      (setf (gtb-clocked-percentage (gtb-context-clocked context)) (/ (* 100.0 (gtb-clocked-minutes (gtb-context-clocked context))) total-minutes))
-      (setf (gtb-clocked-percentage (gtb-task-clocked task)) (/ (* 100.0 (gtb-clocked-minutes (gtb-task-clocked task))) total-minutes)))))
+      (let* ((task-pct (/ (* 100.0 (gtb-clocked-minutes (gtb-task-clocked task))) total-minutes))
+             (context-pct (/ (* 100.0 (gtb-clocked-minutes (gtb-context-clocked context))) total-minutes))
+             (category-pct (/ (* 100.0 (gtb-clocked-minutes (gtb-category-clocked category))) total-minutes)))
+        (setf (gtb-clocked-percentage (gtb-task-clocked task)) task-pct)
+        (setf (gtb-clocked-percentage (gtb-context-clocked context)) context-pct)
+        (setf (gtb-clocked-percentage (gtb-category-clocked category)) category-pct)))))
+
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;; Display
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+(defun gtb-buffer ()
+  "Return the gtb output buffer.
+
+Get the buffer named `gtb-buffer-name', and create it
+if it does not exist."
+  (or
+   (get-buffer gtb-buffer-name)
+   (generate-new-buffer gtb-buffer-name)))
+
+(defun gtb-minutes-str (minutes)
+  "FIXME MINUTES."
+  ;; https://www.gnu.org/software/emacs/manual/html_node/elisp/Time-Parsing.html
+  (format-seconds "%h:%02m" (* 60 minutes)))
+
+(defun gtb-percentage-str (percentage)
+  "FIXME PERCENTAGE."
+  (format gtb-percentage-fmt percentage))
 
 (defun gtb-assemble-fmt (&rest columns-fmt)
   "FIXME COLUMNS-FMT."
@@ -215,22 +240,26 @@ FIXME TSTART TEND"
           (mapconcat 'identity columns-fmt "|")
           "|\n"))
 
-(defun gtb-indent-fmt (num)
+(defun gtb-indent-str (num)
   "FIXME NUM."
-  (concat (apply #'concat (make-list num gtb-indent-fmt)) "%s"))
+  (concat (apply #'concat (make-list num gtb-indent-str)) "%s"))
+
+(defun gtb-display-categories (categories)
+  "FIXME CATEGORIES."
+  (concat "|-|\n" (apply #'concat (mapcar #'gtb-display-category categories)) "|-|\n"))
 
 (defun gtb-display-category (category)
   "FIXME CATEGORY."
   (let ((result)
         (category-fmt (gtb-assemble-fmt
                        "%s"
-                       (gtb-indent-fmt 0)))
+                       (gtb-indent-str 0)))
         (context-fmt (gtb-assemble-fmt
-                      (gtb-indent-fmt 1)
+                      (gtb-indent-str 1)
                       ""
                       "%s"))
         (task-fmt (gtb-assemble-fmt
-                   (gtb-indent-fmt 2)
+                   (gtb-indent-str 2)
                    ""
                    ""
                    "%s"
@@ -247,10 +276,6 @@ FIXME TSTART TEND"
                                             (gtb-task-name task)
                                             (gtb-percentage-str (gtb-clocked-percentage (gtb-task-clocked task)))
                                             (gtb-minutes-str (gtb-clocked-minutes (gtb-task-clocked task))))))))))
-
-(defun gtb-display-categories (categories)
-  "FIXME CATEGORIES."
-  (concat "|-|\n" (apply #'concat (mapcar #'gtb-display-category categories)) "|-|\n"))
 
 (defun gtb-display-bucket (bucket)
   "FIXME BUCKET."
@@ -271,14 +296,44 @@ FIXME TSTART TEND"
       (format "%s" (caar allocations))
     (mapconcat (lambda (allocation) (format "%s: %.1f" (car allocation) (cdr allocation))) allocations ", ")))
 
-(defun gtb-total-buckets (bucket-specs &optional tstart tend)
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;; FIXME
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+(defun gtb--assemble-bucket (name allocations headline-filter &optional is-billable)
+  "FIXME NAME ALLOCATIONS HEADLINE-FILTER IS-BILLABLE."
+  (gtb-bucket-create :name name
+                     :allocations (gtb--normalize-allocations allocations)
+                     :headline-filter headline-filter
+                     :is-billable is-billable))
+
+(defun gtb--normalize-allocations (allocations)
+  "FIXME ALLOCATIONS."
+  (let ((sum 0))
+    (unless (listp allocations)
+      (setq allocations `((,allocations . 1))))
+    (dolist (allocation allocations)
+      (let ((share (cdr allocation)))
+        (when (<= share 0)
+          (error "An allocation share has to be positive"))
+        (cl-incf sum share)))
+    (dolist (allocation allocations allocations)
+      (let ((share (cdr allocation)))
+        (setf (cdr allocation) (/ share (float sum)))))))
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;; gtb
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+;;;###autoload
+(defun gtb (bucket-specs &optional tstart tend)
   "FIXME BUCKET-SPECS TSTART TEND."
   (interactive)
   (with-current-buffer (gtb-buffer)
     (org-mode)
     (erase-buffer))
 
-  (let ((buckets (mapcar (lambda (spec-list) (apply #'gtb-assemble-bucket spec-list)) bucket-specs))
+  (let ((buckets (mapcar (lambda (spec-list) (apply #'gtb--assemble-bucket spec-list)) bucket-specs))
         (billable-minutes 0)
         (non-billable-minutes 0)
         (total-minutes (org-clock-sum tstart tend))
@@ -317,28 +372,8 @@ FIXME TSTART TEND"
       (let ((unaccounted-minutes (- total-minutes billable-minutes non-billable-minutes)))
         (unless (= 0 unaccounted-minutes)
           (goto-char (point-min))
-          (insert (format "* ERROR unaccounted time: %s\n" (gtb-minutes-str unaccounted-minutes))))))))
-
-(defun gtb-assemble-bucket (name allocations headline-filter &optional is-billable)
-  "FIXME NAME ALLOCATIONS HEADLINE-FILTER IS-BILLABLE."
-  (gtb-bucket-create :name name
-                                :allocations (gtb-normalize-allocations allocations)
-                                :headline-filter headline-filter
-                                :is-billable is-billable))
-
-(defun gtb-normalize-allocations (allocations)
-  "FIXME ALLOCATIONS."
-  (let ((sum 0))
-    (unless (listp allocations)
-      (setq allocations `((,allocations . 1))))
-    (dolist (allocation allocations)
-      (let ((share (cdr allocation)))
-        (when (<= share 0)
-          (error "An allocation share has to be positive"))
-        (cl-incf sum share)))
-    (dolist (allocation allocations allocations)
-      (let ((share (cdr allocation)))
-        (setf (cdr allocation) (/ share (float sum)))))))
+          (insert (format "* ERROR unaccounted time: %s\n" (gtb-minutes-str unaccounted-minutes)))))
+      (read-only-mode 1))))
 
 (provide 'gtb)
 
