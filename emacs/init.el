@@ -214,7 +214,8 @@
   :bind (("C-c i" . magit-status)
          ("C-c f" . magit-file-popup))
   :init
-  (setq magit-delete-by-moving-to-trash nil
+  (setq magit-save-repository-buffers 'dontask
+        magit-delete-by-moving-to-trash nil
         magit-diff-refine-hunk 'all
         magit-completing-read-function 'ivy-completing-read))
 
