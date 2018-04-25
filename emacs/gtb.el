@@ -367,6 +367,7 @@ if it does not exist."
   "FIXME BUCKET-SPECS TSTART TEND."
   (interactive)
   (with-current-buffer (gtb-buffer)
+    (setq buffer-read-only nil)
     (org-mode)
     (erase-buffer))
 
@@ -410,7 +411,7 @@ if it does not exist."
         (unless (= 0 unaccounted-minutes)
           (goto-char (point-min))
           (insert (format "* ERROR unaccounted time: %s\n" (gtb-minutes-str unaccounted-minutes)))))
-      (read-only-mode 1))))
+      (setq buffer-read-only t))))
 
 (provide 'gtb)
 
