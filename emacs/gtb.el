@@ -89,6 +89,11 @@
   :type 'string
   :group 'gtb)
 
+(defcustom gtb-hide-categories nil
+  "If not nil, do not display the categories, but only the contexts and tasks."
+  :type 'boolean
+  :group 'gtb)
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; Data structures
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -292,18 +297,21 @@ if it does not exist."
                        "%s"
                        (gtb-indent-str 0)))
         (context-fmt (gtb-assemble-fmt
-                      (gtb-indent-str 1)
+                      (gtb-indent-str (if gtb-hide-categories 0 1))
                       ""
                       "%s"))
         (task-fmt (gtb-assemble-fmt
-                   (gtb-indent-str 2)
+                   (gtb-indent-str (if gtb-hide-categories 1 2))
                    ""
                    ""
                    "%s"
                    "%s")))
-    (setq result (concat result (format category-fmt
-                                        (gtb-category-name category)
-                                        (gtb-percentage-str (gtb-clocked-percentage (gtb-category-clocked category))))))
+
+
+    (unless gtb-hide-categories
+      (setq result (concat result (format category-fmt
+                                          (gtb-category-name category)
+                                          (gtb-percentage-str (gtb-clocked-percentage (gtb-category-clocked category)))))))
     (dolist (context (gtb-category-contexts category) result)
       (setq result (concat result (format context-fmt
                                           (gtb-context-name context)
