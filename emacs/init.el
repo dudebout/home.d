@@ -214,11 +214,15 @@
   :bind (("C-c i" . magit-status)
          ("C-c f" . magit-file-popup))
   :init
-  (magit-define-popup-switch 'magit-log-popup ?p "first parent" "--first-parent")
   (setq magit-save-repository-buffers 'dontask
         magit-delete-by-moving-to-trash nil
         magit-diff-refine-hunk 'all
         magit-completing-read-function 'ivy-completing-read))
+
+(use-package magit-log
+  :after magit
+  :init
+  (magit-define-popup-switch 'magit-log-popup ?p "first parent" "--first-parent"))
 
 (use-package markdown-mode
   :bind (:map markdown-mode-map
