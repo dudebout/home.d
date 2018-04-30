@@ -244,9 +244,11 @@
                                   "DELEGATED(D@/!)"
                                   "READ(r)"
                                   "WATCH(w)"
+                                  "BUY(b)"
                                   "|"
                                   "DONE(d!)"
-                                  "CANCELED(c@)"))))
+                                  "BOUGHT(B!)"
+                                  "CANCELLED(c@)"))))
 
 (use-package org-agenda
   :bind ("C-c a" . org-agenda)
@@ -314,7 +316,7 @@
   :bind ("C-c c" . org-capture)
   :init
   ;; consider merging the inbox into a single tree (what is the purpose of tasks vs notes?)
-  (setq org-capture-templates '(("t" "task" entry
+  (setq org-capture-templates '(("t" "todo" entry
                                  (file+olp home.d/capture-file "inbox" "tasks")
                                  "* TODO %?\n:LOGBOOK:\n- Created on %U\n:END:")
                                 ("r" "read" entry
@@ -325,6 +327,12 @@
                                  (file+olp home.d/capture-file "inbox" "tasks")
                                  "* WATCH [[%:link][%:description]]\n:LOGBOOK:\n- Created on %U\n:END:"
                                  :immediate-finish t)
+                                ("b" "buy" entry
+                                 (file+olp home.d/capture-file "inbox" "tasks")
+                                 "* BUY %?\n:LOGBOOK:\n- Created on %U\n:END:")
+                                ("p" "project" entry
+                                 (file+olp home.d/capture-file "projects")
+                                 "* %?\n")
                                 ("n" "note" entry
                                  (file+olp home.d/capture-file "inbox" "notes")
                                  "* %?\n:LOGBOOK:\n- Created on %U\n:END:")
