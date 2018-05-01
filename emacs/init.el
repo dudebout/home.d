@@ -222,7 +222,7 @@
 (use-package magit-log
   :after magit
   :init
-  (magit-define-popup-switch 'magit-log-popup ?p "first parent" "--first-parent"))
+  (magit-define-popup-switch 'magit-log-popup ?p "First parent" "--first-parent"))
 
 (use-package markdown-mode
   :bind (:map markdown-mode-map
