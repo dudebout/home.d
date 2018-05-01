@@ -248,7 +248,7 @@
                                   "|"
                                   "DONE(d!)"
                                   "BOUGHT(B!)"
-                                  "CANCELLED(c@)"))))
+                                  "CANCELED(c@)"))))
 
 (use-package org-agenda
   :bind ("C-c a" . org-agenda)
