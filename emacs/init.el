@@ -89,6 +89,7 @@
          ("C-x C-f" . counsel-find-file)
          ("<f1> l" . counsel-find-library)
          ("C-s" . counsel-grep-or-swiper)
+         ("M-s s" . isearch-forward)
          ("C-c s f" . counsel-git)
          ("C-c s i" . counsel-git-grep)
          ("C-c s g" . rgrep)
