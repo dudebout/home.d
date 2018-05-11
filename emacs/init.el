@@ -17,6 +17,7 @@
 (setq inhibit-startup-screen t
       initial-scratch-message nil
       make-backup-files nil
+      create-lockfiles nil
       visible-bell t
       column-number-mode t
       size-indication-mode t
