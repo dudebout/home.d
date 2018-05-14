@@ -477,6 +477,8 @@
   :defer t
   :init (add-hook 'coq-mode-hook #'company-coq-mode))
 
+(use-package which-key
+  :init (which-key-mode))
 
 ;; https://github.com/abo-abo/swiper/issues/776
 
