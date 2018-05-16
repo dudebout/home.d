@@ -85,6 +85,7 @@
   :init (global-company-mode))
 
 (use-package counsel
+  :init (setq counsel-find-file-at-point t)
   :bind (("M-x" . counsel-M-x)
          ("C-h b" . counsel-descbinds)
          ("C-x C-f" . counsel-find-file)
