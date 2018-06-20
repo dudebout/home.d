@@ -280,13 +280,6 @@
                                                ((org-agenda-use-time-grid nil)
                                                 (org-agenda-span 'day)
                                                 (org-agenda-start-on-weekday nil)))
-                                       (tags-todo "interruptions"
-                                                  ((org-agenda-overriding-header "Interruptions")))
-                                       (agenda ""
-                                               ((org-agenda-use-time-grid nil)
-                                                (org-agenda-span 'week)
-                                                (org-agenda-start-day "+1d")
-                                                (org-agenda-start-on-weekday nil)))
                                        (tags "projects"
                                              ((org-agenda-overriding-header "Next actions")
                                               (org-agenda-skip-function #'home.d/org-agenda-skip-not-next-action)
@@ -295,6 +288,11 @@
 ;; It results in an error, when log mode is activated and there is a clock-in activity for the current day.
 ;; This is probably due to the way on the current day a grid with all the hours of the day is displayed.
                                               (org-agenda-prefix-format '((tags . "%-32(home.d/org-agenda-project-prefix-format) ")))))
+                                       (agenda ""
+                                               ((org-agenda-use-time-grid nil)
+                                                (org-agenda-span 'week)
+                                                (org-agenda-start-day "+1d")
+                                                (org-agenda-start-on-weekday nil)))
                                        (agenda ""
                                                ((org-agenda-span 'month)
                                                 (org-agenda-overriding-header "Next month")
