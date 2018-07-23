@@ -281,7 +281,7 @@
                                                ((org-agenda-use-time-grid nil)
                                                 (org-agenda-span 'day)
                                                 (org-agenda-start-on-weekday nil)))
-                                       (tags "projects"
+                                       (tags "current"
                                              ((org-agenda-overriding-header "Next actions")
                                               (org-agenda-skip-function #'home.d/org-agenda-skip-not-next-action)
 ;; FIXME
