@@ -217,7 +217,8 @@
   :bind (("C-c i" . magit-status)
          ("C-c f" . magit-file-popup))
   :init
-  (setq magit-save-repository-buffers 'dontask
+  (setq magit-branch-rename-push-target nil ; local changes should not flow to master
+        magit-save-repository-buffers 'dontask
         magit-delete-by-moving-to-trash nil
         magit-diff-refine-hunk 'all
         magit-completing-read-function 'ivy-completing-read))
