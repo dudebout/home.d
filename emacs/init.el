@@ -297,6 +297,7 @@
                                                 (org-agenda-start-on-weekday nil)))
                                        (agenda ""
                                                ((org-agenda-span 'month)
+                                                (org-agenda-start-day "+8d")
                                                 (org-agenda-overriding-header "Next month")
                                                 (org-agenda-show-all-dates nil)
                                                 (org-agenda-skip-function
