@@ -150,7 +150,7 @@
 
 (use-package god-mode
   :init (progn
-          (global-set-key (kbd "<escape>") 'god-local-mode)
+          ;; (global-set-key (kbd "<escape>") 'god-local-mode)
           (eval-after-load 'zenburn-theme
             '(progn
               (add-hook 'god-mode-enabled-hook 'ddb/switch-mode-line-background-on-god-mode)
