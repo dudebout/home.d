@@ -24,6 +24,10 @@
      ("bucket c"
       overhead
       (lambda () (gtb-has-bucket-property "c"))
+      t)
+     ("bucket c (repeat)"
+      problem
+      (lambda () (gtb-has-bucket-property "c"))
       t))))
 
 (ert-deftest end-to-end-test ()

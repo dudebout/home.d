@@ -1,4 +1,8 @@
-* ERROR unaccounted time: 1:00
+* ERROR multi-bucketed tasks
++ category II -> context 1 -> task C
+* ERROR non-bucketed tasks
++ category II -> context 1 -> task D
++ category II -> context 1 -> task E
 * billed
 + project1 :: 40.00%
 + project2 :: 60.00%
@@ -27,4 +31,4 @@
 |     context 1                |       | 16.7% |       |      |
 |         task A               |       |       | 16.7% | 1:00 |
 |------------------------------+-------+-------+-------+------|
-* non-billable time: 1:00
+* non-billable time: 2:00

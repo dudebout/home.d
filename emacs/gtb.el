@@ -184,7 +184,7 @@ FIXME TSTART TEND"
       (org-clock-sum tstart tend)
       org-clock-file-total-minutes)))
 
-(defun gtb-get-clocked-tasks-if (headline-filter &optional tstart tend)
+(defun gtb-get-clocked-tasks-if (headline-filter bucket-name &optional tstart tend)
   "FIXME HEADLINE-FILTER TSTART TEND."
   (let (result)
     (save-excursion
@@ -197,8 +197,26 @@ FIXME TSTART TEND"
           (let ((time (gtb-org-clock-sum-current-item tstart tend))
                 (task (gtb-task-at-point)))
             (when (> time 0)
+              (let ((gtb-buckets (cons bucket-name (get-text-property (point) 'gtb-buckets))))
+                (add-text-properties (point) (+ 1 (point))
+                                     `(gtb-buckets ,gtb-buckets)))
               (setf (gtb-task-clocked task) (gtb-clocked-create :minutes time))
               (gtb--push-end task result))))
+        (outline-next-heading)))
+    result))
+
+(defun gtb-tasks-improperly-bucketed ()
+  "FIXME."
+  (let (result)
+    (save-excursion
+      (goto-char (point-min))
+      (while (not (equal (point) (point-max)))
+        (let ((buckets (get-text-property (point) 'gtb-buckets)))
+          (when (and
+                 (gtb-taskp)
+                 (/= 1 (length buckets)))
+            (let ((task (gtb-task-at-point)))
+              (gtb--push-end `(,task . ,buckets) result))))
         (outline-next-heading)))
     result))
 
@@ -374,6 +392,7 @@ if it does not exist."
 (defun gtb (bucket-specs &optional tstart tend)
   "FIXME BUCKET-SPECS TSTART TEND."
   (interactive)
+  (remove-list-of-text-properties (point-min) (point-max) '(gtb-buckets))
   (with-current-buffer (gtb-buffer)
     (setq buffer-read-only nil)
     (org-mode)
@@ -385,7 +404,7 @@ if it does not exist."
         (total-minutes (org-clock-sum tstart tend))
         allocations)
     (dolist (bucket buckets)
-      (let* ((tasks (gtb-get-clocked-tasks-if (gtb-bucket-headline-filter bucket) tstart tend))
+      (let* ((tasks (gtb-get-clocked-tasks-if (gtb-bucket-headline-filter bucket) (gtb-bucket-name bucket) tstart tend))
              (categories (gtb-compute-categories tasks))
              (minutes (-sum (mapcar #'gtb-propagate-clocked-minutes categories))))
         (setf (gtb-bucket-categories bucket) categories)
@@ -406,6 +425,9 @@ if it does not exist."
               (cl-incf (alist-get (car alloc) allocations 0) (* percentage (cdr alloc)))))
           (gtb-display-bucket bucket))))
 
+    (let* ((improperly-bucketed (gtb-tasks-improperly-bucketed))
+           (multi-bucketed (seq-filter 'cdr improperly-bucketed))
+           (not-bucketed (seq-remove 'cdr improperly-bucketed)))
     (with-current-buffer (gtb-buffer)
       (whitespace-cleanup)
       (goto-char (point-min))
@@ -415,11 +437,17 @@ if it does not exist."
       (unless (= 0 non-billable-minutes)
         (goto-char (point-max))
         (insert (format "* non-billable time: %s\n" (gtb-minutes-str non-billable-minutes))))
-      (let ((unaccounted-minutes (- total-minutes billable-minutes non-billable-minutes)))
-        (unless (= 0 unaccounted-minutes)
-          (goto-char (point-min))
-          (insert (format "* ERROR unaccounted time: %s\n" (gtb-minutes-str unaccounted-minutes)))))
-      (setq buffer-read-only t))))
+      (when not-bucketed
+        (goto-char (point-min))
+        (insert "* ERROR non-bucketed tasks\n")
+        (dolist (x not-bucketed)
+          (insert (format "+ %s -> %s -> %s\n" (gtb-task-category (car x)) (gtb-task-context (car x)) (gtb-task-name (car x))))))
+      (when multi-bucketed
+        (goto-char (point-min))
+        (insert "* ERROR multi-bucketed tasks\n")
+        (dolist (x multi-bucketed)
+          (insert (format "+ %s -> %s -> %s\n" (gtb-task-category (car x)) (gtb-task-context (car x)) (gtb-task-name (car x))))))
+      (setq buffer-read-only t)))))
 
 (provide 'gtb)
 
