@@ -196,10 +196,10 @@ FIXME TSTART TEND"
              (gtb-taskp))
           (let ((time (gtb-org-clock-sum-current-item tstart tend))
                 (task (gtb-task-at-point)))
+            (let ((gtb-buckets (cons bucket-name (get-text-property (point) 'gtb-buckets))))
+              (add-text-properties (point) (+ 1 (point))
+                                   `(gtb-buckets ,gtb-buckets)))
             (when (> time 0)
-              (let ((gtb-buckets (cons bucket-name (get-text-property (point) 'gtb-buckets))))
-                (add-text-properties (point) (+ 1 (point))
-                                     `(gtb-buckets ,gtb-buckets)))
               (setf (gtb-task-clocked task) (gtb-clocked-create :minutes time))
               (gtb--push-end task result))))
         (outline-next-heading)))
@@ -447,7 +447,8 @@ if it does not exist."
         (insert "* ERROR multi-bucketed tasks\n")
         (dolist (x multi-bucketed)
           (insert (format "+ %s -> %s -> %s\n" (gtb-task-category (car x)) (gtb-task-context (car x)) (gtb-task-name (car x))))))
-      (setq buffer-read-only t)))))
+      (setq buffer-read-only t))
+  (remove-list-of-text-properties (point-min) (point-max) '(gtb-buckets)))))
 
 (provide 'gtb)
 
