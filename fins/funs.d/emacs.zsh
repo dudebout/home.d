@@ -8,7 +8,7 @@ __emacs-echo () {
     #        If name is the name of a set parameter `1' is substituted, otherwise
     #        `0' is substituted.
     if (( ${+EMACS_ECHO} )); then
-        echo "$@"
+        echo "$@" >&2
     fi
 }
 
@@ -42,7 +42,10 @@ __emacs-daemon-start () {
             rm -f $(__emacs-daemon-socket)
         fi
         __emacs-echo 'Starting emacs daemon'
-        (cd $HOME && emacs --daemon --eval '(setq frame-title-format "emacs_X_frame")')
+        # arguably a bug: org-frame-title-format-backup is set to
+        # frame-title-format at org-mode initialization instead of at clock-in
+        # time
+        (cd $HOME && emacs --daemon --eval '(setq frame-title-format "emacs_X_frame" org-frame-title-format-backup "emacs_X_frame")')
     else
         __emacs-echo 'Emacs daemon is already running'
     fi
