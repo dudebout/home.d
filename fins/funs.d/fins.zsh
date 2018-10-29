@@ -1,6 +1,14 @@
-# Imperfect as it also returns functions defined in ~/.zprofile, etc.
 fins-which () {
-  local fun=$1
+  local cmd=$1
 
-  (source ~/.home.d/fins/funs.d/* && which $fun)
+  local exe
+  exe=$(which "$cmd")
+
+  if [[ "$exe" =~ "$HOME_D/fins/bin" ]]; then
+      local fun
+      fun=$(sed -n 's/source "\([^"]\+\)"/\1/p' "$exe")
+      (source "$fun" && which "$cmd")
+  else
+      echo "$exe"
+  fi
 }
