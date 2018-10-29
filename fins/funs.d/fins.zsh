@@ -1,5 +1,5 @@
 fins-which () {
-  local cmd=$1
+  local cmd="$1"
 
   local exe
   exe=$(which "$cmd")
@@ -7,8 +7,18 @@ fins-which () {
   if [[ "$exe" =~ "$HOME_D/fins/bin" ]]; then
       local fun
       fun=$(sed -n 's/source "\([^"]\+\)"/\1/p' "$exe")
-      (source "$fun" && which "$cmd")
+      if (( ${+FINS_WHICH_ALL} )); then
+          cat "$fun"
+      else
+          (source "$fun" && which "$cmd")
+      fi
   else
       echo "$exe"
   fi
+}
+
+fins-which-all () {
+    local cmd="$1"
+
+    FINS_WHICH_ALL=1 fins-which "$cmd"
 }
