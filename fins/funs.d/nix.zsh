@@ -8,5 +8,12 @@ nix-ag () {
 }
 
 nix-upgrade-home.d () {
-    nix-env --file '<nixos-18_09>' --remove-all --install --from-expression "import $HOME/.config/nixpkgs/home.d.nix"
+    file="${1:-https://github.com/NixOS/nixpkgs-channels/archive/nixos-18.09.tar.gz}"
+
+    nix-env \
+        --file "$file" \
+        --remove-all \
+        --install \
+        --from-expression \
+        "import $HOME_D/nix"
 }
