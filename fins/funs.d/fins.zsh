@@ -22,3 +22,12 @@ fins-which-all () {
 
     FINS_WHICH_ALL=1 fins-which "$cmd"
 }
+
+fins-gen () {
+    local fins_gen=$HOME_D/fins/fins-gen
+    $fins_gen
+    local profile=$HOME_D/profile/fins
+    if [[ -d $profile ]]; then
+        FINSDIR=$profile $fins_gen
+    fi
+}
