@@ -45,7 +45,12 @@ bash_prompt_command () {
 
     local ps1_cwd=$(bash_ps1_part \\w $ZENBURN_BLUE__M__2)
 
-    local ps1_prompt=$(bash_ps1_part \$ $ZENBURN_YELLOW)
+    local ps1_prompt
+    if [[ -v IN_NIX_SHELL ]]; then
+        ps1_prompt=$(bash_ps1_part \# $ZENBURN_YELLOW)
+    else
+        ps1_prompt=$(bash_ps1_part \$ $ZENBURN_YELLOW)
+    fi
 
     PS1=''
     for part in "$ps1_host" "$ps1_cwd" "$ps1_exit_code" "$ps1_prompt"; do
