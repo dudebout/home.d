@@ -45,6 +45,7 @@ in
       nix-mode
       org-pdfview
       org-plus-contrib
+      org-trello
       paredit
       pass
       pdf-tools
