@@ -334,7 +334,7 @@
                                  (file+olp home.d/capture-file "inbox" "tasks")
                                  "* BUY %?\n:LOGBOOK:\n- Created on %U\n:END:")
                                 ("p" "project" entry
-                                 (file+olp home.d/capture-file "projects")
+                                 (file+olp home.d/capture-file "other projects")
                                  "* %?\n")
                                 ("n" "note" entry
                                  (file+olp home.d/capture-file "inbox" "notes")
