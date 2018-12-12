@@ -2,7 +2,7 @@
 nixpkgs:
 
 let
-  config = { allowUnfreePredicate = pkg: true; };
+  config = { allowUnfreePredicate = pkg: true; pulseaudio = true; };
   profile = builtins.getEnv "HOME_D" + "/profile/nix";
   overlay = "${profile}/overlay.nix";
   overlays =
