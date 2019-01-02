@@ -235,6 +235,12 @@
 (use-package menu-bar
   :bind ("C-c m" . menu-bar-mode))
 
+(use-package nix-mode
+  :init
+  ;; there does not seem to be indentation support so every press of a closing
+  ;; paren shifts the whole line to the left
+  (remove-hook 'post-self-insert-hook #'electric-indent-post-self-insert-function))
+
 (use-package org
   :defer t
   :init
