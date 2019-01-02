@@ -350,7 +350,7 @@
                                  "* %?\n:LOGBOOK:\n- Created on %U\n:END:")
                                 ("m" "meeting" entry
                                  (file+olp home.d/capture-file "inbox" "meetings")
-                                 "* meeting with %? about \n:LOGBOOK:\n- Created on %U\n:END:"
+                                 "* meeting with %^{with} about %^{about}\n:LOGBOOK:\n- Created on %U\n:END:\n"
                                  :clock-in t :clock-resume t))))
 
 (use-package org-clock
