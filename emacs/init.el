@@ -102,6 +102,9 @@
 (use-package counsel-projectile
   :init (counsel-projectile-mode))
 
+(use-package projectile
+  :init (define-key projectile-mode-map (kbd "C-c p") 'projectile-command-map))
+
 ;; (use-package dante
 ;;   :init  (progn
 ;;            (put 'dante-project-root 'safe-local-variable #'stringp)
