@@ -8,7 +8,7 @@ nix-ag () {
 }
 
 nix-upgrade-home.d () {
-    file="${1:-https://github.com/NixOS/nixpkgs-channels/archive/nixos-18.09.tar.gz}"
+    file="${1:-https://github.com/NixOS/nixpkgs-channels/archive/nixos-19.03.tar.gz}"
 
     nix-env \
         --file "$file" \
