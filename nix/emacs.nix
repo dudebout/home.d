@@ -27,8 +27,6 @@ in
       counsel-projectile
       elisp-slime-nav
       fill-column-indicator
-      flycheck
-      flycheck-haskell
       git-gutter
       god-mode
       helpful
@@ -56,7 +54,6 @@ in
       selected
       smart-mode-line
       swiper
-      use-package
       wgrep
       which-key
       yaml-mode
