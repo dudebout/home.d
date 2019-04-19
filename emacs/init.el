@@ -220,6 +220,7 @@
   :bind (("C-c i" . magit-status)
          ("C-c f" . magit-file-popup))
   :init
+  (add-hook 'magit-section-movement-hook 'magit-log-maybe-update-blob-buffer)
   (setq magit-branch-rename-push-target nil ; local changes should not flow to master
         magit-save-repository-buffers 'dontask
         magit-delete-by-moving-to-trash nil
