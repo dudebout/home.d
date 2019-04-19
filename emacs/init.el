@@ -95,8 +95,8 @@
          ("C-c s f" . counsel-git)
          ("C-c s i" . counsel-git-grep)
          ("C-c s g" . rgrep)
-         ("C-c s r" . counsel-rg)
-         ("C-c s s" . counsel-ag)
+         ("C-c s s" . counsel-rg)
+         ("C-c s a" . counsel-ag)
          ("C-c s z" . zrgrep)))
 
 (use-package counsel-projectile
