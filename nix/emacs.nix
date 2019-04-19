@@ -28,6 +28,7 @@ in
       elisp-slime-nav
       fill-column-indicator
       git-gutter
+      git-timemachine
       god-mode
       helpful
       hydra
