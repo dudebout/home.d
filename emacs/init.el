@@ -300,6 +300,9 @@
 ;; It results in an error, when log mode is activated and there is a clock-in activity for the current day.
 ;; This is probably due to the way on the current day a grid with all the hours of the day is displayed.
                                               (org-agenda-prefix-format '((tags . "%-32(home.d/org-agenda-project-prefix-format) ")))))
+                                       (tags "/WAITING"
+                                               ((org-agenda-overriding-header "Waiting")
+                                                (org-agenda-prefix-format '((tags . "%-32(home.d/org-agenda-project-prefix-format) ")))))
                                        (agenda ""
                                                ((org-agenda-use-time-grid nil)
                                                 (org-agenda-span 'week)

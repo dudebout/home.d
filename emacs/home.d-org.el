@@ -39,6 +39,7 @@ is unscheduled."
   "Is heading at point unscheduled and notdone."
   (and
    (-non-nil (mapcar (apply-partially #'string= (org-get-todo-state)) org-not-done-keywords))
+   (not (string= (org-get-todo-state) "WAITING"))
    (not (org-get-scheduled-time (point)))))
 
 (defun home.d/org-agenda-project-prefix-format ()
