@@ -18,11 +18,11 @@
        (point-max)))))
 
 (defun home.d/org-agenda-skip-not-next-action ()
-  "Determines next actions as an `org-agenda-skip-function'."
+  "Determine next actions as an `org-agenda-skip-function'."
   (home.d/org-agenda-skip-if (not (home.d/org-is-next-action))))
 
 (defun home.d/org-is-next-action ()
-  "Determines if the heading at point is a next action.
+  "Determine if the heading at point is a next action.
 A heading is a next action if it is in a notdone TODO state, and
 is unscheduled."
   (when (home.d/org-is-unscheduled-notdone)
@@ -58,6 +58,14 @@ is unscheduled."
 (defun home.d/org-agenda-skip-if-tag (tag)
   "`org-agenda-skip-function' to discard headings tagged with TAG."
   (home.d/org-agenda-skip-if (member tag (org-get-tags-at (point)))))
+
+(defun home.d/org-evaluate-buffer-time-ranges ()
+  "Evaluate all the time ranges time ranges in the current buffer."
+  (when (eq major-mode 'org-mode)
+    (save-excursion
+      (goto-char (point-min))
+      (while (search-forward "CLOCK:" nil t)
+        (org-evaluate-time-range)))))
 
 (provide 'home.d-org)
 
