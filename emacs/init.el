@@ -29,7 +29,7 @@
               require-final-newline t)
 
 (add-hook 'before-save-hook #'whitespace-cleanup)
-(add-hook 'before-save-hook #'home.d/org-evaluate-all-time-ranges)
+(add-hook 'before-save-hook #'home.d/org-evaluate-buffer-time-ranges)
 (add-hook 'after-save-hook #'executable-make-buffer-file-executable-if-script-p)
 
 (defalias 'yes-or-no-p 'y-or-n-p)
