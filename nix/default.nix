@@ -3,12 +3,16 @@ nixpkgs:
 
 let
   config = { allowUnfreePredicate = pkg: true; pulseaudio = true; };
-  profile = builtins.getEnv "HOME_D" + "/profile/nix";
-  overlay = "${profile}/overlay.nix";
-  overlays =
-  if builtins.pathExists overlay
-    then [(import overlay)]
-    else [];
+  home_d = builtins.getEnv "HOME_D";
+  profile = home_d + "/profile";
+  existing_overlays = dir:
+    let
+      overlay = dir + "/nix/overlay.nix";
+    in
+      if builtins.pathExists overlay
+        then [(import overlay)]
+        else [];
+  overlays = existing_overlays home_d ++ existing_overlays profile;
   pkgs = nixpkgs { inherit config overlays; };
 in
 

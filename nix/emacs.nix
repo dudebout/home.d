@@ -11,6 +11,7 @@ in
       # Not easy to set up
       # dante
       # attrap
+      retrospect
       intero
       flycheck
       flycheck-haskell
