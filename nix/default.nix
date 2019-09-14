@@ -19,7 +19,7 @@ in
 with pkgs;
 let
   xmonad_packages = hPkgs : with hPkgs; [ xmonad-contrib ];
-  expression = "${profile}/default.nix";
+  expression = "${profile}/nix/default.nix";
   extra_pkgs =
     if builtins.pathExists expression
     then (import expression) pkgs
