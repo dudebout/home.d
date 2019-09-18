@@ -59,6 +59,8 @@ is unscheduled."
   "`org-agenda-skip-function' to discard headings tagged with TAG."
   (home.d/org-agenda-skip-if (member tag (org-get-tags-at (point)))))
 
+;;; FIXME, if there is a problem, e.g., CLOCK not closed, tell the user about
+;;; it.
 (defun home.d/org-evaluate-buffer-time-ranges ()
   "Evaluate all the time ranges time ranges in the current buffer."
   (when (eq major-mode 'org-mode)
