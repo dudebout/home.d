@@ -272,7 +272,7 @@
         org-agenda-skip-deadline-if-done t
         org-agenda-files (or org-agenda-files
                              (list org-directory))
-        org-agenda-clockreport-parameter-plist '(:link t :maxlevel 3)
+        org-agenda-clockreport-parameter-plist '(:link t :maxlevel 6)
         org-agenda-log-mode-add-notes nil
         org-agenda-custom-commands '(("f" "Future events"
                                       tags "TIMESTAMP>=\"<now>\""
