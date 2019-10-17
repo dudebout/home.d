@@ -8,12 +8,19 @@ nix-ag () {
 }
 
 nix-upgrade-home.d () {
-    file="${1:-https://github.com/NixOS/nixpkgs-channels/archive/nixos-19.03.tar.gz}"
+    file="${1:-https://github.com/NixOS/nixpkgs-channels/archive/nixos-19.09.tar.gz}"
+    profile="${2:-default}"
 
     nix-env \
+        --max-jobs auto \
         --file "$file" \
         --remove-all \
         --install \
         --from-expression \
         "import $HOME_D/nix"
+}
+
+nix-cleanup () {
+    nix-env --delete-generations 7d
+    nix-collect-garbage
 }

@@ -1,6 +1,6 @@
 self: super:
 {
-  emacsPackagesNg = super.emacsPackagesNg.overrideScope (_self: _super: {
+  emacsPackages = super.emacsPackages.overrideScope' (_self: _super: {
     retrospect = self.callPackage ({ dash
                                    , fetchFromGitHub
                                    , lib
@@ -27,7 +27,7 @@ self: super:
           license = lib.licenses.gpl3;
         };
       }) { inherit (self) lib fetchFromGitHub;
-           inherit (self.emacsPackagesNg) melpaBuild dash org-plus-contrib;
+           inherit (self.emacsPackages) melpaBuild dash org-plus-contrib;
          };
   });
 }
