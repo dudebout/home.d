@@ -11,7 +11,7 @@ nix-upgrade-home.d () {
     file="${1:-https://github.com/NixOS/nixpkgs-channels/archive/nixos-19.09.tar.gz}"
     profile="${2:-default}"
 
-    nix-env \
+    nice nix-env \
         --max-jobs auto \
         --file "$file" \
         --remove-all \
