@@ -51,6 +51,8 @@ main = do
                                                     , ("S-<XF86AudioLowerVolume>", spawn "amixer set Master 5%-")
                                                     , ("C-<XF86AudioRaiseVolume>", spawn "amixer set Master 1%+")
                                                     , ("C-<XF86AudioLowerVolume>", spawn "amixer set Master 1%-")
+                                                    , ("M-<XF86AudioRaiseVolume>", spawn "pactl set-sink-volume @DEFAULT_SINK@ +10%")
+                                                    , ("M-<XF86AudioLowerVolume>", spawn "pactl set-sink-volume @DEFAULT_SINK@ -10%")
                                                     , ("<XF86AudioMute>", spawn "amixer set Master toggle")
                                                     ]
   where sessionName = "scratch"
