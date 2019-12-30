@@ -219,7 +219,7 @@
 
 (use-package magit
   :bind (("C-c i" . magit-status)
-         ("C-c f" . magit-file-popup))
+         ("C-c f" . magit-file-dispatch))
   :init
   (add-hook 'magit-section-movement-hook 'magit-log-maybe-update-blob-buffer)
   (setq magit-branch-rename-push-target nil ; local changes should not flow to master
@@ -231,7 +231,7 @@
 (use-package magit-log
   :after magit
   :init
-  (magit-define-popup-switch 'magit-log-popup ?p "First parent" "--first-parent"))
+  (transient-insert-suffix 'magit-log "-n" '("=p" "First parent" "--first-parent")))
 
 (use-package markdown-mode
   :bind (:map markdown-mode-map
