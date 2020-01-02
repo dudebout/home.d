@@ -1,7 +1,13 @@
 #!/usr/bin/zsh
 
-xsetroot -cursor_name left_ptr
+inactivity_minutes=20
+screensaver_fade_in_seconds=30
+xset s $(( $inactivity_minutes * 60 )) $screensaver_fade_in_seconds
+
+xsetroot -cursor_name left_ptr -solid '#3f3f3f'
 xrdb-reload
+
+XSECURELOCK_DIM_COLOR='#7f9f7f' XSECURELOCK_SHOW_HOSTNAME=0 XSECURELOCK_SHOW_USERNAME=0 XSECURELOCK_DIM_TIME_MS=30000 xss-lock -n /usr/lib/xsecurelock/dimmer -l -- /usr/bin/xsecurelock &
 
 home.d-file () {
     local rel_path=$1

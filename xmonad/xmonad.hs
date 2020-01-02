@@ -36,8 +36,7 @@ main = do
                                                     , ("M-a", runOrRaise "slack" (className =? "Slack"))
                                                     , ("M-n", runOrRaise "nautilus" (className =? "Nautilus"))
                                                     , ("M-q", spawn "PATH=$HOME_D_XMONAD_PATH $HOME_D_XMONAD --recompile && $HOME_D_XMONAD --restart")
-                                                    -- FIXME put this in profile
-                                                    , ("M-S-l", spawn "i3lock -c \\#3f3f3f")
+                                                    , ("M-S-l", spawn "xset s activate")
                                                     , ("M-S-x", spawn "xkill")
                                                     , ("<XF86MonBrightnessDown>", spawn "xbacklight -dec 10")
                                                     , ("<XF86MonBrightnessUp>", spawn "xbacklight -inc 10")
