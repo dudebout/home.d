@@ -10,12 +10,7 @@ self: super:
         pname = "retrospect";
         ename = "retrospect";
         version = "0.1";
-        src = fetchFromGitHub {
-          owner = "dudebout";
-          repo = "retrospect";
-          rev = "7ef5782919c74ca872473d8a3ad6c2cb2e30d1c2";
-          sha256 = "182sbrzkps425v8fd9yaf4yjpc2hr1jhx37p3m5rwa2m441ijclh";
-        };
+        src = (import nix/sources.nix).retrospect;
         recipe = builtins.toFile "retrospect-recipe" ''
           (retrospect
               :fetcher github

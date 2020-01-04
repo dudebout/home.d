@@ -1,0 +1,14 @@
+{
+    "retrospect": {
+        "branch": "master",
+        "description": "A retrospective mode for org",
+        "homepage": null,
+        "owner": "dudebout",
+        "repo": "retrospect",
+        "rev": "90f11f7b116b793b15f930ee2c6c87a5f92d369d",
+        "sha256": "13mjwp3b1ba5wll28k1bwim9javyw8wh7rmrxnm0y8jjlwm0aysk",
+        "type": "tarball",
+        "url": "https://github.com/dudebout/retrospect/archive/90f11f7b116b793b15f930ee2c6c87a5f92d369d.tar.gz",
+        "url_template": "https://github.com/<owner>/<repo>/archive/<rev>.tar.gz"
+    }
+}
