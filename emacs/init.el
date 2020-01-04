@@ -312,7 +312,8 @@
                                                ((org-agenda-use-time-grid nil)
                                                 (org-agenda-span 'week)
                                                 (org-agenda-start-day "+1d")
-                                                (org-agenda-start-on-weekday nil)))
+                                                (org-agenda-start-on-weekday nil)
+                                                (org-agenda-skip-function '(home.d/org-agenda-skip-if-tag "daily"))))
                                        (agenda ""
                                                ((org-agenda-span 'month)
                                                 (org-agenda-start-day "+8d")
