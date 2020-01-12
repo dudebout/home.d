@@ -1,8 +1,10 @@
-# Revisit if argument should be nixpkgs or { nixpkgs ? <nixpkgs> }
 nixpkgs:
 
 let
-  config = { allowUnfreePredicate = pkg: true; pulseaudio = true; };
+  config = {
+    allowUnfreePredicate = _pkg: true;
+    pulseaudio = true;
+  };
   home_d = builtins.getEnv "HOME_D";
   profile = home_d + "/profile";
   existing_overlays = dir:
