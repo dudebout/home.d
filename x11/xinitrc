@@ -1,8 +1,11 @@
 #!/usr/bin/zsh
 
-inactivity_minutes=20
+inactivity_minutes=10
 screensaver_fade_in_seconds=30
 xset s $(( $inactivity_minutes * 60 )) $screensaver_fade_in_seconds
+dpms_inactivity_minutes=$(( $inactivity_minutes + 1 ))
+dpms_inactivity_seconds=$(( $dpms_inactivity_minutes * 60 ))
+xset dpms $dpms_inactivity_seconds $dpms_inactivity_seconds $dpms_inactivity_seconds
 
 xsetroot -cursor_name left_ptr -solid '#3f3f3f'
 xrdb-reload
