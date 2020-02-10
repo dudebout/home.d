@@ -34,6 +34,7 @@ emacsPackages.emacsWithPackages (ePkgs: with ePkgs;
     iedit
     ivy
     ivy-hydra
+    jinja2-mode
     lispy
     macrostep
     magit
