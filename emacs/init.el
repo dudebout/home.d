@@ -281,7 +281,7 @@
                                       ((org-agenda-span 'year)
                                        (org-agenda-show-all-dates nil)
                                        (org-agenda-skip-function
-                                        (org-agenda-skip-entry-if 'scheduled 'deadline))))
+                                        '(org-agenda-skip-entry-if 'scheduled 'deadline))))
                                      ("d" "Daily" agenda ""
                                       ((org-agenda-start-with-clockreport-mode t)
                                        (org-agenda-start-with-log-mode 'clockcheck)
@@ -303,6 +303,8 @@
                                               (org-agenda-prefix-format '((tags . "%-32(home.d/org-agenda-project-prefix-format) ")))))
                                        (tags "/WAITING"
                                                ((org-agenda-overriding-header "Waiting")
+                                                (org-agenda-skip-function
+                                                 '(org-agenda-skip-entry-if 'scheduled 'deadline))
                                                 (org-agenda-prefix-format '((tags . "%-32(home.d/org-agenda-project-prefix-format) ")))))
                                        (agenda ""
                                                ((org-agenda-use-time-grid nil)
