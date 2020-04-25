@@ -64,7 +64,7 @@ emacsPackages.emacsWithPackages (ePkgs: with ePkgs;
 
     # This is wrong. The version of GHC used by emacs should depend on the
     # project being built, not on the version of emacs being installed.
-    pkgs.haskellPackages.stylish-haskell
+    # pkgs.haskellPackages.stylish-haskell
     pkgs.haskellPackages.hlint
     pkgs.haskellPackages.ghc
 
