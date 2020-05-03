@@ -1,4 +1,4 @@
-PROMPT=$'%{\e[32m%}$HOME_D_HOST%{\e[m%} %{\e[34m%}${${${${(D)PWD/#%~/_}/#\\~\\//_/}/#\\~/$}/#_/\~}%{\e[m%} %{\e[31m%}%(?..$?)%{\e[m%}%(?.. )%{\e[33m%}$%{\e[m%} '
+PROMPT=$'%{\e[32m%}$HOME_D_HOST%{\e[m%} %{\e[34m%}${${${${(D)PWD/#%~/_}/#\\~\\//_/}/#\\~/$}/#_/\~}%{\e[m%} %{\e[31m%}%(?..$?)%{\e[m%}%(?.. )%{\e['$PROMPT_COLOR$'m%}$%{\e[m%} '
 export LESS_TERMCAP_mb
 LESS_TERMCAP_mb=$'\e[31m'
 export LESS_TERMCAP_md
