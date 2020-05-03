@@ -24,6 +24,7 @@ emacsPackages.emacsWithPackages (ePkgs: with ePkgs;
     company-coq
     counsel
     counsel-projectile
+    cmake-mode
     elisp-slime-nav
     fill-column-indicator
     git-gutter
