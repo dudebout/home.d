@@ -1,4 +1,4 @@
-#!/usr/bin/zsh
+#!/usr/bin/env zsh
 
 FINSDIR="${FINSDIR:-$HOME_D/fins}"
 BINDIR="$FINSDIR/bin"
@@ -23,7 +23,7 @@ for file in $FINSDIR/funs.d/?*.zsh ; do
         fin="$BINDIR/$fun"
         echo "  Creating $fin"
         cat > "$fin" <<EOF
-#!/usr/bin/zsh
+#!/usr/bin/env zsh
 
 set -e
 set -u
