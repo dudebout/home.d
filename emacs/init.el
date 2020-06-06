@@ -358,7 +358,9 @@
                                  "* %?\n:LOGBOOK:\n- Created on %U\n:END:")
                                 ("e" "event" entry
                                  (file+olp home.d/capture-file "tickler")
-                                 "* %?\n:LOGBOOK:\n- Created on %U\n:END:")
+                                 "* %?\n:LOGBOOK:\n- Created on %U\n:END:"
+                                 ;; Figure out why time-prompt does not work, nor does calling org-capture with C-1
+                                 :time-prompt t)
                                 ("m" "meeting" entry
                                  (file+olp home.d/capture-file "inbox" "meetings")
                                  "* meeting with %^{with} about %^{about}\n:LOGBOOK:\n- Created on %U\n:END:\n"
