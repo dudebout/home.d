@@ -34,5 +34,7 @@ source-home.d () {
 }
 
 source-home.d x11/monitors
+# https://github.com/xmonad/xmonad/issues/126
+export _JAVA_AWT_WM_NONREPARENTING=1
 
 exec $HOME_D_XMONAD
