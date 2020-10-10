@@ -16,4 +16,4 @@ XTerm*cutNewline: false
 XTerm*cutToBeginningOfLine: false
 
 XCursor.theme: Vanilla-DMZ-AA
-Xcursor.size: 12
+XCursor.size: 12
