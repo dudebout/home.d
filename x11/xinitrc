@@ -1,4 +1,4 @@
-#!/usr/bin/zsh
+#!/usr/bin/env zsh
 
 inactivity_minutes=10
 screensaver_fade_in_seconds=30
@@ -8,9 +8,19 @@ dpms_inactivity_seconds=$(( $dpms_inactivity_minutes * 60 ))
 xset dpms $dpms_inactivity_seconds $dpms_inactivity_seconds $dpms_inactivity_seconds
 
 xsetroot -cursor_name left_ptr -solid '#3f3f3f'
+xrandr --output HDMI2 --right-of DP1 &
 xrdb-reload
 
-XSECURELOCK_DIM_COLOR='#7f9f7f' XSECURELOCK_SHOW_HOSTNAME=0 XSECURELOCK_SHOW_USERNAME=0 XSECURELOCK_DIM_TIME_MS=30000 xss-lock -n /usr/lib/xsecurelock/dimmer -l -- /usr/bin/xsecurelock &
+# Ensures systemd user units, such as redshift and gnupg-agent have access to
+# the display and DBUS information. This could be taken care off by NixOS if
+# using a display manager instead of startx:
+# https://www.reddit.com/r/NixOS/comments/fmj1ws/problems_with_dbus_settings_in_my_xinitrc/
+#
+# https://wiki.gentoo.org/wiki/X_without_Display_Manager
+eval $(dbus-launch --exit-with-session --sh-syntax)
+systemctl --user import-environment DISPLAY XAUTHORITY DBUS_SESSION_BUS_ADDRESS
+
+XSECURELOCK_DIM_COLOR='#7f9f7f' XSECURELOCK_SHOW_HOSTNAME=0 XSECURELOCK_SHOW_USERNAME=0 XSECURELOCK_DIM_TIME_MS=30000 xss-lock -n /run/current-system/sw/libexec/xsecurelock/dimmer -l -- xsecurelock &
 
 home.d-file () {
     local rel_path=$1
@@ -33,8 +43,7 @@ source-home.d () {
     fi
 }
 
-source-home.d x11/monitors
 # https://github.com/xmonad/xmonad/issues/126
 export _JAVA_AWT_WM_NONREPARENTING=1
 
-exec $HOME_D_XMONAD
+exec /run/current-system/sw/bin/xmonad

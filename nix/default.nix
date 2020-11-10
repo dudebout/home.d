@@ -20,13 +20,11 @@ in
 
 with pkgs;
 let
-  xmonad_packages = hPkgs : with hPkgs; [ xmonad-contrib ];
   expression = "${profile}/nix/default.nix";
   extra_pkgs =
     if builtins.pathExists expression
     then (import expression) pkgs
     else [];
 in
-  [ (xmonad-with-packages.override { packages = xmonad_packages; })
-    (import ./emacs.nix { inherit pkgs; })
+  [
   ] ++ extra_pkgs
