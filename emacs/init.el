@@ -82,6 +82,24 @@
           ;; setup C-' in isearch
           (avy-setup-default)))
 
+(defun clang-format-buffer-dwim ()
+  "Format buffer if sensible .clang-format found
+
+Searching for .clang-format in the project or in the current
+directory to account for adhoc examples not contained in a git
+repo."
+  (when (member major-mode '(c-mode c++-mode))
+    (let ((dir (locate-dominating-file "." ".clang-format")))
+      (when (and
+             dir
+             (or
+              (equal (expand-file-name (file-name-as-directory ".")) (expand-file-name dir))
+              (s-starts-with? (projectile-project-root) (expand-file-name dir))))
+        (clang-format-buffer)))))
+
+(use-package clang-format
+  :init (add-hook 'before-save-hook #'clang-format-buffer-dwim))
+
 (use-package company
   :init (global-company-mode))
 
@@ -113,6 +131,9 @@
 ;;
 ;; .dir-locals.el example
 ;; ((haskell-mode . ((dante-project-root . "/codemill/dudebout/repos/arc-systems/"))))
+
+(use-package direnv
+  :config (direnv-mode))
 
 (use-package ediff
   :defer t
@@ -373,7 +394,7 @@
 
 (use-package org-protocol)
 
-(use-package org-pdfview)
+(use-package org-pdftools)
 
 (use-package pdf-tools)
 
