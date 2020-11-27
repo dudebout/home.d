@@ -135,6 +135,9 @@ repo."
 (use-package direnv
   :config (direnv-mode))
 
+;;; https://github.com/wbolster/emacs-direnv/issues/17#issuecomment-711131460
+(advice-add 'lsp :before #'direnv-update-environment)
+
 (use-package ediff
   :defer t
   :init (setq ediff-window-setup-function 'ediff-setup-windows-plain))
@@ -236,13 +239,11 @@ repo."
         ivy-use-virtual-buffers t))
 
 (use-package lsp
-  :init
-  (setq lsp-keymap-prefix "M-l"))
+  :init (setq lsp-keymap-prefix "M-l")
+  :hook ((lsp-mode . lsp-enable-which-key-integration)
+         (haskell-mode haskell-literate-mode)))
 
-(use-package lsp-haskell
-  :init
-  (add-hook 'haskell-mode-hook #'lsp)
-  (add-hook 'haskell-literate-mode-hook #'lsp))
+(use-package lsp-haskell)
 
 (use-package macrostep
   :bind ("C-c e" . macrostep-expand))
