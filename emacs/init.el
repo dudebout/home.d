@@ -235,6 +235,15 @@ repo."
   (setq ivy-wrap t
         ivy-use-virtual-buffers t))
 
+(use-package lsp
+  :init
+  (setq lsp-keymap-prefix "M-l"))
+
+(use-package lsp-haskell
+  :init
+  (add-hook 'haskell-mode-hook #'lsp)
+  (add-hook 'haskell-literate-mode-hook #'lsp))
+
 (use-package macrostep
   :bind ("C-c e" . macrostep-expand))
 
