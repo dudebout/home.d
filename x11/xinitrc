@@ -46,4 +46,7 @@ source-home.d () {
 # https://github.com/xmonad/xmonad/issues/126
 export _JAVA_AWT_WM_NONREPARENTING=1
 
+/run/current-system/sw-bin/polybar --config=$HOME_D/xmonad/polybar.ini --reload top &
+disown
+
 exec /run/current-system/sw/bin/xmonad
