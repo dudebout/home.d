@@ -17,6 +17,7 @@ import XMonad.Hooks.EwmhDesktops   (ewmh)
 import XMonad.Hooks.ManageDocks    (docks, avoidStruts)
 import XMonad.Hooks.ManageHelpers  (doCenterFloat)
 import XMonad.Layout.NoBorders     (smartBorders)
+import XMonad.ManageHook           ((-->), doIgnore)
 import XMonad.Util.EZConfig        (additionalKeysP)
 import XMonad.Util.NamedScratchpad (NamedScratchpad (NS), namedScratchpadAction,
                                     namedScratchpadManageHook)
@@ -30,7 +31,10 @@ main = do
     def { modMask = mod4Mask
         , normalBorderColor = normalColor
         , focusedBorderColor = focusedColor
-        , manageHook = namedScratchpadManageHook scratchpads <+> manageHook def
+        , manageHook = mconcat [ className =? "Logic" --> doIgnore -- https://support.saleae.com/faq/technical-faq/xmonad-on-linux-causes-issues
+                               , namedScratchpadManageHook scratchpads
+                               , manageHook def
+                               ]
         , layoutHook = avoidStruts $ smartBorders (layoutHook def)
         } `additionalKeysP` [ ("M-s", saneNSAction scratchpads nsScratch)
                             , ("M-u", withFocused (windows . W.sink))
