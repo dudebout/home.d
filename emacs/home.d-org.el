@@ -40,6 +40,7 @@ is unscheduled."
   (and
    (-non-nil (mapcar (apply-partially #'string= (org-get-todo-state)) org-not-done-keywords))
    (not (string= (org-get-todo-state) "WAITING"))
+   (not (string= (org-get-todo-state) "DELEGATED"))
    (not (org-get-scheduled-time (point)))))
 
 (defun home.d/org-agenda-project-prefix-format ()
