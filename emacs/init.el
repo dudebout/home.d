@@ -132,8 +132,9 @@ repo."
 ;; .dir-locals.el example
 ;; ((haskell-mode . ((dante-project-root . "/codemill/dudebout/repos/arc-systems/"))))
 
-(use-package direnv
-  :config (direnv-mode))
+(use-package envrc
+  :config (envrc-global-mode)
+  :init (define-key envrc-mode-map (kbd "C-c e") 'envrc-command-map))
 
 ;;; https://github.com/wbolster/emacs-direnv/issues/17#issuecomment-711131460
 (advice-add 'lsp :before #'direnv-update-environment)
@@ -246,7 +247,7 @@ repo."
 (use-package lsp-haskell)
 
 (use-package macrostep
-  :bind ("C-c e" . macrostep-expand))
+  :bind ("C-c y" . macrostep-expand))
 
 (use-package magit
   :bind (("C-c i" . magit-status)
