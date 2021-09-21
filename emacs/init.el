@@ -133,8 +133,9 @@ repo."
 ;; ((haskell-mode . ((dante-project-root . "/codemill/dudebout/repos/arc-systems/"))))
 
 (use-package envrc
-  :config (envrc-global-mode)
-  :init (define-key envrc-mode-map (kbd "C-c e") 'envrc-command-map))
+  :init (progn
+          (envrc-global-mode)
+          (define-key envrc-mode-map (kbd "C-c e") 'envrc-command-map)))
 
 ;;; https://github.com/wbolster/emacs-direnv/issues/17#issuecomment-711131460
 (advice-add 'lsp :before #'direnv-update-environment)
