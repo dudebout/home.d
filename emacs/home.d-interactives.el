@@ -52,16 +52,6 @@ user."
         (fill-paragraph nil t)
       (fill-paragraph nil))))
 
-(defun home.d/swap-buffers-in-windows ()
-  "Swap the buffers from the selected window and next window."
-  (interactive)
-  (let* ((this (selected-window))
-         (other (next-window))
-         (this-buffer (window-buffer this))
-         (other-buffer (window-buffer other)))
-    (set-window-buffer other this-buffer)
-    (set-window-buffer this other-buffer)))
-
 (defun home.d/delete-current-buffer-and-delete-file ()
   "Remove file connected to current buffer and kill buffer."
   (interactive)

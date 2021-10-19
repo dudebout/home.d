@@ -45,6 +45,7 @@
 (bind-key "C-x M-k" 'home.d/delete-current-buffer-and-delete-file)
 (bind-key "M-g M-g" 'home.d/goto-line-with-feedback)
 (bind-key "C-c r" 'replace-string)
+
 ;; Make sure that the last letter of the keybinding does not
 ;; correspond to the letter of the XMonad binding called by ct, else
 ;; xdotool key does not seem to be called properly / there is an
@@ -63,11 +64,12 @@
 (setq use-package-verbose t)
 (require 'use-package)
 
+
 (use-package ace-window
   :bind ("M-o" . ace-window)
   :init (progn
-          ;; colemak home row, minus n, and o which are reserved
-          ;; should consider ordering them by finger strength
+          ;; colemak home row, sorted by finger strength (except n, and o which
+          ;; are reserved)
           (setq aw-keys '(?a ?r ?s ?t ?d ?h ?e ?i)
                 aw-dispatch-always t)
           (ace-window-display-mode)))
@@ -77,8 +79,8 @@
          ("M-g g" . avy-goto-line)
          ("C-c W" . avy-org-refile-as-child))
   :init (progn
-           ;; colemak home row
-          (setq avy-keys '(?a ?r ?s ?t ?d ?h ?n ?e ?i ?o))
+          ;; colemak home row sorted by finger strength
+          (setq avy-keys '(?e ?s ?n ?t ?i ?r ?a ?o))
           ;; setup C-' in isearch
           (avy-setup-default)))
 
@@ -124,21 +126,10 @@ repo."
 (use-package projectile
   :init (define-key projectile-mode-map (kbd "C-c p") 'projectile-command-map))
 
-;; (use-package dante
-;;   :init  (progn
-;;            (put 'dante-project-root 'safe-local-variable #'stringp)
-;;            (add-hook 'haskell-mode-hook 'dante-mode)))
-;;
-;; .dir-locals.el example
-;; ((haskell-mode . ((dante-project-root . "/codemill/dudebout/repos/arc-systems/"))))
-
 (use-package envrc
   :init (progn
           (envrc-global-mode)
           (define-key envrc-mode-map (kbd "C-c e") 'envrc-command-map)))
-
-;;; https://github.com/wbolster/emacs-direnv/issues/17#issuecomment-711131460
-(advice-add 'lsp :before #'direnv-update-environment)
 
 (use-package ediff
   :defer t
@@ -150,41 +141,17 @@ repo."
           (add-hook 'emacs-lisp-mode-hook 'elisp-slime-nav-mode)
           (add-hook 'c-mode-hook 'elisp-slime-nav-mode)))
 
-(use-package fill-column-indicator)
-  ;; :config
-  ;; (define-globalized-minor-mode ddb/global-fci-mode fci-mode turn-on-fci-mode)
-  ;; (ddb/global-fci-mode 1)
-
 ;; TODO integrate flycheck-color-mode-line and flycheck-pos-tip
 (use-package flycheck
-  :defer t
-  :init (use-package flycheck-haskell
-          :defer t
-          :init (progn
-                  (add-hook 'haskell-mode-hook 'flycheck-mode)
-                  (add-hook 'flycheck-mode-hook 'flycheck-haskell-setup)
-                  (global-flycheck-mode))))
-
-;;; https://emacs.stackexchange.com/questions/7281/how-to-modify-face-for-a-specific-buffer
-;;; https://www.gnu.org/software/emacs/manual/html_node/elisp/Face-Remapping.html
-(defun ddb/switch-mode-line-background-on-god-mode ()
-  (if god-local-mode
-      (progn
-        (setq ddb/mode-line-relative-cookie
-              (face-remap-add-relative 'mode-line `((:background ,(zenburn-with-color-variables zenburn-red-4)))))
-        (setq ddb/mode-line-inactive-relative-cookie
-              (face-remap-add-relative 'mode-line-inactive `((:background ,(zenburn-with-color-variables zenburn-red-3))))))
-    (progn
-      (face-remap-remove-relative ddb/mode-line-relative-cookie)
-      (face-remap-remove-relative ddb/mode-line-inactive-relative-cookie))))
-
-(use-package god-mode
-  :init (progn
-          ;; (global-set-key (kbd "<escape>") 'god-local-mode)
-          (eval-after-load 'zenburn-theme
-            '(progn
-              (add-hook 'god-mode-enabled-hook 'ddb/switch-mode-line-background-on-god-mode)
-              (add-hook 'god-mode-disabled-hook 'ddb/switch-mode-line-background-on-god-mode)))))
+  :init (global-flycheck-mode))
+;; (use-package flycheck
+;;   :defer t
+;;   :init (use-package flycheck-haskell
+;;           :defer t
+;;           :init (progn
+;;                   (add-hook 'haskell-mode-hook 'flycheck-mode)
+;;                   (add-hook 'flycheck-mode-hook 'flycheck-haskell-setup)
+;;                   (global-flycheck-mode))))
 
 (use-package git-gutter
   :init (global-git-gutter-mode))
@@ -200,6 +167,14 @@ repo."
           (unless (locate-library "dante")
             (add-hook 'haskell-mode-hook 'interactive-haskell-mode))))
 
+(use-package helpful
+  :bind (("C-h f" . helpful-callable)
+         ("C-h o" . helpful-symbol)
+         ("C-h v" . helpful-variable)
+         ("C-h k" . helpful-key)
+         ("C-c C-d" . helpful-at-point)
+         ("C-h C" . helpful-command)))
+
 (defvar ddb/hs-state nil
   "Current state of hideshow ddb/hs-toggle-all.")
 
@@ -211,14 +186,6 @@ repo."
     (if ddb/hs-state
         (hs-hide-all)
       (hs-show-all)))
-
-(use-package helpful
-  :bind (("C-h f" . helpful-callable)
-         ("C-h o" . helpful-symbol)
-         ("C-h v" . helpful-variable)
-         ("C-h k" . helpful-key)
-         ("C-c C-d" . helpful-at-point)
-         ("C-h C" . helpful-command)))
 
 (use-package hideshow
   :commands hs-minor-mode
@@ -240,10 +207,13 @@ repo."
   (setq ivy-wrap t
         ivy-use-virtual-buffers t))
 
+
 (use-package lsp
   :init (setq lsp-keymap-prefix "M-l")
   :hook ((lsp-mode . lsp-enable-which-key-integration)
+         (haskell-mode lsp)
          (haskell-mode haskell-literate-mode)))
+
 
 (use-package lsp-haskell)
 
@@ -427,8 +397,7 @@ repo."
   ;; consider using powerline and smart-mode-line-powerline-theme
   :init (progn
           (setq sml/no-confirm-load-theme t
-                sml/theme nil
-                rm-blacklist '(" God"))
+                sml/theme nil)
           (sml/setup)))
 
 (defun ddb/add-shell-extension (shell &optional ext)
