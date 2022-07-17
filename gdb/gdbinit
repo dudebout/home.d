@@ -3,3 +3,7 @@ set print pretty on
 set history save on
 set pagination off
 set confirm off
+set style tui-border foreground none
+set style tui-active-border foreground red
+set tui active-border-mode normal
+set print asm-demangle on
