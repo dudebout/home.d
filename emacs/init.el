@@ -575,6 +575,11 @@ https://code.orgmode.org/bzg/org-mode/commit/13424336a6f30c50952d291e7a82906c121
 
 ;;; Added but not fully internalized yet
 (use-package org-roam
+  :custom (org-roam-capture-templates
+           '(("d" "default" plain "%?"
+              :target (file+head "${slug}.org"
+                                 "#+title: ${title}\n")
+              :unnarrowed t)))
   :init (setq org-roam-v2-ack t)
   :bind (("C-c n l" . org-roam-buffer-toggle)
          ("C-c n f" . org-roam-node-find)
@@ -589,9 +594,7 @@ https://code.orgmode.org/bzg/org-mode/commit/13424336a6f30c50952d291e7a82906c121
          ("C-c n j" . org-roam-dailies-capture-today))
   :config
   (setq org-roam-node-display-template (concat "${title:*} " (propertize "${tags:10}" 'face 'org-tag)))
-  (org-roam-db-autosync-mode)
-  ;; If using org-roam-protocol
-  (require 'org-roam-protocol))
+  (org-roam-db-autosync-mode))
 
 
 (use-package org-agenda
