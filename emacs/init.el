@@ -573,6 +573,27 @@ https://code.orgmode.org/bzg/org-mode/commit/13424336a6f30c50952d291e7a82906c121
         (replace-match (downcase (match-string-no-properties 1)) :fixedcase nil nil 1))
       (message "Lower-cased %d matches" count))))
 
+;;; Added but not fully internalized yet
+(use-package org-roam
+  :init (setq org-roam-v2-ack t)
+  :bind (("C-c n l" . org-roam-buffer-toggle)
+         ("C-c n f" . org-roam-node-find)
+         ("C-c n t" . org-roam-tag-add)
+         ("C-c n T" . org-roam-tag-remove)
+         ("C-c n r" . org-roam-ref-add)
+         ("C-c n R" . org-roam-ref-remove)
+         ("C-c n g" . org-roam-graph)
+         ("C-c n i" . org-roam-node-insert)
+         ("C-c n c" . org-roam-capture)
+         ;; Dailies
+         ("C-c n j" . org-roam-dailies-capture-today))
+  :config
+  (setq org-roam-node-display-template (concat "${title:*} " (propertize "${tags:10}" 'face 'org-tag)))
+  (org-roam-db-autosync-mode)
+  ;; If using org-roam-protocol
+  (require 'org-roam-protocol))
+
+
 (use-package org-agenda
   :bind (:map org-agenda-mode-map
               ("v" . 'hydra-org-agenda-view/body)))
