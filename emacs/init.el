@@ -28,6 +28,10 @@
               indent-tabs-mode nil
               require-final-newline t)
 
+(use-package emacs
+  :custom (visual-line-fringe-indicators (alist-get 'continuation fringe-indicator-alist))
+  :bind (("C-c l" . 'visual-line-mode)))
+
 (add-hook 'before-save-hook #'whitespace-cleanup)
 (add-hook 'before-save-hook #'home.d/org-evaluate-buffer-time-ranges)
 (add-hook 'after-save-hook #'executable-make-buffer-file-executable-if-script-p)
