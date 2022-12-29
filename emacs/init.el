@@ -597,6 +597,21 @@ https://code.orgmode.org/bzg/org-mode/commit/13424336a6f30c50952d291e7a82906c121
   (org-roam-db-autosync-mode))
 
 
+(defun org-roam-update-file-name ()
+  (when (org-roam-buffer-p)
+    (let* ((file-name (buffer-file-name))
+           (file-node (save-excursion
+                        (goto-char 1)
+                        (org-roam-node-at-point)))
+           (slug (org-roam-node-slug file-node))
+           (expected-name (expand-file-name (concat slug ".org"))))
+      (unless (string-equal file-name expected-name)
+        (rename-file file-name expected-name t)
+        (set-visited-file-name expected-name t t)))))
+
+(add-hook 'after-save-hook #'org-roam-update-file-name)
+
+
 (use-package org-agenda
   :bind (:map org-agenda-mode-map
               ("v" . 'hydra-org-agenda-view/body)))
