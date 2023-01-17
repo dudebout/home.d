@@ -601,6 +601,7 @@ https://code.orgmode.org/bzg/org-mode/commit/13424336a6f30c50952d291e7a82906c121
   (org-roam-db-autosync-mode))
 
 
+(require 'org-roam)
 (defun org-roam-update-file-name ()
   (when (org-roam-buffer-p)
     (let* ((file-name (buffer-file-name))
