@@ -4,12 +4,11 @@ module Main
 
 import qualified XMonad.StackSet as W
 
-import Data.Default       (def)
 import Data.List          (intercalate)
 import System.Environment (getEnv)
 
 import XMonad                      (Resize (Expand, Shrink), XConfig (..),
-                                    className, mod4Mask, sendMessage, spawn,
+                                    className, def, mod4Mask, sendMessage, spawn,
                                     title, windows, withFocused, xmonad, (<+>),
                                     (=?))
 import XMonad.Actions.WindowGo     (raise, runOrRaise)
