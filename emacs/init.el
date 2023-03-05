@@ -68,6 +68,11 @@
 (setq use-package-verbose t)
 (require 'use-package)
 
+(use-package reformatter
+  :init
+  (reformatter-define haskell-format
+    :program "ormolu"))
+
 
 (use-package ace-window
   :bind ("M-o" . ace-window)
@@ -165,6 +170,7 @@ repo."
   :init (progn
           (setq haskell-stylish-on-save t)
           (add-hook 'haskell-mode-hook 'haskell-indentation-mode)
+          (add-hook 'haskell-mode-hook 'haskell-format-on-save-mode)
           ;; dante has conflicting install instructions with
           ;; haskell-mode. Ensure the haskell-mode instructions are
           ;; followed when dante is not installed.
