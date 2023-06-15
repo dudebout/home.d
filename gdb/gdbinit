@@ -7,3 +7,5 @@ set style tui-border foreground none
 set style tui-active-border foreground red
 set tui active-border-mode normal
 set print asm-demangle on
+# Disables warnings about auto loading libthread_db.so
+set auto-load no
