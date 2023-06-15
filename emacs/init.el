@@ -71,8 +71,15 @@
 (use-package reformatter
   :init
   (reformatter-define haskell-format
-    :program "ormolu"))
-
+    :program "ormolu")
+  (reformatter-define nix-format
+    :program "nixpkgs-fmt")
+  (reformatter-define python-black-format
+    :program "black"
+    :args '("-"))
+  (reformatter-define python-isort-format
+    :program "isort"
+    :args '("-")))
 
 (use-package ace-window
   :bind ("M-o" . ace-window)
@@ -257,7 +264,15 @@ repo."
   :init
   ;; there does not seem to be indentation support so every press of a closing
   ;; paren shifts the whole line to the left
-  (remove-hook 'post-self-insert-hook #'electric-indent-post-self-insert-function))
+  (remove-hook 'post-self-insert-hook #'electric-indent-post-self-insert-function)
+  (add-hook 'nix-mode-hook 'nix-format-on-save-mode))
+
+(use-package python
+  :init
+  (add-hook 'python-mode-hook 'python-isort-format-on-save-mode)
+  (add-hook 'python-mode-hook 'python-black-format-on-save-mode))
+
+
 
 (use-package org
   :defer t
