@@ -73,11 +73,11 @@
   (reformatter-define haskell-format
     :program "ormolu")
   (reformatter-define nix-format
-    :program "nixpkgs-fmt")
-  (reformatter-define python-black-format
+    :program "alejandra")
+  (reformatter-define python-format
     :program "black"
     :args '("-"))
-  (reformatter-define python-isort-format
+  (reformatter-define python-sort-imports
     :program "isort"
     :args '("-")))
 
@@ -269,8 +269,8 @@ repo."
 
 (use-package python
   :init
-  (add-hook 'python-mode-hook 'python-isort-format-on-save-mode)
-  (add-hook 'python-mode-hook 'python-black-format-on-save-mode))
+  (add-hook 'python-mode-hook 'python-format-on-save-mode)
+  (add-hook 'python-mode-hook 'python-sort-imports-on-save-mode))
 
 
 
