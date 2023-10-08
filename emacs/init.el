@@ -68,16 +68,18 @@
 (setq use-package-verbose t)
 (require 'use-package)
 
+;;; Use slashes in the names to avoid clashes with other modes. This happened
+;;; with nix-format.el for example.
 (use-package reformatter
   :init
-  (reformatter-define haskell-format
+  (reformatter-define haskell/format
     :program "ormolu")
-  (reformatter-define nix-format
+  (reformatter-define nix/format
     :program "alejandra")
-  (reformatter-define python-format
+  (reformatter-define python/format
     :program "black"
     :args '("-"))
-  (reformatter-define python-sort-imports
+  (reformatter-define python/sort-imports
     :program "isort"
     :args '("-")))
 
@@ -177,7 +179,7 @@ repo."
   :init (progn
           (setq haskell-stylish-on-save t)
           (add-hook 'haskell-mode-hook 'haskell-indentation-mode)
-          (add-hook 'haskell-mode-hook 'haskell-format-on-save-mode)
+          (add-hook 'haskell-mode-hook 'haskell/format-on-save-mode)
           ;; dante has conflicting install instructions with
           ;; haskell-mode. Ensure the haskell-mode instructions are
           ;; followed when dante is not installed.
@@ -265,12 +267,12 @@ repo."
   ;; there does not seem to be indentation support so every press of a closing
   ;; paren shifts the whole line to the left
   (remove-hook 'post-self-insert-hook #'electric-indent-post-self-insert-function)
-  (add-hook 'nix-mode-hook 'nix-format-on-save-mode))
+  (add-hook 'nix-mode-hook 'nix/format-on-save-mode))
 
 (use-package python
   :init
-  (add-hook 'python-mode-hook 'python-format-on-save-mode)
-  (add-hook 'python-mode-hook 'python-sort-imports-on-save-mode))
+  (add-hook 'python-mode-hook 'python/format-on-save-mode)
+  (add-hook 'python-mode-hook 'python/sort-imports-on-save-mode))
 
 
 
