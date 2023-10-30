@@ -274,8 +274,6 @@ repo."
   (add-hook 'python-mode-hook 'python/format-on-save-mode)
   (add-hook 'python-mode-hook 'python/sort-imports-on-save-mode))
 
-
-
 (use-package org
   :defer t
   :init
