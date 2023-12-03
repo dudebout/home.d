@@ -159,6 +159,11 @@ repo."
           (add-hook 'emacs-lisp-mode-hook 'elisp-slime-nav-mode)
           (add-hook 'c-mode-hook 'elisp-slime-nav-mode)))
 
+(use-package checkdoc
+  :defer t
+  ;; That experimental flag does not quite work. It warns about correct uses.
+  :init (setq checkdoc-verb-check-experimental-flag nil))
+
 ;; TODO integrate flycheck-color-mode-line and flycheck-pos-tip
 (use-package flycheck
   :init (global-flycheck-mode))
