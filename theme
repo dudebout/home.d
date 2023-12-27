@@ -99,8 +99,7 @@ add_to_ls_colors '*.tgz' $ZENBURN_RED
 add_to_ls_colors '*.xz' $ZENBURN_RED
 
 
-# GREP_COLOR is deprecated: use GREP_COLORS
-export GREP_COLOR="$(ansi_escape_fg $ZENBURN_YELLOW)"
+export GREP_COLORS="mt=$(ansi_escape_fg $ZENBURN_YELLOW)"
 
 alias ag="ag --color-line-number '$(ansi_escape_fg $ZENBURN_YELLOW)' \
              --color-match '1;$(ansi_escape_fg $ZENBURN_YELLOW)' \
