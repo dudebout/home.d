@@ -276,6 +276,7 @@ repo."
 
 (use-package python
   :init
+  (setq python-fill-docstring-style 'symmetric)
   (add-hook 'python-mode-hook 'python/format-on-save-mode)
   (add-hook 'python-mode-hook 'python/sort-imports-on-save-mode))
 
