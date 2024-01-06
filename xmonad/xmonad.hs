@@ -34,6 +34,8 @@ import XMonad.Util.NamedScratchpad
     namedScratchpadManageHook,
   )
 
+data Terminal = Alacritty | XTerm
+
 main :: IO ()
 main = do
   -- FIXME put this in generated
@@ -45,7 +47,7 @@ main = do
         { modMask = mod4Mask,
           normalBorderColor = normalColor,
           focusedBorderColor = focusedColor,
-          terminal = "alacritty",
+          terminal = terminalName,
           manageHook =
             mconcat
               [ className =? "Logic" --> doIgnore, -- https://support.saleae.com/faq/technical-faq/xmonad-on-linux-causes-issues
@@ -56,7 +58,7 @@ main = do
         }
         `additionalKeysP` [ ("M-s", saneNSAction scratchpads nsScratch),
                             ("M-u", withFocused (windows . W.sink)),
-                            ("M-t", runOrRaise "xt" (title =? "tmux:default")),
+                            ("M-t", runOrRaise terminalFinsLauncher (title =? "tmux:default")),
                             ("M-e", runOrRaise "emacs-attach" (className =? "Emacs")),
                             ("M-i", runOrRaise "firefox" (className =? "firefox")),
                             ("M-a", runOrRaise "slack" (className =? "Slack")),
@@ -84,14 +86,21 @@ main = do
                             ("<XF86AudioMute>", spawn "amixer set Master toggle")
                           ]
   where
+    terminal = Alacritty
+    terminalName = case terminal of
+      Alacritty -> "alacritty"
+      XTerm -> "xterm"
+    terminalFinsLauncher = case terminal of
+      Alacritty -> "at"
+      XTerm -> "xt"
     sessionName = "scratch"
-    xtermTitle = "NS:tmux:" ++ sessionName
+    termTitle = "NS:tmux:" ++ sessionName
     nsScratch = "NS:" ++ sessionName
     scratchpads =
       [ NS
           nsScratch
-          (intercalate " " ["xt", sessionName, xtermTitle])
-          (title =? xtermTitle)
+          (intercalate " " [terminalFinsLauncher, sessionName, termTitle])
+          (title =? termTitle)
           doCenterFloat
       ]
     -- FIXME add a way to reselect the scratchpad even if it is on the current workspace

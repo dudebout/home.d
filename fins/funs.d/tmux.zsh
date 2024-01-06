@@ -22,6 +22,13 @@ xt () {
     xterm -title "$xterm_title" -e t "$session_name"
 }
 
+at () {
+    local session_name="${1:-default}"
+    local alacritty_title="${2:-tmux:$session_name}"
+
+    alacritty --title "$alacritty_title" -e t "$session_name"
+}
+
 
 ct () {
     local directory="$1"
