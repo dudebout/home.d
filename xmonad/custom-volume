@@ -20,10 +20,13 @@ volume_icons = [volume_low, volume_medium, volume_high]
 
 rx = re.compile("^Event 'change' on sink #")
 
-def icon_for_volume(volume_percent: int) -> str:
-    # This formula
-    index = max(round(volume / 100 * len(volume_icons)), len(volume_icons))
-    return chr(volume_icons[index])
+def icon_for_volume(volume_percent: Optional[int]) -> str:
+    if volume_percent is None:
+        result= chr(volume_off)
+    else:
+        index = max(round(volume / 100 * len(volume_icons)), len(volume_icons))
+        result= chr(volume_icons[index])
+    return result
 
 def get_volume() -> int:
     output = subprocess.check_output(["pactl", "get-sink-volume", "@DEFAULT_SINK@"], text=True)
@@ -46,13 +49,7 @@ def handle_event(stream):
         # logging.warning(f"Ignoring event: {event}")
     else:
         # logging.warning(f"Matching event: {event}")
-        if get_mute():
-            icon = f"%{{F#ff0000}}{chr(volume_off)}"
-        else:
-            icon = icon_for_volume(get_volume())
-        # if icon != ICON:
-        #     ICON = icon
-        print(icon, flush=True)
+        print(icon_for_volume(None if get_mute else get_volume()), flush=True)
 
 def pactl_subscribe() -> None:
     p = subprocess.Popen(["pactl", "subscribe"], stdout=subprocess.PIPE, bufsize=1, text=True)
