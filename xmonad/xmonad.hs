@@ -64,7 +64,7 @@ main = do
                             ("M-a", runOrRaise "slack" (className =? "Slack")),
                             ("M-p", spawn "rofi -show run"),
                             ("M-n", runOrRaise "nautilus" (className =? "Nautilus")),
-                            ("M-q", spawn "polybar-msg cmd quit; polybar --config=$HOME_D/xmonad/polybar.ini --reload top & disown; xmonad --recompile && xmonad --restart"),
+                            ("M-q", spawn "systemctl --user restart polybar.service; xmonad --recompile && xmonad --restart"),
                             ("M-S-l", spawn "xset s activate"),
                             ("M-S-x", spawn "xkill"),
                             ("M-<Right>", sendMessage Expand),

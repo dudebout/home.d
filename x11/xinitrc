@@ -49,5 +49,8 @@ export _JAVA_AWT_WM_NONREPARENTING=1
 # Moved to home manager
 # /run/current-system/sw/bin/polybar --config=$HOME_D/xmonad/polybar.ini --reload top &
 # disown
+# This will not be needed once xmonad is handled by systemd and starts the graphical-session.target unit.
+# From that we can make sure polybar is started before that target.
+systemctl --user restart polybar.service
 
 exec /run/current-system/sw/bin/xmonad
