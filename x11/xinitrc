@@ -20,7 +20,16 @@ xrdb-reload
 eval $(dbus-launch --exit-with-session --sh-syntax)
 systemctl --user import-environment DISPLAY XAUTHORITY DBUS_SESSION_BUS_ADDRESS
 
-XSECURELOCK_DIM_COLOR='#7f9f7f' XSECURELOCK_SHOW_HOSTNAME=0 XSECURELOCK_SHOW_USERNAME=0 XSECURELOCK_DIM_TIME_MS=30000 xss-lock -n /run/current-system/sw/libexec/xsecurelock/dimmer -l -- xsecurelock &
+# Look into DPMS state when blanking the screen to save more power
+XSECURELOCK_BLANK_TIMEOUT=5 \
+XSECURELOCK_AUTH_FOREGROUND_COLOR=#dcdccc \
+XSECURELOCK_AUTH_BACKGROUND_COLOR=#3f3f3f \
+XSECURELOCK_BACKGROUND_COLOR=#3f3f3f \
+XSECURELOCK_DIM_COLOR=#7f9f7f \
+XSECURELOCK_SHOW_HOSTNAME=0 \
+XSECURELOCK_SHOW_USERNAME=0 \
+XSECURELOCK_DIM_TIME_MS=30000 \
+xss-lock -n /run/current-system/sw/libexec/xsecurelock/dimmer -l -- xsecurelock &
 
 home.d-file () {
     local rel_path=$1
